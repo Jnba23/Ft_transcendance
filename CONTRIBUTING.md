@@ -184,20 +184,97 @@ If you have questions or run into issues:
 
 ## Quick Reference
 
+### Setup Instructions for ft_transcendance
+
+#### First Time (One Time Only)
 ```bash
-# Setup
-git clone <repo-url>
-git checkout feature/<your-feature>
+# Clone repository
+git clone https://github.com/your-org/ft_transcendance.git
+cd ft_transcendance
 
-# Daily workflow
-git fetch origin
-git merge origin/develop
-# ... make changes ...
+# Checkout develop branch (NOT main)
+git checkout develop
+
+# Install backend dependencies
+cd backend && npm install && cd ..
+## if your npm version is deprecated and cannot support the packages versions :
+### Download and install nvm  
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+### This adds nvm to your ~/.bashrc automatically
+### Reload your shell
+   source ~/.bashrc
+
+### Verify nvm is installed
+   nvm --version
+### and then install node 18 LTS
+   nvm install 18
+
+   # Use Node 18
+   nvm use 18
+
+   # Verify
+   node --version  # Should show v18.x.x
+   npm --version
+
+# Install frontend dependencies
+cd frontend && npm install && cd ..
+
+# Checkout your feature branch
+git checkout feature/[your-part]
+```
+
+Replace `[your-part]` with:
+- `user_mgmnt` (if you're doing auth)
+- `game` (if you're doing main game)
+- `scnd_game` (if you're doing RPS)
+- `chat_matchmaking` (if you're doing chat)
+
+#### Daily Workflow
+
+##### Morning - Start Work
+```bash
+# Make sure you're on develop
+git checkout develop
+
+# Pull latest changes
+git pull origin develop
+
+# Switch to your feature branch
+git checkout feature/[your-part]
+
+# Update your branch with latest develop
+git rebase origin/develop
+
+# Start development
+npm run dev
+```
+
+##### During Development
+```bash
+# In another terminal, run tests
+npm run test:watch
+```
+
+##### Before Pushing
+```bash
+# Format code
+npm run format
+
+# Fix style issues
+npm run lint:fix
+
+# Run all tests
+npm test
+
+# If everything passes, commit
 git add .
-git commit -m "type(scope): description"
-git push origin feature/<your-feature>
+git commit -m "feat(scope): description"
 
-# Create PR on GitHub
-# Base: develop ← Compare: feature/<your-feature>
+# Push to your feature branch
+git push origin feature/[your-part]
+```
+
+## Create PR on GitHub
+### Base: develop ← Compare: feature/<your-feature>
 ```
 Happy coding :D

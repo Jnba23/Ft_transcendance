@@ -6,4 +6,52 @@ on:
   pull_request:
     branches: [ develo, main ]
 jobs:
-  test
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - name: setup Nodejs
+      uses: actions/setup-node@v6
+      with:
+        node-version: '18'
+        cache: 'npm'
+    - name: install backend dependencies
+      run: |
+        cd backend
+        npm install
+    - name: run backend linting
+      run: |
+        cd backend
+        npm run linting
+    - name: check formatting
+      run: |
+        cd backend
+        npm run format:check
+    - name: run backend test
+      run: |
+        cd backend
+        npm test
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - name: setup Nodejs
+      uses: actions/setup-node@v6
+      with:
+        node-version: '18'
+    - name: install frontend dependencies
+      run: |
+        cd frontend
+        npm install
+    - name: run frontend linting
+      run: |
+        cd frontend
+        npm run lint
+    - name: check formatting
+      run: |
+        cd frontend
+        npm run format:check
+    - name: build for production
+      run: |
+        cd frontend
+        npm run build 

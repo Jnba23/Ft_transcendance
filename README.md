@@ -10,9 +10,9 @@ Final 42 common core project
 
 ```
 	- For the frontend we're using : Vite
-	
 ```
 	- 
 ```
 ## Styling
-	- For the code styling we're using : ESlint
+	- For code formatting( max-len, no-mixed-spaces-and-tabs, keyword-spacing, comma-style...) we're using : Prettier
+	- For code-quality rules/catching bugs( no-unused-vars, no-extra-bind, no-implicit-globals...) we're using : Eslint

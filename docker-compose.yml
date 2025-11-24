@@ -1,0 +1,34 @@
+volumes:
+  redis_data:
+network:
+  trans_net:
+    driver: bridge
+services:
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/data:/app/data
+      - /app/node_modules
+    networks:
+      - trans_net
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./.env
+    volumes:
+      - ./frontend/src:/app/src
+      - /app/node_modules
+    networks:
+      - trans_net
+  redis:
+    /*finish it later*/
