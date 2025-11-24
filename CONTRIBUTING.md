@@ -243,7 +243,7 @@ git pull origin develop
 git checkout feature/[your-part]
 
 # Update your branch with latest develop
-git rebase origin/develop
+git merge origin/develop
 
 # Start development
 npm run dev
