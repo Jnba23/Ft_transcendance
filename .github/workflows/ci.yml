@@ -22,7 +22,7 @@ jobs:
     - name: run backend linting
       run: |
         cd backend
-        npm run linting
+        npm run lint
     - name: check formatting
       run: |
         cd backend
