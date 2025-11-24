@@ -19,7 +19,7 @@
     "no-unused-vars": "off",  // Turn off default rule
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     // Instead use TypeScript version, allow unused params starting with _
-    "@typescript-eslint/explicit-function-return-types": "warn",
+    // "@typescript-eslint/explicit-function-return-types": "error",
     // Warn if function doesn't have explicit return type
     "semi": ["error", "always"],
     // Error if missing semicolons
