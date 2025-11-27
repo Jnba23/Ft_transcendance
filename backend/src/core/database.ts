@@ -1,13 +1,11 @@
 import Database, { type Database as SQLiteDatabase } from 'better-sqlite3';
-import type { FastifyInstance } from 'fastify'
+import type { FastifyInstance } from 'fastify';
 import fastifyPlugin from 'fastify-plugin';
-import path from 'path';
 import fs from 'fs';
+import path from 'path'; // keeping for path.join to create paths
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 declare module 'fastify' {
     interface FastifyInstance {
@@ -16,7 +14,7 @@ declare module 'fastify' {
 }
 
 async function databasePlugin(fastify: FastifyInstance, opt: any) {
-    const dbDir = path.join(process.cwd(), 'data');
+    const dbDir = path.join(process.cwd(), 'data'); // data directory at project root
 
     if (!fs.existsSync(dbDir)) {
         fs.mkdirSync(dbDir, { recursive: true });
@@ -27,15 +25,17 @@ async function databasePlugin(fastify: FastifyInstance, opt: any) {
 
     db.pragma('foreign_keys = ON');
 
-    const schema = fs.readFileSync(path.join(__dirname, '/db/schema.sql'), 'utf-8');
+    // schema.sql is located in this package under core/db/schema.sql
+    const schemaPath = path.join(__dirname, 'db', 'schema.sql');
+    const schema = fs.readFileSync(schemaPath, 'utf-8');
 
     db.exec(schema);
 
     fastify.decorate('db', db);
 
-    fastify.addHook('onClose', async (instanse: FastifyInstance) => {
-        instanse.db.close();
-    })
+    fastify.addHook('onClose', async (instance: FastifyInstance) => {
+        instance.db.close();
+    });
 }
 
 export default fastifyPlugin(databasePlugin, {
