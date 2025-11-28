@@ -8,36 +8,36 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 declare module 'fastify' {
-    interface FastifyInstance {
-        db: SQLiteDatabase;
-    }
+  interface FastifyInstance {
+    db: SQLiteDatabase;
+  }
 }
 
 async function databasePlugin(fastify: FastifyInstance, opt: any) {
-    const dbDir = path.join(process.cwd(), 'data'); // data directory at project root
+  const dbDir = path.join(process.cwd(), 'data'); // data directory at project root
 
-    if (!fs.existsSync(dbDir)) {
-        fs.mkdirSync(dbDir, { recursive: true });
-    }
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
 
-    const dbPath = path.join(dbDir, 'app.db');
-    const db = new Database(dbPath);
+  const dbPath = path.join(dbDir, 'app.db');
+  const db = new Database(dbPath);
 
-    db.pragma('foreign_keys = ON');
+  db.pragma('foreign_keys = ON');
 
-    // schema.sql is located in this package under core/db/schema.sql
-    const schemaPath = path.join(__dirname, 'db', 'schema.sql');
-    const schema = fs.readFileSync(schemaPath, 'utf-8');
+  // schema.sql is located in this package under core/db/schema.sql
+  const schemaPath = path.join(__dirname, 'db', 'schema.sql');
+  const schema = fs.readFileSync(schemaPath, 'utf-8');
 
-    db.exec(schema);
+  db.exec(schema);
 
-    fastify.decorate('db', db);
+  fastify.decorate('db', db);
 
-    fastify.addHook('onClose', async (instance: FastifyInstance) => {
-        instance.db.close();
-    });
+  fastify.addHook('onClose', async (instance: FastifyInstance) => {
+    instance.db.close();
+  });
 }
 
 export default fastifyPlugin(databasePlugin, {
-    name: 'Database'
+  name: 'Database',
 });

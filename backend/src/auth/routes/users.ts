@@ -170,7 +170,94 @@ async function userRoutes(fastify: FastifyInstance) {
                 })
             }
         }
-    })
+    });
+
+    // Get all users (no password hashes)
+    fastify.route({
+        method: 'GET',
+        url: '/api/auth/users',
+        schema: {
+            response: {
+                200: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            id: { type: 'number' },
+                            username: { type: 'string' },
+                            email: { type: 'string' }
+                        }
+                    }
+                }
+            }
+        },
+        handler: async (request: FastifyRequest, reply: FastifyReply) => {
+            try {
+                const users = fastify.db.prepare(
+                    'SELECT id, username, email FROM users'
+                ).all() as Array<{ id: number; username: string; email: string }>;
+
+                return reply.code(200).send(users);
+            } catch (err) {
+                fastify.log.error(err);
+                return reply.code(500).send({ error: 'Internal server error' });
+            }
+        }
+    });
+
+    // Get a user by id
+    fastify.route({
+        method: 'GET',
+        url: '/api/auth/users/:id',
+        schema: {
+            params: {
+                type: 'object',
+                properties: {
+                    id: { type: 'integer' }
+                },
+                required: ['id']
+            },
+            response: {
+                200: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'number' },
+                        username: { type: 'string' },
+                        email: { type: 'string' }
+                    }
+                },
+                400: {
+                    type: 'object',
+                    properties: { error: { type: 'string' } }
+                },
+                404: {
+                    type: 'object',
+                    properties: { error: { type: 'string' } }
+                }
+            }
+        },
+        handler: async (request: FastifyRequest<{ Params: { id: number } }>, reply: FastifyReply) => {
+            try {
+                const id = Number((request.params as any).id);
+                if (Number.isNaN(id)) {
+                    return reply.code(400).send({ error: 'Invalid user id' });
+                }
+
+                const user = fastify.db.prepare(
+                    'SELECT id, username, email FROM users WHERE id = ?'
+                ).get(id) as { id: number; username: string; email: string } | undefined;
+
+                if (!user) {
+                    return reply.code(404).send({ error: 'User not found' });
+                }
+
+                return reply.code(200).send(user);
+            } catch (err) {
+                fastify.log.error(err);
+                return reply.code(500).send({ error: 'Internal server error' });
+            }
+        }
+    });
 }
 
 export default userRoutes;
