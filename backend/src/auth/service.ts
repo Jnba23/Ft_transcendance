@@ -10,8 +10,8 @@ async function start() {
   try {
     const fastify = await buildApp();
     await fastify.listen({ port: PORT, host: HOST });
-    console.log(`🚀 Server running at http://${HOST}:${PORT}`);
-  } catch (err) {
+    fastify.log.info(`🚀 Server running at http://${HOST}:${PORT}`);
+  } catch (err: unknown) {
     console.error('❌ Server failed to start:', err);
     process.exit(1);
   }

@@ -13,7 +13,7 @@ declare module 'fastify' {
   }
 }
 
-async function databasePlugin(fastify: FastifyInstance, opt: any) {
+async function databasePlugin(fastify: FastifyInstance) {
   const dbDir = path.join(process.cwd(), 'data'); // data directory at project root
 
   if (!fs.existsSync(dbDir)) {
