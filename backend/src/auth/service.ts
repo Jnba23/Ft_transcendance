@@ -12,6 +12,7 @@ async function start() {
     await fastify.listen({ port: PORT, host: HOST });
     fastify.log.info(`🚀 Server running at http://${HOST}:${PORT}`);
   } catch (err: unknown) {
+    // eslint-disable-next-line no-console
     console.error('❌ Server failed to start:', err);
     process.exit(1);
   }
