@@ -207,10 +207,10 @@ cd backend && npm install && cd ..
 ### Verify nvm is installed
    nvm --version
 ### and then install node 18 LTS
-   nvm install 18
+   nvm install 20
 
-   # Use Node 18
-   nvm use 18
+   # Use Node 20
+   nvm use 20
 
    # Verify
    node --version  # Should show v18.x.x
