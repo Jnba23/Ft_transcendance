@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
-const HOST = process.env.HOT || '0.0.0.0';
+const HOST = process.env.HOST || '0.0.0.0';
 
 async function start() {
   try {

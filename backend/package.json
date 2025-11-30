@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node --loader ts-node/esm src/main.ts",
-    "dev": "nodemon --watch './**/*.ts' --exec 'ts-node' server.ts",
+    "start": "tsx src/auth/server.ts",
+    "dev": "nodemon --watch './**/*.ts' --exec 'tsx' src/auth/server.ts",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "lint": "eslint src/**/*.ts",
