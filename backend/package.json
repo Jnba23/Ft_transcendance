@@ -1,7 +1,7 @@
 {
-  "name": "merged-ft_transcendance-backend",
+  "name": "ft_transcendance-backend",
   "version": "1.0.0",
-  "description": "Merged Fastify TypeScript API for ft_transcendance",
+  "description": "Fastify backend for ft_transcendance",
   "main": "server.ts",
   "type": "module",
   "scripts": {
