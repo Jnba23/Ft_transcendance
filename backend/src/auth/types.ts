@@ -2,11 +2,19 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  display_name?: string; // Optional initially
   avatar_url?: string;
-  email_verified: boolean;
-  status: 'online' | 'offline' | 'in-game';
+  level: number;
+  status: 'online' | 'offline' | 'in_game';
+  
+  // Stats
+  pong_wins: number;
+  pong_losses: number;
+  chess_wins: number;
+  chess_losses: number;
+  win_streak: number;
+
   created_at: string;
-  updated_at: string;
 }
 
 import { Type, Static } from '@sinclair/typebox';
@@ -17,6 +25,12 @@ export const RegisterSchema = Type.Object({
     maxLength: 20,
     description: 'Username must be between 3 and 20 characters',
   }),
+  // New field: display_name (Optional)
+  display_name: Type.Optional(Type.String({
+    minLength: 3,
+    maxLength: 20,
+    description: 'Public name for tournaments (defaults to username if empty)',
+  })),
   email: Type.String({
     format: 'email',
     description: 'Must be a valid email address',

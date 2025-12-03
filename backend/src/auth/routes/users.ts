@@ -1,9 +1,27 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { hashPassword, verifyPassword } from '../../utils/password';
-import { RegisterSchema, LoginSchema, RegisterSchemaType, LoginSchemaType } from '../types'
+import { FastifyInstance } from 'fastify';
+import { RegisterSchema, LoginSchema } from '../types'
+import { createUserHandlers } from '../handlers/users';
 
 async function userRoutes(fastify: FastifyInstance) {
-    // Creat new user
+    const handlers = createUserHandlers(fastify);
+
+    // Reusable user object schema to avoid repetition
+    const UserResponseSchema = {
+        type: 'object',
+        properties: {
+            id: { type: 'number' },
+            username: { type: 'string' },
+            display_name: { type: 'string' }, // Added
+            email: { type: 'string' },
+            avatar_url: { type: 'string' },
+            level: { type: 'number' },        // Added
+            status: { type: 'string' },       // Added
+            // Stats (Optional: include these if you want them on login/register, or keep them for profile only)
+            win_streak: { type: 'number' }
+        }
+    };
+
+    // Create new user
     fastify.route({
         method: 'POST',
         url: '/api/auth/register',
@@ -15,82 +33,30 @@ async function userRoutes(fastify: FastifyInstance) {
                     type: 'object',
                     properties: {
                         message: { type: 'string' },
-                        user: {
-                            id: { type: 'number' },
-                            username: { type: 'string' },
-                            email: 'string',
-                        }
+                        user: UserResponseSchema
                     }
                 },
                 400: {
                     description: 'Bad request - validation error',
                     type: 'object',
-                    properties: {
-                        error: { type: 'string' }
-                    }
+                    properties: { error: { type: 'string' } }
                 },
                 409: {
                     description: 'Conflict - user already exists',
                     type: 'object',
-                    properties: {
-                        error: { type: 'string' }
-                    }
+                    properties: { error: { type: 'string' } }
                 },
                 500: {
                     description: 'Internal server error',
                     type: 'object',
-                    properties: {
-                        error: { type: 'string' }
-                    }
+                    properties: { error: { type: 'string' } }
                 }
             }
         },
-        handler: async (request: FastifyRequest<{ Body: RegisterSchemaType }>, reply: FastifyReply) => {
-            try {
-                const { username, email, password, password_confirmation } = request.body;
-
-                if (password !== password_confirmation) {
-                    return reply.code(400).send({
-                        error: 'Passwords do not match',
-                    });
-                }
-
-                const existingUser = fastify.db.prepare(
-                    'SELECT id, email, username FROM users WHERE email = ? OR username = ?'
-                ).get(email, username) as {id: number; email: string; username: string} | undefined;
-
-                if (existingUser) {
-                    const conflictField = existingUser.username === username ? 'username':'email';
-                    return reply.code(409).send({
-                        error: `User with this ${conflictField} already exists`,
-                    });
-                }
-
-                const passwordHash = await hashPassword(password);
-
-                const result = fastify.db.prepare(
-                    `INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)`
-                ).run(username, email, passwordHash);
-
-                const userId = result.lastInsertRowid as number;
-
-                return reply.code(201).send({
-                    message: 'User registered successfully',
-                    user: {
-                        id: userId,
-                        username,
-                        email,
-                    }
-                })
-            } catch (err) {
-                fastify.log.error(err);
-                return reply.code(500).send({
-                    error: 'Internal server error'
-                });
-            }
-        }
-
+        handler: handlers.register
     });
+
+    // Login
     fastify.route({
         method: 'POST',
         url: '/api/auth/login',
@@ -101,78 +67,25 @@ async function userRoutes(fastify: FastifyInstance) {
                     description: 'Login successful',
                     type: 'object',
                     properties: {
-                        message: {type: 'string' },
-                        user: {
-                            type: 'object',
-                            properties: {
-                                id: { type: 'number' },
-                                username: { type: 'string' },
-                                email: { type: 'string' }
-                            }
-                        }
+                        message: { type: 'string' },
+                        user: UserResponseSchema
                     }
                 },
                 400: {
-                    description: 'Bad request',
                     type: 'object',
-                    properties: {
-                        error: { type: 'string' }
-                    }
+                    properties: { error: { type: 'string' } }
                 },
                 401: {
                     description: 'Unauthorized - invalid credentials',
                     type: 'object',
-                    properties: {
-                        error: { type: 'string' }
-                    }
+                    properties: { error: { type: 'string' } }
                 }
             }
         },
-        handler: async (request: FastifyRequest<{ Body: LoginSchemaType }>, reply: FastifyReply) => {
-            try {
-                const { identifier, password } = request.body;
-                
-                const user = fastify.db.prepare(
-                    'SELECT id, username, email, password_hash FROM users WHERE email = ? OR username = ?'
-                ).get(identifier, identifier) as {
-                    id: number,
-                    username: string,
-                    email: string,
-                    password_hash: string
-                } | undefined;
-
-                if (!user) {
-                    return reply.code(401).send({
-                        error: 'Invalid credentials'
-                    });
-                }
-
-                const isVallidPassword = await verifyPassword(password, user.password_hash);
-                
-                if (!isVallidPassword) {
-                    return reply.code(401).send({
-                        error: 'Invalid credentials'
-                    })
-                }
-
-                return reply.code(200).send({
-                    messsage: 'Login successful',
-                    user: {
-                        id: user.id,
-                        username: user.username,
-                        email: user.email
-                    }
-                });
-            } catch (err) {
-                fastify.log.error(err);
-                return reply.code(500).send({
-                    error: 'Internal server error. Please try again later.'
-                })
-            }
-        }
+        handler: handlers.login
     });
 
-    // Get all users (no password hashes)
+    // Get all users (Simplified view)
     fastify.route({
         method: 'GET',
         url: '/api/auth/users',
@@ -185,36 +98,26 @@ async function userRoutes(fastify: FastifyInstance) {
                         properties: {
                             id: { type: 'number' },
                             username: { type: 'string' },
-                            email: { type: 'string' }
+                            display_name: { type: 'string' },
+                            avatar_url: { type: 'string' },
+                            level: { type: 'number' },
+                            status: { type: 'string' }
                         }
                     }
                 }
             }
         },
-        handler: async (request: FastifyRequest, reply: FastifyReply) => {
-            try {
-                const users = fastify.db.prepare(
-                    'SELECT id, username, email FROM users'
-                ).all() as Array<{ id: number; username: string; email: string }>;
-
-                return reply.code(200).send(users);
-            } catch (err) {
-                fastify.log.error(err);
-                return reply.code(500).send({ error: 'Internal server error' });
-            }
-        }
+        handler: handlers.listUsers
     });
 
-    // Get a user by id
+    // Get a user by id (Full Profile View)
     fastify.route({
         method: 'GET',
         url: '/api/auth/users/:id',
         schema: {
             params: {
                 type: 'object',
-                properties: {
-                    id: { type: 'integer' }
-                },
+                properties: { id: { type: 'integer' } },
                 required: ['id']
             },
             response: {
@@ -223,7 +126,17 @@ async function userRoutes(fastify: FastifyInstance) {
                     properties: {
                         id: { type: 'number' },
                         username: { type: 'string' },
-                        email: { type: 'string' }
+                        display_name: { type: 'string' },
+                        email: { type: 'string' },
+                        avatar_url: { type: 'string' },
+                        level: { type: 'number' },
+                        status: { type: 'string' },
+                        // Full Stats for Profile
+                        pong_wins: { type: 'number' },
+                        pong_losses: { type: 'number' },
+                        chess_wins: { type: 'number' },
+                        chess_losses: { type: 'number' },
+                        win_streak: { type: 'number' }
                     }
                 },
                 400: {
@@ -236,27 +149,7 @@ async function userRoutes(fastify: FastifyInstance) {
                 }
             }
         },
-        handler: async (request: FastifyRequest<{ Params: { id: number } }>, reply: FastifyReply) => {
-            try {
-                const id = Number((request.params as any).id);
-                if (Number.isNaN(id)) {
-                    return reply.code(400).send({ error: 'Invalid user id' });
-                }
-
-                const user = fastify.db.prepare(
-                    'SELECT id, username, email FROM users WHERE id = ?'
-                ).get(id) as { id: number; username: string; email: string } | undefined;
-
-                if (!user) {
-                    return reply.code(404).send({ error: 'User not found' });
-                }
-
-                return reply.code(200).send(user);
-            } catch (err) {
-                fastify.log.error(err);
-                return reply.code(500).send({ error: 'Internal server error' });
-            }
-        }
+        handler: handlers.getUserById
     });
 }
 
