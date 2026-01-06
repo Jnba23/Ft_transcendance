@@ -1,43 +1,42 @@
 import Database, { type Database as SQLiteDatabase } from 'better-sqlite3';
-import type { FastifyInstance } from 'fastify';
-import fastifyPlugin from 'fastify-plugin';
 import fs from 'fs';
-import path from 'path'; // keeping for path.join to create paths
+import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-declare module 'fastify' {
-  interface FastifyInstance {
-    db: SQLiteDatabase;
-  }
-}
+let db: SQLiteDatabase | null = null;
 
-async function databasePlugin(fastify: FastifyInstance) {
-  const dbDir = path.join(process.cwd(), 'data'); // data directory at project root
+export function initDatabase(): SQLiteDatabase {
+  const dbDir = path.join(process.cwd(), 'data');
 
   if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
   }
 
   const dbPath = path.join(dbDir, 'app.db');
-  const db = new Database(dbPath);
-
+  db = new Database(dbPath);
   db.pragma('foreign_keys = ON');
 
-  // schema.sql is located in this package under core/db/schema.sql
   const schemaPath = path.join(__dirname, 'db', 'schema.sql');
   const schema = fs.readFileSync(schemaPath, 'utf-8');
-
   db.exec(schema);
 
-  fastify.decorate('db', db);
-
-  fastify.addHook('onClose', async (instance: FastifyInstance) => {
-    instance.db.close();
-  });
+  console.log('✅ Database initialized');
+  return db;
 }
 
-export default fastifyPlugin(databasePlugin, {
-  name: 'Database',
-});
+export function getDb() {
+  if (!db) {
+    throw new Error('Database not initialized. Call initDatabase() first.');
+  }
+  return db;
+}
+
+export function closeDb(): void {
+  if (db) {
+    db.close();
+    db = null;
+    console.log('Database connection closed');
+  }
+}

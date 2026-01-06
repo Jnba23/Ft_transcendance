@@ -3,12 +3,10 @@
 -- ============================================
 
 -- Core Users table
--- Updates: Added display_name, level, split wins/losses into Pong/Chess, added win_streak
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    display_name TEXT UNIQUE,         -- New: For tournaments/UI (distinct from login username)
     password_hash TEXT NOT NULL,
     avatar_url TEXT DEFAULT '/default-avatar.png',
     level INTEGER DEFAULT 1,          -- New: Player level (e.g. Lv. 24)
@@ -52,6 +50,13 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
     expires_at DATETIME NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Token Blacklist (for server-side logout)
+CREATE TABLE IF NOT EXISTS token_blacklist (
+    token TEXT PRIMARY KEY,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Simple Matchmaking Queue
@@ -165,7 +170,6 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 -- Users indexes
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
-CREATE INDEX IF NOT EXISTS idx_users_display_name ON users(display_name); -- Added index
 CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
 
 -- OAuth indexes

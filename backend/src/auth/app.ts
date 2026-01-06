@@ -1,53 +1,59 @@
-import databasePlugin from '../core/database';
-// import cookiePlugin from '@fastify/cookie';
-// import authPlugin from './plugins/auth'
-import userRoutes from './routes/users';
-import Fastify from 'fastify';
+import express, { Application, Request, Response, NextFunction } from 'express';
+import authRoutes from './routes/auth.routes.js';
+import { AppError } from '../utils/AppError.js';
+import { config } from './config/index.js';
+import morgan from 'morgan';
+import cors from 'cors';
 
-async function buildApp() {
-  const fastify = Fastify({ logger: true });
-  // ============================================================
-  // Register Plugins
-  // ============================================================
-  await fastify.register(databasePlugin);
-  // await fastify.register(authPlugin);
+const app: Application = express();
 
-  // ============================================================
-  // Register Routes
-  // ============================================================
-  await fastify.register(userRoutes);
+app.use(
+  cors({
+    origin: config.corsOrigin,
+    credentials: true,
+  })
+);
+app.use(morgan('dev'));
+app.use(express.json());
 
-  // ============================================================
-  // Health Check Route
-  // ============================================================
-  fastify.route({
-    method: 'GET',
-    url: '/health',
-    schema: {
-      description: 'Server health check',
-      tags: ['Health'],
-      response: {
-        200: {
-          description: 'Server is healthy',
-          type: 'object',
-          properties: {
-            status: { type: 'string' },
-            timestamp: { type: 'string' },
-            uptime: { type: 'number' },
-          },
-        },
-      },
-    },
-    handler: async (request, reply) => {
-      return reply.code(200).send({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
+app.get('/', (req, res) => {
+  res.json({ message: 'Hello from Express! 🚀' });
+});
+
+app.use('/api/auth', authRoutes);
+
+app.use((req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+app.use((err: AppError | Error, req: Request, res: Response, next: NextFunction) => {
+  const errorResponse: { status: string; message: string; stack?: string } = {
+    status: err.status || 'error',
+    message: err.message,
+  };
+
+  if (process.env.NODE_ENV === 'development') {
+    errorResponse.stack = err.stack;
+  }
+
+  if (err instanceof AppError && err.isOperational) {
+    // Trusted error: Send the response we built
+    res.status(err.statusCode).json(errorResponse);
+  } else {
+    console.log('ERROR 💥', err);
+
+    // IN DEVELOPMENT: You usually want to see the crash details anyway
+    if (process.env.NODE_ENV === 'development') {
+      res.status(500).json(errorResponse);
+    }
+    // IN PRODUCTION: Send generic message (Hide details)
+    else {
+      res.status(500).json({
+        status: 'error',
+        message: 'Something went wrong!',
       });
-    },
-  });
+    }
+  }
+});
 
-  return fastify;
-}
-
-export default buildApp;
+export default app;
