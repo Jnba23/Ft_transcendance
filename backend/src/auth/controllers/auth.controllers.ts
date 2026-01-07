@@ -7,7 +7,7 @@ import { signJwt } from '../../utils/jwt.js';
 import { config } from '../config/index.js';
 import { User } from '../types.js';
 
-export const registerHandler = catchAsync(
+export const signupHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { username, email, password } = req.body;
     const db = getDb();

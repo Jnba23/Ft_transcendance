@@ -42,16 +42,6 @@ CREATE TABLE IF NOT EXISTS oauth_accounts (
     UNIQUE(provider, provider_user_id)
 );
 
--- JWT Refresh Tokens
-CREATE TABLE IF NOT EXISTS refresh_tokens (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    token_hash TEXT UNIQUE NOT NULL,
-    expires_at DATETIME NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
 -- Token Blacklist (for server-side logout)
 CREATE TABLE IF NOT EXISTS token_blacklist (
     token TEXT PRIMARY KEY,

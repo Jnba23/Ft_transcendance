@@ -2,13 +2,13 @@ import { Router } from 'express';
 import { validateResource } from '../../middleware/validateResource.js';
 import {
   loginHandler,
-  registerHandler,
+  signupHandler,
 } from '../controllers/auth.controllers.js';
-import { loginSchema, registerSchema } from '../schemas/auth.schema.js';
+import { loginSchema, signupSchema } from '../schemas/auth.schema.js';
 
 const router = Router();
 
 router.post('/login', validateResource(loginSchema), loginHandler);
-router.post('/register', validateResource(registerSchema), registerHandler);
+router.post('/signup', validateResource(signupSchema), signupHandler);
 
 export default router;
