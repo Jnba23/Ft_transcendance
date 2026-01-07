@@ -1,8 +1,10 @@
+import { hashPassword, verifyPassword } from '../../utils/crypto.js';
 import { Request, Response, NextFunction } from 'express';
-import { hashPassword } from '../../utils/crypto.js';
-import { getDb } from '../../core/database.js';
-import { AppError } from '../../utils/AppError.js';
 import { catchAsync } from '../../utils/catchAsync.js';
+import { AppError } from '../../utils/AppError.js';
+import { getDb } from '../../core/database.js';
+import { signJwt } from '../../utils/jwt.js';
+import { config } from '../config/index.js';
 import { User } from '../types.js';
 
 export const registerHandler = catchAsync(
@@ -38,6 +40,40 @@ export const registerHandler = catchAsync(
           username: user.username,
           email: user.email,
         },
+      },
+    });
+  }
+);
+
+export const loginHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
+
+    const db = getDb();
+
+    const user = db
+      .prepare('SELECT * FROM users WHERE email = ?')
+      .get(email) as User | undefined;
+
+    if (!user || !(await verifyPassword(password, user.password_hash))) {
+      return next(new AppError('Invalid email or password', 401));
+    }
+
+    const accessToken = signJwt(
+      { id: user.id, username: user.username },
+      { expiresIn: config.jwtAccessExpiresIn }
+    );
+
+    const refreshToken = signJwt(
+      { id: user.id, username: user.username },
+      { expiresIn: config.jwtRefreshExpiresIn }
+    );
+
+    res.status(200).json({
+      status: 'success',
+      token: {
+        accessToken,
+        refreshToken,
       },
     });
   }

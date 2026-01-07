@@ -26,34 +26,36 @@ app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-app.use((err: AppError | Error, req: Request, res: Response, next: NextFunction) => {
-  const errorResponse: { status: string; message: string; stack?: string } = {
-    status: err.status || 'error',
-    message: err.message,
-  };
+app.use(
+  (err: AppError | Error, req: Request, res: Response, _next: NextFunction) => {
+    const errorResponse: { status: string; message: string; stack?: string } = {
+      status: err instanceof AppError ? err.status : 'error',
+      message: err.message,
+    };
 
-  if (process.env.NODE_ENV === 'development') {
-    errorResponse.stack = err.stack;
-  }
-
-  if (err instanceof AppError && err.isOperational) {
-    // Trusted error: Send the response we built
-    res.status(err.statusCode).json(errorResponse);
-  } else {
-    console.log('ERROR 💥', err);
-
-    // IN DEVELOPMENT: You usually want to see the crash details anyway
     if (process.env.NODE_ENV === 'development') {
-      res.status(500).json(errorResponse);
+      errorResponse.stack = err.stack;
     }
-    // IN PRODUCTION: Send generic message (Hide details)
-    else {
-      res.status(500).json({
-        status: 'error',
-        message: 'Something went wrong!',
-      });
+
+    if (err instanceof AppError && err.isOperational) {
+      // Trusted error: Send the response we built
+      res.status(err.statusCode).json(errorResponse);
+    } else {
+      console.log('ERROR 💥', err);
+
+      // IN DEVELOPMENT: You usually want to see the crash details anyway
+      if (process.env.NODE_ENV === 'development') {
+        res.status(500).json(errorResponse);
+      }
+      // IN PRODUCTION: Send generic message (Hide details)
+      else {
+        res.status(500).json({
+          status: 'error',
+          message: 'Something went wrong!',
+        });
+      }
     }
   }
-});
+);
 
 export default app;
