@@ -1,6 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import authRoutes from './routes/auth.routes.js';
 import { AppError } from '../utils/AppError.js';
+import { deserializeUser } from '../middleware/deserializeUser.js';
 import { config } from './config/index.js';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -16,12 +17,17 @@ app.use(
 app.use(morgan('dev'));
 app.use(express.json());
 
+// Custom Middleware
+app.use(deserializeUser);
+
+// Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Hello from Express! 🚀' });
+  res.json({ message: 'Auth Service Running 🚀' });
 });
 
 app.use('/api/auth', authRoutes);
 
+// 404 Handler
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });

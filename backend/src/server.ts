@@ -1,8 +1,10 @@
 import { initDatabase, closeDb } from './core/database.js';
 import { config } from './auth/config/index.js';
 import app from './auth/app.js';
+import { startCleanupJob } from './core/cron.js';
 
 initDatabase();
+startCleanupJob();
 
 const server = app.listen(config.port, () => {
   console.log(`🚀 Server is running on http://localhost:${config.port}`);

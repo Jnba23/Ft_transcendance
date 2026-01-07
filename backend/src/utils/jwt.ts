@@ -18,7 +18,9 @@ export const verifyJwt = (token: string): VerifyJwtResult => {
       decoded,
     };
   } catch (error: unknown) {
-    const expired = error instanceof Error && error.message === 'jwt expired';
+    let expired = false;
+    if (error instanceof Error && error.message === 'jwt expired')
+      expired = true;
     return {
       valid: false,
       expired,
