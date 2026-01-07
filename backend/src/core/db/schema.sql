@@ -165,10 +165,6 @@ CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
 -- OAuth indexes
 CREATE INDEX IF NOT EXISTS idx_oauth_user_id ON oauth_accounts(user_id);
 
--- Refresh tokens indexes
-CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id);
-CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires ON refresh_tokens(expires_at);
-
 -- Matchmaking indexes
 CREATE INDEX IF NOT EXISTS idx_matchmaking_status ON matchmaking_queue(status);
 CREATE INDEX IF NOT EXISTS idx_matchmaking_mode ON matchmaking_queue(game_mode);

@@ -63,32 +63,10 @@ JOIN oauth_accounts oa ON u.id = oa.user_id
 WHERE oa.provider = '42' AND oa.provider_user_id = '12345';
 ```
 
-3. REFRESH_TOKENS - For Secure JWT Management
-```sql
-CREATE TABLE IF NOT EXISTS refresh_tokens (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,                       -- Which user this token belongs to
-  token_hash TEXT UNIQUE NOT NULL,                -- Encrypted token (for security)
-  expires_at DATETIME NOT NULL,                   -- When token becomes invalid
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE -- Clean up when user deleted
-);
-```
+3. REFRESH_TOKENS - Not used (current design)
 
-How to use:
-
-```sql
--- Store a refresh token when user logs in
-INSERT INTO refresh_tokens (user_id, token_hash, expires_at) 
-VALUES (1, 'hashed_token_here', '2024-12-31 23:59:59');
-
--- Verify a refresh token
-SELECT * FROM refresh_tokens 
-WHERE token_hash = 'hashed_token_here' AND expires_at > CURRENT_TIMESTAMP;
-
--- Delete expired tokens
-DELETE FROM refresh_tokens WHERE expires_at < CURRENT_TIMESTAMP;
-```
+The current auth implementation does not persist refresh tokens in the database.
+Revocation is handled via the `token_blacklist` table.
 
 4. MATCHMAKING_QUEUE - Find Players for Games
 ```sql
@@ -296,9 +274,7 @@ CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
 -- Find OAuth accounts for a user quickly
 CREATE INDEX IF NOT EXISTS idx_oauth_user_id ON oauth_accounts(user_id);
 
--- Find refresh tokens for a user and check expiration
-CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id);
-CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires ON refresh_tokens(expires_at);
+-- Refresh tokens are not persisted, so no refresh_tokens indexes
 
 -- Matchmaking: find waiting players by game mode
 CREATE INDEX IF NOT EXISTS idx_matchmaking_status ON matchmaking_queue(status);
