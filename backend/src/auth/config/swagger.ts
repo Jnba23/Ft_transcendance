@@ -12,15 +12,31 @@ const options: swaggerJsdoc.Options = {
 RESTful API for the ft_transcendence project - a multiplayer gaming platform featuring Pong and Chess.
 
 ## Authentication
-This API uses JWT (JSON Web Tokens) for authentication. Include the access token in the Authorization header:
+This API uses JWT (JSON Web Tokens) for authentication. 
+
+### For Protected Endpoints (🔒 lock icon)
+Click the **Authorize** button at the top, then enter your access token:
 \`\`\`
-Authorization: Bearer <your_access_token>
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 \`\`\`
+**Note:** Do NOT include the word "Bearer" - just paste the token.
+
+### Token Lifetimes
+- **Access Token**: 15 minutes
+- **Refresh Token**: 3 days  
+- **Temp Token (2FA)**: 5 minutes
 
 ## 2FA Flow
 When 2FA is enabled, the login process requires two steps:
-1. Submit credentials → Receive \`tempToken\`
-2. Submit \`tempToken\` + OTP code → Receive access/refresh tokens
+
+1. **POST /auth/login** → Receive \`tempToken\` (5 min validity)
+2. **POST /auth/2fa/authenticate** → Send \`tempToken\` + OTP code → Receive full tokens
+
+### Setting Up 2FA
+1. **POST /auth/2fa/generate** (requires login) → Get QR code
+2. Scan QR with authenticator app (Google Authenticator, Authy, etc.)
+3. **POST /auth/2fa/turn-on** → Send 6-digit code → Enable 2FA
+4. **POST /auth/2fa/turn-off** → Send password → Disable 2FA
             `,
             contact: {
                 name: 'ft_transcendence Team',
@@ -52,7 +68,7 @@ When 2FA is enabled, the login process requires two steps:
                     type: 'http',
                     scheme: 'bearer',
                     bearerFormat: 'JWT',
-                    description: 'Enter your JWT access token',
+                    description: 'JWT access token (do not include "Bearer" prefix - just paste the token)',
                 },
             },
         },
