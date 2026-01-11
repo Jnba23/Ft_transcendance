@@ -20,9 +20,9 @@ const router = Router();
  *       Complete the 2FA authentication flow after receiving a tempToken from login.
  *       
  *       **Flow:**
- *       1. Call `/auth/login` with credentials
- *       2. If 2FA is enabled, receive a `tempToken` (valid for 5 minutes)
- *       3. Call this endpoint with the `tempToken` and 6-digit OTP code
+ *       1. Call /auth/login with credentials
+ *       2. If 2FA is enabled, receive a temporary token (valid for 5 minutes)
+ *       3. Call this endpoint with the temporary token and 6-digit OTP code
  *       4. Receive full access and refresh tokens
  *     tags: [Auth]
  *     requestBody:

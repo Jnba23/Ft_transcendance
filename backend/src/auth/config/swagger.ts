@@ -14,7 +14,7 @@ RESTful API for the ft_transcendence project - a multiplayer gaming platform fea
 ## Authentication
 This API uses JWT (JSON Web Tokens) for authentication. 
 
-### For Protected Endpoints (🔒 lock icon)
+### For Protected Endpoints (with 🔒 lock icon)
 Click the **Authorize** button at the top, then enter your access token:
 \`\`\`
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -22,21 +22,25 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 **Note:** Do NOT include the word "Bearer" - just paste the token.
 
 ### Token Lifetimes
-- **Access Token**: 15 minutes
-- **Refresh Token**: 3 days  
-- **Temp Token (2FA)**: 5 minutes
+- Access Token: 15 minutes
+- Refresh Token: 3 days  
+- Temp Token for 2FA: 5 minutes
 
 ## 2FA Flow
 When 2FA is enabled, the login process requires two steps:
 
-1. **POST /auth/login** → Receive \`tempToken\` (5 min validity)
-2. **POST /auth/2fa/authenticate** → Send \`tempToken\` + OTP code → Receive full tokens
+**Step 1:** Call POST /auth/login with credentials → Receive a temporary token (valid 5 min)
+
+**Step 2:** Call POST /auth/2fa/authenticate with temp token + OTP code → Receive full access/refresh tokens
 
 ### Setting Up 2FA
-1. **POST /auth/2fa/generate** (requires login) → Get QR code
-2. Scan QR with authenticator app (Google Authenticator, Authy, etc.)
-3. **POST /auth/2fa/turn-on** → Send 6-digit code → Enable 2FA
-4. **POST /auth/2fa/turn-off** → Send password → Disable 2FA
+**Step 1:** Call POST /auth/2fa/generate (requires login) → Get QR code
+
+**Step 2:** Scan QR with authenticator app (Google Authenticator, Authy, etc.)
+
+**Step 3:** Call POST /auth/2fa/turn-on → Send 6-digit code → Enable 2FA
+
+**Step 4:** Call POST /auth/2fa/turn-off → Send password → Disable 2FA
             `,
             contact: {
                 name: 'ft_transcendence Team',
