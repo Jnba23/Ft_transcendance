@@ -150,15 +150,17 @@ router.get('/', getAllUsersHandler); // Simplified list
  * /users/{id}:
  *   get:
  *     summary: Get user by ID
- *     description: Retrieve detailed profile information for a specific user by their ID.
+ *     description: Retrieve detailed profile information for a specific user by their ID. Returns public profile data including stats.
  *     tags: [Users]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: integer
+ *           minimum: 1
  *         required: true
  *         description: Numeric ID of the user to retrieve
+ *         example: 1
  *     responses:
  *       200:
  *         description: User profile retrieved successfully
@@ -181,6 +183,9 @@ router.get('/', getAllUsersHandler); // Simplified list
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
+ *             example:
+ *               status: fail
+ *               message: User not found
  *       500:
  *         description: Internal server error
  *         content:

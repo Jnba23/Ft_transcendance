@@ -11,7 +11,8 @@ import { z } from 'zod';
  *       properties:
  *         code:
  *           type: string
- *           description: 6-digit OTP code from authenticator app
+ *           pattern: '^\d{6}$'
+ *           description: 6-digit OTP code from authenticator app (Google Authenticator, Authy, etc.)
  *           example: "123456"
  *     Verify2FALoginReq:
  *       type: object
@@ -21,11 +22,13 @@ import { z } from 'zod';
  *       properties:
  *         code:
  *           type: string
- *           description: 6-digit OTP code
+ *           pattern: '^\d{6}$'
+ *           description: 6-digit OTP code from authenticator app
  *           example: "123456"
  *         tempToken:
  *           type: string
- *           description: Temporary token received from first login step
+ *           description: Temporary JWT token received from login endpoint when 2FA is enabled
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *     Generate2FARes:
  *       type: object
  *       properties:
@@ -35,10 +38,14 @@ import { z } from 'zod';
  *         data:
  *           type: object
  *           properties:
- *             qrCode:
+ *             qrcode:
  *               type: string
- *               description: Base64 encoded QR code image
- *               example: "data:image/png;base64,..."
+ *               description: Base64 encoded QR code image (scan with authenticator app)
+ *               example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+ *             secret:
+ *               type: string
+ *               description: Secret key for manual entry in authenticator app
+ *               example: "KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD"
  */
 
 export const twoFaSchema = z.object({

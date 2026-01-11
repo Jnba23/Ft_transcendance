@@ -78,7 +78,12 @@ router.post('/signup', validateResource(signupSchema), signupHandler);
  * /auth/login:
  *   post:
  *     summary: Log in a user
- *     description: Authenticate a user with email and password to receive access and refresh tokens.
+ *     description: |
+ *       Authenticate a user with email and password.
+ *       
+ *       **Normal flow:** Returns access and refresh tokens.
+ *       
+ *       **2FA enabled:** Returns a temporary token. Use `/auth/2fa/authenticate` to complete login.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -88,22 +93,28 @@ router.post('/signup', validateResource(signupSchema), signupHandler);
  *             $ref: '#/components/schemas/LoginReq'
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Login successful (or 2FA required)
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 tokens:
- *                   type: object
- *                   properties:
- *                     accessToken:
- *                       type: string
- *                     refreshToken:
- *                       type: string
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/LoginRes'
+ *                 - $ref: '#/components/schemas/Login2FARequiredRes'
+ *             examples:
+ *               normalLogin:
+ *                 summary: Normal login (no 2FA)
+ *                 value:
+ *                   status: success
+ *                   token:
+ *                     accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                     refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *               twoFactorRequired:
+ *                 summary: 2FA required
+ *                 value:
+ *                   status: success
+ *                   message: 2FA required
+ *                   action_required: 2fa_auth
+ *                   tempToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *       400:
  *         description: Invalid input
  *         content:
@@ -131,22 +142,17 @@ router.post('/login', validateResource(loginSchema), loginHandler);
  * /auth/refresh:
  *   post:
  *     summary: Refresh access token
- *     description: Get a new access token using a valid refresh token.
+ *     description: Exchange a valid refresh token for a new access token. Use this when the access token expires.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - refreshToken
- *             properties:
- *               refreshToken:
- *                 type: string
+ *             $ref: '#/components/schemas/RefreshTokenReq'
  *     responses:
  *       200:
- *         description: Access token refreshed
+ *         description: Access token refreshed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -157,15 +163,16 @@ router.post('/login', validateResource(loginSchema), loginHandler);
  *                   example: success
  *                 token:
  *                   type: string
- *                   description: New access token
- *       400:
- *         description: Refresh token is required
+ *                   description: New JWT access token
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       403:
+ *         description: Refresh token is required or invalid
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  *       401:
- *         description: Invalid or expired refresh token
+ *         description: Token expired or revoked
  *         content:
  *           application/json:
  *             schema:

@@ -7,12 +7,43 @@ const options: swaggerJsdoc.Options = {
         info: {
             title: 'ft_transcendence API',
             version: '1.0.0',
-            description: 'API documentation for the ft_transcendence project',
+            description: `
+## Overview
+RESTful API for the ft_transcendence project - a multiplayer gaming platform featuring Pong and Chess.
+
+## Authentication
+This API uses JWT (JSON Web Tokens) for authentication. Include the access token in the Authorization header:
+\`\`\`
+Authorization: Bearer <your_access_token>
+\`\`\`
+
+## 2FA Flow
+When 2FA is enabled, the login process requires two steps:
+1. Submit credentials → Receive \`tempToken\`
+2. Submit \`tempToken\` + OTP code → Receive access/refresh tokens
+            `,
+            contact: {
+                name: 'ft_transcendence Team',
+            },
+            license: {
+                name: 'MIT',
+                url: 'https://opensource.org/licenses/MIT',
+            },
         },
         servers: [
             {
                 url: `http://localhost:${config.port}/api`,
-                description: 'Local server',
+                description: 'Development server',
+            },
+        ],
+        tags: [
+            {
+                name: 'Auth',
+                description: 'Authentication endpoints (login, signup, logout, token refresh, 2FA)',
+            },
+            {
+                name: 'Users',
+                description: 'User management and profile endpoints',
             },
         ],
         components: {
@@ -21,6 +52,7 @@ const options: swaggerJsdoc.Options = {
                     type: 'http',
                     scheme: 'bearer',
                     bearerFormat: 'JWT',
+                    description: 'Enter your JWT access token',
                 },
             },
         },

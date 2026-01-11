@@ -15,7 +15,14 @@ const router = Router();
  * /auth/2fa/authenticate:
  *   post:
  *     summary: Verify 2FA code during login
- *     description: Verify the OTP code using the temporary token received during login. Returns full access tokens.
+ *     description: |
+ *       Complete the 2FA authentication flow after receiving a tempToken from login.
+ *       
+ *       **Flow:**
+ *       1. Call `/auth/login` with credentials
+ *       2. If 2FA is enabled, receive a `tempToken` (valid for 5 minutes)
+ *       3. Call this endpoint with the `tempToken` and 6-digit OTP code
+ *       4. Receive full access and refresh tokens
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -25,7 +32,7 @@ const router = Router();
  *             $ref: '#/components/schemas/Verify2FALoginReq'
  *     responses:
  *       200:
- *         description: 2FA verification successful
+ *         description: 2FA verification successful - full tokens returned
  *         content:
  *           application/json:
  *             schema:
@@ -39,20 +46,30 @@ const router = Router();
  *                   properties:
  *                     accessToken:
  *                       type: string
+ *                       description: JWT access token (15 min expiry)
+ *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *                     refreshToken:
  *                       type: string
+ *                       description: JWT refresh token (3 day expiry)
+ *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *       400:
- *         description: Invalid or expired session
+ *         description: Invalid or expired temporary token
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
+ *             example:
+ *               status: fail
+ *               message: Invalid or expired 2FA session
  *       401:
- *         description: Invalid code
+ *         description: Invalid OTP code
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
+ *             example:
+ *               status: fail
+ *               message: Invalid 2FA code
  */
 router.post('/authenticate', validateResource(verify2FaSchema), authenticate2FaHandler);
 
@@ -62,7 +79,17 @@ router.post('/authenticate', validateResource(verify2FaSchema), authenticate2FaH
  * /auth/2fa/generate:
  *   post:
  *     summary: Generate 2FA QR Code
- *     description: Generate a new 2FA secret and return a QR code for scanning.
+ *     description: |
+ *       Generate a new TOTP secret and QR code for setting up 2FA.
+ *       
+ *       **Setup Flow:**
+ *       1. Call this endpoint (requires authentication)
+ *       2. Display the QR code to the user
+ *       3. User scans with authenticator app (Google Authenticator, Authy, etc.)
+ *       4. User enters the 6-digit code from the app
+ *       5. Call `/auth/2fa/turn-on` to verify and enable 2FA
+ *       
+ *       **Note:** The secret is temporarily stored and must be verified within the session.
  *     security:
  *       - bearerAuth: []
  *     tags: [Auth]
@@ -74,7 +101,13 @@ router.post('/authenticate', validateResource(verify2FaSchema), authenticate2FaH
  *             schema:
  *               $ref: '#/components/schemas/Generate2FARes'
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - valid access token required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiError'
+ *       500:
+ *         description: Failed to generate QR code
  *         content:
  *           application/json:
  *             schema:
@@ -87,7 +120,16 @@ router.post('/generate', requireUser, generate2FaHandler);
  * /auth/2fa/turn-on:
  *   post:
  *     summary: Enable 2FA
- *     description: Verify and enable 2FA for the account.
+ *     description: |
+ *       Verify the OTP code from the authenticator app and enable 2FA for the account.
+ *       
+ *       **Prerequisites:**
+ *       - Must be authenticated
+ *       - Must have called `/auth/2fa/generate` to get a pending secret
+ *       
+ *       **After enabling:**
+ *       - All future logins will require 2FA verification
+ *       - The secret is permanently stored in the database
  *     security:
  *       - bearerAuth: []
  *     tags: [Auth]
@@ -112,13 +154,16 @@ router.post('/generate', requireUser, generate2FaHandler);
  *                   type: string
  *                   example: 2FA has been enabled
  *       400:
- *         description: Invalid code
+ *         description: Invalid OTP code or no pending 2FA setup
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
+ *             example:
+ *               status: fail
+ *               message: Invalid 2FA code
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - valid access token required
  *         content:
  *           application/json:
  *             schema:
