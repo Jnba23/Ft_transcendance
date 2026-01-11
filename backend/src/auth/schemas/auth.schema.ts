@@ -1,5 +1,48 @@
 import { z } from 'zod';
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     RegisterReq:
+ *       type: object
+ *       required:
+ *         - username
+ *         - email
+ *         - password
+ *         - confirmPassword
+ *       properties:
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *         confirmPassword:
+ *           type: string
+ *     LoginReq:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *     ApiError:
+ *       type: object
+ *       properties:
+ *         status:
+ *           type: string
+ *           example: "error"
+ *           description: "Status status (error/fail)"
+ *         message:
+ *           type: string
+ *           example: "Error message details"
+ *           description: "A descriptive error message"
+ */
+
 export const signupSchema = z.object({
   body: z
     .object({

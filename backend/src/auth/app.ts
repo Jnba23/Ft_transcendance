@@ -7,6 +7,9 @@ import { deserializeUser } from '../middleware/deserializeUser.js';
 import { config } from './config/index.js';
 import morgan from 'morgan';
 import cors from 'cors';
+import { swaggerSpec } from './config/swagger.js';
+import swaggerUi from 'swagger-ui-express';
+
 
 const app: Application = express();
 
@@ -27,6 +30,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Auth Service Running 🚀' });
 });
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth/2fa', twoFatRoutes);
