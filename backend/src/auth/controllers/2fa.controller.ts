@@ -21,7 +21,7 @@ export const generate2FaHandler = catchAsync(async (req: Request, res: Response,
     const imageUrl = await qrcode.toDataURL(otpauth);
 
     const db = getDb();
-    db.prepare('UPDATE users SET tow_fa_secret = ? WHERE id = ?').run(secret, user.id);
+    db.prepare('UPDATE users SET two_fa_secret = ? WHERE id = ?').run(secret, user.id);
 
     res.status(200).json({
         status: 'success',
