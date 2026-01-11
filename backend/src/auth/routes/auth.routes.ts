@@ -84,7 +84,7 @@ router.post('/signup', validateResource(signupSchema), signupHandler);
  *       
  *       **Normal flow:** Returns access and refresh tokens.
  *       
- *       **2FA enabled:** Returns a temporary token. Use `/auth/2fa/authenticate` to complete login.
+ *       **2FA enabled:** Returns a temporary token. Use POST /auth/2fa/authenticate to complete login.
  *     tags: [Auth]
  *     requestBody:
  *       required: true

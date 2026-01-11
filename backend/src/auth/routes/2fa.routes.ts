@@ -88,7 +88,7 @@ router.post('/authenticate', validateResource(verify2FaSchema), authenticate2FaH
  *       2. Display the QR code to the user
  *       3. User scans with authenticator app (Google Authenticator, Authy, etc.)
  *       4. User enters the 6-digit code from the app
- *       5. Call `/auth/2fa/turn-on` to verify and enable 2FA
+ *       5. Call POST /auth/2fa/turn-on to verify and enable 2FA
  *       
  *       **Note:** The secret is temporarily stored and must be verified within the session.
  *     security:
@@ -126,7 +126,7 @@ router.post('/generate', requireUser, generate2FaHandler);
  *       
  *       **Prerequisites:**
  *       - Must be authenticated
- *       - Must have called `/auth/2fa/generate` to get a pending secret
+ *       - Must have called POST /auth/2fa/generate to get a pending secret
  *       
  *       **After enabling:**
  *       - All future logins will require 2FA verification
