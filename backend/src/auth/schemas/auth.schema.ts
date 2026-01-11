@@ -89,6 +89,16 @@ import { z } from 'zod';
  *         refreshToken:
  *           type: string
  *           description: Valid refresh token from login
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *     LogoutReq:
+ *       type: object
+ *       required:
+ *         - refreshToken
+ *       properties:
+ *         refreshToken:
+ *           type: string
+ *           description: Refresh token to blacklist (also send access token in Authorization header)
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *     ApiError:
  *       type: object
  *       properties:
@@ -131,6 +141,12 @@ export const loginSchema = z.object({
 });
 
 export const refreshSchema = z.object({
+  body: z.object({
+    refreshToken: z.string().min(1, 'Refresh token is required'),
+  }),
+});
+
+export const logoutSchema = z.object({
   body: z.object({
     refreshToken: z.string().min(1, 'Refresh token is required'),
   }),

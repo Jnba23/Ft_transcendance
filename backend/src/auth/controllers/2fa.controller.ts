@@ -8,6 +8,7 @@ import { config } from '../config/index.js';
 import { authenticator } from 'otplib';
 import { User } from "../types.js";
 import qrcode from 'qrcode';
+import { verifyPassword } from "../../utils/crypto.js";
 
 // Generate QR Code
 export const generate2FaHandler = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -102,5 +103,25 @@ export const authenticate2FaHandler = catchAsync(async (req: Request, res: Respo
     res.status(200).json({
         status: 'success',
         token: { accessToken, refreshToken }
-    })
-})
+    });
+});
+
+export const turnOff2FaHandler = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { password } = req.body;
+    const user = res.locals.user as User;
+    const db = getDb();
+
+    const userWithSecert = db.prepare('SELECT password_hash FROM users WHERE id = ?').get(user.id) as User;
+
+    if (!userWithSecert || !(await verifyPassword(password, userWithSecert.password_hash))){
+        return next(new AppError('Invalid password', 401));
+    }
+
+    // 2. Disable 2FA and delete the secret (forcing a new scan if they enable it again)
+    db.prepare('UPDATE users SET is_2fa_enabled = 0, two_fa_secret = NULL WHERE id = ?').run(user.id);
+
+    res.status(200).json({
+        status: 'success',
+        message: '2FA has been disabled'
+    });
+});

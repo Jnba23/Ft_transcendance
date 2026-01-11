@@ -46,6 +46,16 @@ import { z } from 'zod';
  *               type: string
  *               description: Secret key for manual entry in authenticator app
  *               example: "KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD"
+ *     Disable2FAReq:
+ *       type: object
+ *       required:
+ *         - password
+ *       properties:
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's account password for security verification
+ *           example: "securePass123"
  */
 
 export const twoFaSchema = z.object({
@@ -58,5 +68,11 @@ export const verify2FaSchema = z.object({
     body: z.object({
         code: z.string().length(6, 'Code must be exactly 6 digits'),
         tempToken: z.string().min(1, 'Temporary token is required'),
+    }),
+});
+
+export const turnOff2FaSchema = z.object({
+    body: z.object({
+        password: z.string().min(1, 'Password is required to disable 2FA'),
     }),
 });

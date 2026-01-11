@@ -10,6 +10,7 @@ import {
   loginSchema,
   signupSchema,
   refreshSchema,
+  logoutSchema,
 } from '../schemas/auth.schema.js';
 
 const router = Router();
@@ -192,13 +193,26 @@ router.post('/refresh', validateResource(refreshSchema), refreshAccessTokenHandl
  * /auth/logout:
  *   post:
  *     summary: Logout user
- *     description: Invalidate the current session and tokens.
+ *     description: |
+ *       Invalidate both access and refresh tokens by adding them to the blacklist.
+ *       
+ *       **Requirements:**
+ *       - Send access token in Authorization header
+ *       - Send refresh token in request body
+ *       
+ *       Both tokens will be blacklisted and cannot be used again.
  *     security:
  *       - bearerAuth: []
  *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LogoutReq'
  *     responses:
  *       200:
- *         description: Logout successful
+ *         description: Logout successful - tokens blacklisted
  *         content:
  *           application/json:
  *             schema:
@@ -210,8 +224,17 @@ router.post('/refresh', validateResource(refreshSchema), refreshAccessTokenHandl
  *                 message:
  *                   type: string
  *                   example: Logged out successfully
+ *       400:
+ *         description: Refresh token is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiError'
+ *             example:
+ *               status: fail
+ *               message: Refresh token is required
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - no access token provided
  *         content:
  *           application/json:
  *             schema:
@@ -223,8 +246,6 @@ router.post('/refresh', validateResource(refreshSchema), refreshAccessTokenHandl
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
-router.post('/logout', logoutHandler);
-
-
+router.post('/logout', validateResource(logoutSchema), logoutHandler);
 
 export default router;

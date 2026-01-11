@@ -3,9 +3,10 @@ import { requireUser } from '../../middleware/requireUser.js';
 import {
     authenticate2FaHandler,
     generate2FaHandler,
+    turnOff2FaHandler,
     turnOn2FaHandler
 } from '../controllers/2fa.controller.js';
-import { twoFaSchema, verify2FaSchema } from '../schemas/2fa.schema.js';
+import { twoFaSchema, verify2FaSchema, turnOff2FaSchema } from '../schemas/2fa.schema.js';
 import { Router } from 'express';
 
 const router = Router();
@@ -170,5 +171,62 @@ router.post('/generate', requireUser, generate2FaHandler);
  *               $ref: '#/components/schemas/ApiError'
  */
 router.post('/turn-on', requireUser, validateResource(twoFaSchema), turnOn2FaHandler);
+
+/**
+ * @swagger
+ * /auth/2fa/turn-off:
+ *   post:
+ *     summary: Disable 2FA
+ *     description: |
+ *       Disable two-factor authentication for the account.
+ *       
+ *       **Security Requirements:**
+ *       - Must be authenticated
+ *       - Must provide account password for verification
+ *       
+ *       **After disabling:**
+ *       - Future logins will NOT require 2FA
+ *       - The 2FA secret is deleted from the database
+ *       - User must re-scan a new QR code if they want to enable 2FA again
+ *     security:
+ *       - bearerAuth: []
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Disable2FAReq'
+ *     responses:
+ *       200:
+ *         description: 2FA disabled successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: 2FA has been disabled
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiError'
+ *       401:
+ *         description: Unauthorized or invalid password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiError'
+ *             example:
+ *               status: fail
+ *               message: Invalid password
+ */
+router.post('/turn-off', requireUser, validateResource(turnOff2FaSchema), turnOff2FaHandler);
 
 export default router;
