@@ -5,7 +5,7 @@ import {
   signupHandler,
   refreshAccessTokenHandler,
   logoutHandler,
-} from '../controllers/auth.controllers.js';
+} from '../controllers/auth.controller.js';
 import {
   loginSchema,
   signupSchema,

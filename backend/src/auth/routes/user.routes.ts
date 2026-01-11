@@ -4,7 +4,7 @@ import {
   getCurrentUserHandler,
   getUserbyIdHandler,
   updateUserHandler,
-} from '../controllers/user.contollers.js';
+} from '../controllers/user.controller.js';
 import { requireUser } from '../../middleware/requireUser.js';
 import { updateUserSchema } from '../schemas/user.schema.js';
 import { validateResource } from '../../middleware/validateResource.js';
