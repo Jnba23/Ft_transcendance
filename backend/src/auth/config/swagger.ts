@@ -12,26 +12,39 @@ const options: swaggerJsdoc.Options = {
 RESTful API for the ft_transcendence project - a multiplayer gaming platform featuring Pong and Chess.
 
 ## Authentication
-This API uses JWT (JSON Web Tokens) for authentication. 
+This API uses **HTTP-only cookies** for secure JWT token storage.
 
-### For Protected Endpoints (with 🔒 lock icon)
-Click the **Authorize** button at the top, then enter your access token:
-\`\`\`
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-\`\`\`
-**Note:** Do NOT include the word "Bearer" - just paste the token.
+### Cookie-Based Authentication
+Tokens are automatically sent via secure HTTP-only cookies. No manual token management needed!
+
+**Benefits:**
+- 🔒 Secure: Cookies are HTTP-only (not accessible via JavaScript)
+- 🛡️ Protected: CSRF protection via SameSite=strict
+- 🚀 Automatic: Browser handles token sending
 
 ### Token Lifetimes
-- Access Token: 15 minutes
-- Refresh Token: 3 days  
-- Temp Token for 2FA: 5 minutes
+- **Access Token**: 15 minutes (auto-refreshed)
+- **Refresh Token**: 3 days
+- **Temp Token** (2FA): 5 minutes
+
+### How It Works
+1. **Login/Signup**: Tokens stored in cookies automatically
+2. **API Calls**: Browser sends cookies with each request
+3. **Refresh**: Call POST /auth/refresh to get new access token
+4. **Logout**: Cookies cleared and tokens blacklisted
+
+## Testing in Swagger UI
+⚠️ **Important**: Swagger UI may not show cookies properly. For full testing:
+- Use **Postman** (enable "Send cookies" in settings)
+- Use **Browser** (cookies work automatically)
+- Or use curl with -c and -b flags
 
 ## 2FA Flow
 When 2FA is enabled, the login process requires two steps:
 
-**Step 1:** Call POST /auth/login with credentials → Receive a temporary token (valid 5 min)
+**Step 1:** Call POST /auth/login with credentials → Receive temporary token in response body (valid 5 min)
 
-**Step 2:** Call POST /auth/2fa/authenticate with temp token + OTP code → Receive full access/refresh tokens
+**Step 2:** Call POST /auth/2fa/authenticate with temp token + OTP code → Tokens set in cookies
 
 ### Setting Up 2FA
 **Step 1:** Call POST /auth/2fa/generate (requires login) → Get QR code

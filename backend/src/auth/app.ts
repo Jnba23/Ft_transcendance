@@ -9,7 +9,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { swaggerSpec } from './config/swagger.js';
 import swaggerUi from 'swagger-ui-express';
-
+import cookieParser from 'cookie-parser';
 
 const app: Application = express();
 
@@ -21,6 +21,7 @@ app.use(
 );
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(cookieParser());
 
 // Custom Middleware
 app.use(deserializeUser);

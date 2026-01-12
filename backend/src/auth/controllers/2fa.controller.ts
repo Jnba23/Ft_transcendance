@@ -10,6 +10,23 @@ import { User } from "../types.js";
 import qrcode from 'qrcode';
 import { verifyPassword } from "../../utils/crypto.js";
 
+// Cookie options (same as auth controller)
+const accessTokenCookieOptions = {
+	httpOnly: true,
+	secure: config.nodeEnv === 'production',
+	sameSite: 'strict' as const,
+	path: '/',
+	maxAge: 15 * 60 * 1000, // 15 minutes
+};
+
+const refreshTokenCookieOptions = {
+	httpOnly: true,
+	secure: config.nodeEnv === 'production',
+	sameSite: 'strict' as const,
+	path: '/',
+	maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
+};
+
 // Generate QR Code
 export const generate2FaHandler = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const user = res.locals.user as User;
@@ -87,10 +104,10 @@ export const authenticate2FaHandler = catchAsync(async (req: Request, res: Respo
     });
 
     if (!isValid) {
-        return next(new AppError('Invalid 2Fa code', 401));
+        return next(new AppError('Invalid 2FA code', 401));
     }
 
-    // Success! Issue Real Tokens
+    // Success! Issue Real Tokens in cookies
     const accessToken = signJwt(
         { id: user.id, username: user.username },
         { expiresIn: config.jwtAccessExpiresIn }
@@ -100,9 +117,12 @@ export const authenticate2FaHandler = catchAsync(async (req: Request, res: Respo
         { expiresIn: config.jwtRefreshExpiresIn }
     );
 
+    res.cookie('accessToken', accessToken, accessTokenCookieOptions);
+    res.cookie('refreshToken', refreshToken, refreshTokenCookieOptions);
+
     res.status(200).json({
         status: 'success',
-        token: { accessToken, refreshToken }
+        message: '2FA authentication successful'
     });
 });
 

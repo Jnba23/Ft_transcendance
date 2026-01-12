@@ -52,19 +52,47 @@ import { z } from 'zod';
  *           example: securePass123
  *     LoginRes:
  *       type: object
+ *       description: Success response with tokens set in HTTP-only cookies
  *       properties:
  *         status:
  *           type: string
  *           example: success
- *         token:
+ *         message:
+ *           type: string
+ *           example: Logged in successfully
+ *       headers:
+ *         Set-Cookie:
+ *           description: HTTP-only cookies containing accessToken and refreshToken
+ *           schema:
+ *             type: string
+ *             example: accessToken=eyJhbG...; HttpOnly; Secure; SameSite=Strict
+ *     SignupRes:
+ *       type: object
+ *       description: Success response with account created and tokens in cookies
+ *       properties:
+ *         status:
+ *           type: string
+ *           example: success
+ *         message:
+ *           type: string
+ *           example: Account created successfully
+ *         data:
  *           type: object
  *           properties:
- *             accessToken:
- *               type: string
- *               description: JWT access token (expires in 15 minutes)
- *             refreshToken:
- *               type: string
- *               description: JWT refresh token (expires in 3 days)
+ *             user:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       headers:
+ *         Set-Cookie:
+ *           description: HTTP-only cookies containing accessToken and refreshToken
+ *           schema:
+ *             type: string
  *     Login2FARequiredRes:
  *       type: object
  *       description: Response when 2FA is enabled on the account
@@ -81,24 +109,21 @@ import { z } from 'zod';
  *         tempToken:
  *           type: string
  *           description: Temporary token valid for 5 minutes. Use with /auth/2fa/authenticate
- *     RefreshTokenReq:
+ *     RefreshTokenRes:
  *       type: object
- *       required:
- *         - refreshToken
+ *       description: Token refreshed and new accessToken set in cookie
  *       properties:
- *         refreshToken:
+ *         status:
  *           type: string
- *           description: Valid refresh token from login
- *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *     LogoutReq:
- *       type: object
- *       required:
- *         - refreshToken
- *       properties:
- *         refreshToken:
+ *           example: success
+ *         message:
  *           type: string
- *           description: Refresh token to blacklist (also send access token in Authorization header)
- *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *           example: Token refreshed
+ *       headers:
+ *         Set-Cookie:
+ *           description: HTTP-only cookie with new accessToken
+ *           schema:
+ *             type: string
  *     ApiError:
  *       type: object
  *       properties:
@@ -140,14 +165,8 @@ export const loginSchema = z.object({
   }),
 });
 
-export const refreshSchema = z.object({
-  body: z.object({
-    refreshToken: z.string().min(1, 'Refresh token is required'),
-  }),
-});
+// No body validation needed - tokens come from cookies
+export const refreshSchema = z.object({});
 
-export const logoutSchema = z.object({
-  body: z.object({
-    refreshToken: z.string().min(1, 'Refresh token is required'),
-  }),
-});
+// No body validation needed - tokens come from cookies
+export const logoutSchema = z.object({});

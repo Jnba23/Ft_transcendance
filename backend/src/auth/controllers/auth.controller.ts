@@ -8,6 +8,23 @@ import { config } from '../config/index.js';
 import { User } from '../types.js';
 import type { JwtPayload } from 'jsonwebtoken';
 
+const cookieOptions = {
+	httpOnly: true,
+	secure: config.nodeEnv === 'production',
+	sameSite: 'strict' as const,
+	path: '/',
+};
+
+const accessTokenCookieOptions = {
+	...cookieOptions,
+	maxAge: 15 * 60 * 1000, // 15 minutes
+};
+
+const refreshTokenCookieOptions = {
+	...cookieOptions,
+	maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
+};
+
 export const signupHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
 	const { username, email, password } = req.body;
@@ -33,8 +50,24 @@ export const signupHandler = catchAsync(
 	  .prepare('SELECT * FROM users WHERE id = ?')
 	  .get(info.lastInsertRowid) as User;
 
+	// Create tokens for immediate login after signup
+	const accessToken = signJwt(
+	  { id: user.id, username: user.username },
+	  { expiresIn: config.jwtAccessExpiresIn }
+	);
+
+	const refreshToken = signJwt(
+	  { id: user.id, username: user.username },
+	  { expiresIn: config.jwtRefreshExpiresIn }
+	);
+
+	// Set tokens in cookies
+	res.cookie('accessToken', accessToken, accessTokenCookieOptions);
+	res.cookie('refreshToken', refreshToken, refreshTokenCookieOptions);
+
 	res.status(201).json({
 	  status: 'success',
+	  message: 'Account created successfully',
 	  data: {
 		user: {
 		  id: user.id,
@@ -84,16 +117,19 @@ export const loginHandler = catchAsync(
 	  { expiresIn: config.jwtRefreshExpiresIn }
 	);
 
+	res.cookie('accessToken', accessToken, accessTokenCookieOptions);
+	res.cookie('refreshToken', refreshToken, refreshTokenCookieOptions);
+
 	res.status(200).json({
 	  status: 'success',
-	  token: { accessToken, refreshToken },
+	  message: 'Logged in successfully'
 	});
   }
 );
 
 export const refreshAccessTokenHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-	const refreshToken = req.body.refreshToken as string;
+	const refreshToken = req.cookies.refreshToken;
 
 	if (!refreshToken) {
 	  return next(new AppError('Could not refresh access token', 403));
@@ -133,19 +169,18 @@ export const refreshAccessTokenHandler = catchAsync(
 	  { expiresIn: config.jwtAccessExpiresIn }
 	);
 
+	res.cookie('accessToken', accessToken, accessTokenCookieOptions);
+
 	res.status(200).json({
 	  status: 'success',
-	  token: accessToken,
+	  message: 'Token refreshed'
 	});
   }
 );
 
 export const logoutHandler = catchAsync(async (req: Request, res: Response) => {
-  const accessToken = (req.headers.authorization || '').replace(
-	/^Bearer\s/,
-	''
-  );
-  const { refreshToken } = req.body;
+  const accessToken = req.cookies.accessToken;
+  const refreshToken = req.cookies.refreshToken;
 
   const db = getDb();
   const blacklistStmt = db.prepare(
@@ -171,6 +206,10 @@ export const logoutHandler = catchAsync(async (req: Request, res: Response) => {
   if (refreshToken) {
 	blacklistToken(refreshToken);
   }
+
+  // Clear cookies
+  res.clearCookie('accessToken', { path: '/' });
+  res.clearCookie('refreshToken', { path: '/' });
 
   res.status(200).json({
 	status: 'success',

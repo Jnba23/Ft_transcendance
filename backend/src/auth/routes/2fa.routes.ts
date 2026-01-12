@@ -33,7 +33,7 @@ const router = Router();
  *             $ref: '#/components/schemas/Verify2FALoginReq'
  *     responses:
  *       200:
- *         description: 2FA verification successful - full tokens returned
+ *         description: 2FA verification successful - tokens set in HTTP-only cookies
  *         content:
  *           application/json:
  *             schema:
@@ -42,17 +42,14 @@ const router = Router();
  *                 status:
  *                   type: string
  *                   example: success
- *                 tokens:
- *                   type: object
- *                   properties:
- *                     accessToken:
- *                       type: string
- *                       description: JWT access token (15 min expiry)
- *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *                     refreshToken:
- *                       type: string
- *                       description: JWT refresh token (3 day expiry)
- *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 message:
+ *                   type: string
+ *                   example: 2FA authentication successful
+ *         headers:
+ *           Set-Cookie:
+ *             description: HTTP-only cookies containing accessToken and refreshToken
+ *             schema:
+ *               type: string
  *       400:
  *         description: Invalid or expired temporary token
  *         content:

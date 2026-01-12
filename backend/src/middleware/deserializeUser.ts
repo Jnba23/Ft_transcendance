@@ -8,10 +8,7 @@ export const deserializeUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  const accessToken = (req.headers.authorization || '').replace(
-    /^Bearer\s/,
-    ''
-  );
+  const accessToken = req.cookies.accessToken;
 
   if (!accessToken) {
     return next();
