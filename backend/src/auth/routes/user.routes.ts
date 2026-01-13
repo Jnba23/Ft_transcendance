@@ -17,9 +17,13 @@ const router = Router();
  * /users/me:
  *   get:
  *     summary: Get current logged-in user
- *     description: Retrieve detailed profile information for the authenticated user.
+ *     description: |
+ *       🔒 **Protected Route** - Requires authentication
+ *       
+ *       Retrieve detailed profile information for the authenticated user.
+ *       Authentication is automatic via cookies (no Authorization header needed).
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     tags: [Users]
  *     responses:
  *       200:
@@ -56,9 +60,13 @@ router.get('/me', requireUser, getCurrentUserHandler);
  * /users/me:
  *   patch:
  *     summary: Update current user profile
- *     description: Update username or avatar URL for the authenticated user.
+ *     description: |
+ *       🔒 **Protected Route** - Requires authentication
+ *       
+ *       Update username or avatar URL for the authenticated user.
+ *       Authentication is automatic via cookies (no Authorization header needed).
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     tags: [Users]
  *     requestBody:
  *       required: true

@@ -33,11 +33,18 @@ Tokens are automatically sent via secure HTTP-only cookies. No manual token mana
 3. **Refresh**: Call POST /auth/refresh to get new access token
 4. **Logout**: Cookies cleared and tokens blacklisted
 
-## Testing in Swagger UI
-⚠️ **Important**: Swagger UI may not show cookies properly. For full testing:
-- Use **Postman** (enable "Send cookies" in settings)
-- Use **Browser** (cookies work automatically)
-- Or use curl with -c and -b flags
+## 🔓 Accessing Protected Routes
+Protected routes (marked with 🔒) require authentication. Since we use cookies:
+
+1. **Login first**: Call POST /auth/signup or POST /auth/login
+2. **Cookies are set automatically**: Your accessToken is stored
+3. **Make requests**: Protected endpoints work automatically in browser/Postman
+4. **Swagger UI Limitation**: The 🔒 lock icon is for documentation only - Swagger UI doesn't handle cookies well
+
+**For Testing Protected Routes:**
+- ✅ **Postman**: Works perfectly (cookies auto-sent)
+- ✅ **Browser/fetch**: Works automatically  
+- ⚠️ **Swagger UI**: May not work - use Postman instead
 
 ## 2FA Flow
 When 2FA is enabled, the login process requires two steps:
@@ -81,13 +88,28 @@ When 2FA is enabled, the login process requires two steps:
         ],
         components: {
             securitySchemes: {
-                bearerAuth: {
-                    type: 'http',
-                    scheme: 'bearer',
-                    bearerFormat: 'JWT',
-                    description: 'JWT access token (do not include "Bearer" prefix - just paste the token)',
+                cookieAuth: {
+                    type: 'apiKey',
+                    in: 'cookie',
+                    name: 'accessToken',
+                    description: 'JWT access token stored in HTTP-only cookie. Login/Signup to set the cookie automatically.',
                 },
             },
+            schemas: {
+                ApiError: {
+                    type: 'object',
+                    properties: {
+                        status: {
+                            type: 'string',
+                            example: 'fail'
+                        },
+                        message: {
+                            type: 'string',
+                            example: 'Error message'
+                        }
+                    }
+                }
+            }
         },
     },
     apis: ['./src/auth/routes/*.ts', './src/auth/schemas/*.ts'],

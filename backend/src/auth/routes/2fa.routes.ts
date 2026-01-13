@@ -78,7 +78,10 @@ router.post('/authenticate', validateResource(verify2FaSchema), authenticate2FaH
  *   post:
  *     summary: Generate 2FA QR Code
  *     description: |
+ *       🔒 **Protected Route** - Requires authentication
+ *       
  *       Generate a new TOTP secret and QR code for setting up 2FA.
+ *       Authentication is automatic via cookies (no Authorization header needed).
  *       
  *       **Setup Flow:**
  *       1. Call this endpoint (requires authentication)
@@ -89,7 +92,7 @@ router.post('/authenticate', validateResource(verify2FaSchema), authenticate2FaH
  *       
  *       **Note:** The secret is temporarily stored and must be verified within the session.
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     tags: [Auth]
  *     responses:
  *       200:
@@ -119,7 +122,10 @@ router.post('/generate', requireUser, generate2FaHandler);
  *   post:
  *     summary: Enable 2FA
  *     description: |
+ *       🔒 **Protected Route** - Requires authentication
+ *       
  *       Verify the OTP code from the authenticator app and enable 2FA for the account.
+ *       Authentication is automatic via cookies (no Authorization header needed).
  *       
  *       **Prerequisites:**
  *       - Must be authenticated
@@ -129,7 +135,7 @@ router.post('/generate', requireUser, generate2FaHandler);
  *       - All future logins will require 2FA verification
  *       - The secret is permanently stored in the database
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -175,7 +181,10 @@ router.post('/turn-on', requireUser, validateResource(twoFaSchema), turnOn2FaHan
  *   post:
  *     summary: Disable 2FA
  *     description: |
+ *       🔒 **Protected Route** - Requires authentication
+ *       
  *       Disable two-factor authentication for the account.
+ *       Authentication is automatic via cookies (no Authorization header needed).
  *       
  *       **Security Requirements:**
  *       - Must be authenticated
@@ -186,7 +195,7 @@ router.post('/turn-on', requireUser, validateResource(twoFaSchema), turnOn2FaHan
  *       - The 2FA secret is deleted from the database
  *       - User must re-scan a new QR code if they want to enable 2FA again
  *     security:
- *       - bearerAuth: []
+ *       - cookieAuth: []
  *     tags: [Auth]
  *     requestBody:
  *       required: true
