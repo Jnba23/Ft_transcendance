@@ -1,4 +1,4 @@
-import { hashPassword, verifyPassword } from '../../utils/crypto.js';
+import { hashPassword, verifyPassword } from '../../utils/crypt.js';
 import { Request, Response, NextFunction } from 'express';
 import { catchAsync } from '../../utils/catchAsync.js';
 import { AppError } from '../../utils/AppError.js';

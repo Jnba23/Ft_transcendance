@@ -8,7 +8,7 @@ import { config } from '../config/index.js';
 import { authenticator } from 'otplib';
 import { User } from "../types.js";
 import qrcode from 'qrcode';
-import { verifyPassword } from "../../utils/crypto.js";
+import { verifyPassword } from "../../utils/crypt.js";
 
 // Cookie options (same as auth controller)
 const accessTokenCookieOptions = {
