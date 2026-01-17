@@ -1,11 +1,15 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
+import twoFatRoutes from './routes/2fa.routes.js';
 import { AppError } from '../utils/AppError.js';
 import { deserializeUser } from '../middleware/deserializeUser.js';
 import { config } from './config/index.js';
 import morgan from 'morgan';
 import cors from 'cors';
+import { swaggerSpec } from './config/swagger.js';
+import swaggerUi from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
 
 const app: Application = express();
 
@@ -17,6 +21,7 @@ app.use(
 );
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(cookieParser());
 
 // Custom Middleware
 app.use(deserializeUser);
@@ -26,8 +31,10 @@ app.get('/', (req, res) => {
   res.json({ message: 'Auth Service Running 🚀' });
 });
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/auth/2fa', twoFatRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {
