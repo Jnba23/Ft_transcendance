@@ -1,10 +1,10 @@
 import { validateResource } from '../../middleware/validateResource.js';
 import { requireUser } from '../../middleware/requireUser.js';
 import {
-    authenticate2FaHandler,
-    generate2FaHandler,
-    turnOff2FaHandler,
-    turnOn2FaHandler
+  authenticate2FaHandler,
+  generate2FaHandler,
+  turnOff2FaHandler,
+  turnOn2FaHandler
 } from '../controllers/2fa.controller.js';
 import { twoFaSchema, verify2FaSchema, turnOff2FaSchema } from '../schemas/2fa.schema.js';
 import { Router } from 'express';

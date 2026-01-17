@@ -38,6 +38,7 @@ export const deserializeUser = async (
         res.locals.user = user;
       }
     } catch (error: unknown) {
+      // eslint-disable-next-line no-console
       console.log('Error in deserializeUser middleware', error);
     }
   }

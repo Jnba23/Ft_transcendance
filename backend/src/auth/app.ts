@@ -56,7 +56,8 @@ app.use(
       // Trusted error: Send the response we built
       res.status(err.statusCode).json(errorResponse);
     } else {
-      console.log('ERROR 💥', err);
+      // Log error for debugging (disabled in production)
+      // console.log('ERROR 💥', err);
 
       // IN DEVELOPMENT: You usually want to see the crash details anyway
       if (process.env.NODE_ENV === 'development') {
