@@ -1,0 +1,34 @@
+flowchart LR
+
+User --> FE["React App"]
+
+FE -->|onLoad| CheckAuth["GET /auth/me"]
+
+CheckAuth -->|JWT valid| Home["Home Page"]
+CheckAuth -->|No JWT| Landing["Landing Page"]
+
+Landing -->|Click Login| LoginPage
+Landing -->|Click Signup| SignupPage
+
+LoginPage -->|POST /auth/login| AuthAPI
+SignupPage -->|POST /auth/signup| AuthAPI
+
+AuthAPI -->|Set JWT Cookie| Home
+AuthAPI -->|Error| ErrorMsg["Show Error"]
+
+LoginPage -->|POST /auth/login| AuthAPI
+
+AuthAPI --> Creds{"Credentials OK?"}
+
+Creds -->|No| Error["Login Error"]
+Creds -->|Yes| TwoFA{"2FA Enabled?"}
+
+TwoFA -->|Yes| TwoFAPage
+TwoFAPage -->|POST /auth/2fa| Verify2FA
+
+Verify2FA -->|OK| IssueJWT["Set JWT Cookie"]
+Verify2FA -->|Fail| Error
+
+TwoFA -->|No| IssueJWT
+
+IssueJWT --> Home

@@ -1,0 +1,42 @@
+flowchart LR
+
+subgraph Client
+    Browser
+    FE["React App (Vite + Tailwind)"]
+    Browser --> FE
+end
+
+subgraph Backend
+    Express["Express.js Server"]
+
+    subgraph REST
+        AuthAPI["Auth & User APIs"]
+        Swagger["Swagger / OpenAPI"]
+    end
+
+    subgraph WS
+        WSGateway["WebSocket Gateway"]
+        GameEngine["Game Engine"]
+    end
+
+    AuthMW["JWT Middleware"]
+end
+
+subgraph Data
+    Prisma["Prisma ORM"]
+    DB[(SQLite)]
+end
+
+FE -->|REST HTTP| Express
+Express --> AuthMW
+AuthMW --> AuthAPI
+
+FE -->|WebSocket| WSGateway
+WSGateway --> AuthMW
+AuthMW --> GameEngine
+
+AuthAPI --> Prisma
+GameEngine --> Prisma
+Prisma --> DB
+
+Swagger --> AuthAPI
