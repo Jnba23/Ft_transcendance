@@ -22,6 +22,24 @@ const messages = [
     time: '10:32 pm',
     isSent: false,
   },
+  {
+    id: '3',
+    message: 'Sorry I can\'t. I just remembered I have to walk my dog.',
+    time: '10:40 pm',
+    isSent: true,
+  },
+  {
+    id: '4',
+    message: 'It\'s fine. We can do it another time.',
+    time: '10:41 pm',
+    isSent: false,
+  },
+  {
+    id: '5',
+    message: 'Cool! Just remember that i love time traveling with you!',
+    time: '10:42 pm',
+    isSent: true,
+  },
 ] satisfies Message[];
 
 export const users = [

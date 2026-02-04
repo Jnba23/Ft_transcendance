@@ -80,6 +80,46 @@ function NotificationsMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
               </p>
             }
           />{' '}
+          <NotificationsItem
+            icon="leaderboard"
+            iconColor="red"
+            label={
+              <p className="text-white text-sm">
+                You have achieved
+                <span className="font-bold">{' Level 22'}</span>.
+              </p>
+            }
+          />{' '}
+          <NotificationsItem
+            icon="leaderboard"
+            iconColor="red"
+            label={
+              <p className="text-white text-sm">
+                You have achieved
+                <span className="font-bold">{' Level 22'}</span>.
+              </p>
+            }
+          />{' '}
+          <NotificationsItem
+            icon="leaderboard"
+            iconColor="red"
+            label={
+              <p className="text-white text-sm">
+                You have achieved
+                <span className="font-bold">{' Level 22'}</span>.
+              </p>
+            }
+          />{' '}
+          <NotificationsItem
+            icon="leaderboard"
+            iconColor="red"
+            label={
+              <p className="text-white text-sm">
+                You have achieved
+                <span className="font-bold">{' Level 22'}</span>.
+              </p>
+            }
+          />{' '}
           {/* added many for scrollbar */}
         </div>
       </div>
