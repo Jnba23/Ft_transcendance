@@ -6,7 +6,7 @@ const messages = [
   {
     id: '0',
     message:
-      'Yo, you up for a match of Pong later tonight? I\'m trying to climb the leaderboard.',
+      "Yo, you up for a match of Pong later tonight? I'm trying to climb the leaderboard.",
     time: '10:30 pm',
     isSent: false,
   },

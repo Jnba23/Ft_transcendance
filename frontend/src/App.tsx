@@ -5,7 +5,7 @@ import Dashboard from '@pages/dashboard/Dashboard';
 import Profile from '@pages/profile/Profile';
 import GamePage from '@pages/game/GamePage';
 
-function App(): JSX.Element {
+function App() {
   return (
     <BrowserRouter>
       <Routes>

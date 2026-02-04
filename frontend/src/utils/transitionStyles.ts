@@ -20,18 +20,18 @@ const chatTransitions = {
 
 function getTransitionClasses(isOpen: boolean, section: string) {
   switch (section) {
-  case 'navbar':
-    if (isOpen) return navbarTransitions.enter;
+    case 'navbar':
+      if (isOpen) return navbarTransitions.enter;
 
-    return navbarTransitions.leave;
-  case 'overlay':
-    if (isOpen) return overlayTransitions.enter;
+      return navbarTransitions.leave;
+    case 'overlay':
+      if (isOpen) return overlayTransitions.enter;
 
-    return overlayTransitions.leave;
-  case 'chat':
-    if (isOpen) return chatTransitions.enter;
+      return overlayTransitions.leave;
+    case 'chat':
+      if (isOpen) return chatTransitions.enter;
 
-    return chatTransitions.leave;
+      return chatTransitions.leave;
   }
 }
 
