@@ -16,6 +16,7 @@
     "format:check": "prettier --check src/**/*.{js,jsx,ts,tsx,css}"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.5.0",
     "ft_transcendance_shared": "github:Jnba23/ft_transcendance_shared#main",
     "react": "^18.2.0",
