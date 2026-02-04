@@ -24,12 +24,12 @@ function Navbar() {
 
   return (
     <header className="flex gap-3 items-center justify-end">
-      <div className='relative'>
+      <div className="relative">
         <NotificationsBtn
           onClick={notifsMenu.toggle}
           buttonRef={notifsMenu.buttonRef}
         />
-        <NotificationsMenu {...notifsMenu}/>
+        <NotificationsMenu {...notifsMenu} />
       </div>
 
       <div className="relative">
@@ -38,7 +38,7 @@ function Navbar() {
           onClick={userMenu.toggle}
           buttonRef={userMenu.buttonRef}
         />
-        <UserMenu {...userMenu}/>
+        <UserMenu {...userMenu} />
       </div>
     </header>
   );

@@ -2,12 +2,12 @@
 // the section where you wish to use this component
 
 type SectionSizes = {
-	// section_name: string
-	userMenu: string,
-	DM: string,
-	chat: string,
-	msg: string,
-}
+  // section_name: string
+  userMenu: string;
+  DM: string;
+  chat: string;
+  msg: string;
+};
 
 const sectionSizes = {
   // section_name: section_size
@@ -18,18 +18,23 @@ const sectionSizes = {
 } satisfies SectionSizes;
 
 type AvatarProps = {
-	path: string,
-	section: keyof SectionSizes
-}
+  path: string;
+  section: keyof SectionSizes;
+};
 
-function Avatar({path, section = 'userMenu'}: AvatarProps) {
+function Avatar({ path, section = 'userMenu' }: AvatarProps) {
   return (
-    <div className={[
-      sectionSizes[section], 'rounded-full',
-      'overflow-hidden', 'aspect-square'
-    ].join(' ')}>
+    <div
+      className={[
+        sectionSizes[section],
+        'rounded-full',
+        'overflow-hidden',
+        'aspect-square',
+      ].join(' ')}
+    >
       <img
-        src={path} alt="User avatar"
+        src={path}
+        alt="User avatar"
         className="w-full h-full object-cover"
       />
     </div>

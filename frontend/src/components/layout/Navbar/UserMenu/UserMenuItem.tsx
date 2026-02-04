@@ -2,10 +2,10 @@
 // the color you wish to use
 
 type ColorStyles = {
-	// color: string [!always]
-	white: string,
-	red: string,
-}
+  // color: string [!always]
+  white: string;
+  red: string;
+};
 
 const colorStyles = {
   // color: "text-<color> hover:bg-<color>/5"
@@ -14,29 +14,24 @@ const colorStyles = {
 } satisfies ColorStyles;
 
 type UserMenuItemProps = {
-	icon: string,
-	label: string,
-	color?: keyof ColorStyles | undefined,
-}
+  icon: string;
+  label: string;
+  color?: keyof ColorStyles | undefined;
+};
 
-function UserMenuItem({
-  icon,
-  label,
-  color = 'white'
-} : UserMenuItemProps) {
+function UserMenuItem({ icon, label, color = 'white' }: UserMenuItemProps) {
   return (
-    <a href="#" className={[
-      `${colorStyles[color]}`,
-      'text-sm',
-      'flex gap-3 items-center',
-      'px-3 py-2 rounded-md',
-    ].join(' ')}>
-      <span className="material-symbols-outlined !text-base">
-        {icon}
-      </span>
-      <span>
-        {label}
-      </span>
+    <a
+      href="#"
+      className={[
+        `${colorStyles[color]}`,
+        'text-sm',
+        'flex gap-3 items-center',
+        'px-3 py-2 rounded-md',
+      ].join(' ')}
+    >
+      <span className="material-symbols-outlined !text-base">{icon}</span>
+      <span>{label}</span>
     </a>
   );
 }

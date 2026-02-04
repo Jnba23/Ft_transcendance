@@ -1,7 +1,7 @@
 type TransitionStyles = {
-	enter: string,
-	leave: string,
-}
+  enter: string;
+  leave: string;
+};
 
 const navbarTransitions = {
   enter: 'opacity-100 scale-100 duration-150 ease-out',
