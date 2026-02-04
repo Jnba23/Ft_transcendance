@@ -7,7 +7,11 @@
     "baseUrl": "src",
     "paths": {
       "@components/*": ["components/*"],
-      "@pages/*": ["pages/*"]
+      "@pages/*": ["pages/*"],
+      "@hooks/*": ["hooks/*"],
+      "@utils/*": ["utils/*"],
+      "@assets/*": ["assets/*"],
+      "@ui/*": ["components/ui/*"],
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
