@@ -9,17 +9,19 @@ const statusStyle = {
 export type SectionSizes = {
   DM: string;
   chat: string;
+  friendRequest: string;
 };
 
 const sectionSizes = {
   DM: 'text-xs',
   chat: 'text-base',
+  friendRequest: 'text-sm',
 } satisfies SectionSizes;
 
 type UserBadgeProps = {
   username: string;
   avatar: string;
-  status: keyof StatusStyle;
+  status?: keyof StatusStyle;
   section: keyof SectionSizes;
 };
 
@@ -31,7 +33,7 @@ function UserBadge({ username, avatar, status, section }: UserBadgeProps) {
         <span
           className={[
             'size-2.5 rounded-full',
-            `${statusStyle[status]}`,
+            `${status ? statusStyle[status] : 'hidden'}`,
             'absolute right-0 bottom-0',
           ].join(' ')}
         ></span>
