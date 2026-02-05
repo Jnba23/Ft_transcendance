@@ -1,9 +1,10 @@
 import { useRef } from 'react';
-import NotificationOptions from './NotificationOptions';
+import NotificationOptions from '@ui/RequestActions';
 import NotificationsItem from './NotificationsItem';
 import useClickOutside from '@hooks/useClickOutside';
 import getTransitionClasses from '@utils/transitionStyles';
 import type { headerMenuProps } from '@utils/types';
+import RequestActions from '@ui/RequestActions';
 
 function NotificationsMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
   const notifsMenuRef = useRef<HTMLDivElement>(null);
@@ -38,7 +39,7 @@ function NotificationsMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
                 <span className="font-bold">{' ProGamer'}</span>.
               </p>
             }
-            actions={<NotificationOptions />}
+            actions={<RequestActions section="notification" />}
           />
           <NotificationsItem
             icon="leaderboard"
