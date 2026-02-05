@@ -14,36 +14,39 @@ function TwoOptionsToggle({
 	onOpt2Select
 }: TwoOptionsToggleProps) {
 
-	const [isActive, setIsActive] = React.useState(false);
+	const [isOpt1Active, setIsOpt1Active] = React.useState(true);
 
 	return (
 		<div className="flex gap-2 items-center bg-black/20 rounded-lg p-1">
-			<button
-				className={[
-					"flex-1 py-1.5 px-3 rounded-md transition-colors",
-					"text-sm font-semibold text-white/60",
-					"hover:bg-white/10 hover:text-white",
-					"aria-pressed:bg-primary aria-pressed:text-white",
-				].join(' ')}
-				onClick={() => { setIsActive(true); onOpt1Select?.(); }}
-				aria-pressed={isActive}
-			>
-				{opt1}
-			</button>
-			<button
-				className={[
-					"flex-1 py-1.5 px-3 rounded-md transition-colors",
-					"text-sm font-semibold text-white/60",
-					"hover:bg-white/10 hover:text-white",
-					"aria-pressed:bg-primary aria-pressed:text-white",
-				].join(' ')}
-				onClick={() => { setIsActive(false); onOpt2Select?.(); }}
-				aria-pressed={!isActive}
-			>
-				{opt2}
-			</button>
+			<OptionButton
+				label={opt1}
+				isActive={isOpt1Active}
+				onClick={() => { setIsOpt1Active(true); onOpt1Select?.(); }}
+			/>
+			<OptionButton
+				label={opt2}
+				isActive={!isOpt1Active}
+				onClick={() => { setIsOpt1Active(false); onOpt2Select?.(); }}
+			/>
 		</div>
 	);
 }
 
+function OptionButton({ label, isActive, onClick }:
+	{ label: string, isActive: boolean, onClick: () => void }) {
+	return (
+		<button
+			className={[
+				"flex-1 py-1.5 px-3 rounded-md transition-colors",
+				"text-sm font-semibold text-white/60",
+				"hover:bg-white/10 hover:text-white",
+				"aria-pressed:bg-primary aria-pressed:text-white",
+			].join(' ')}
+			onClick={onClick}
+			aria-pressed={isActive}
+		>
+			{label}
+		</button>
+	);
+}
 export default TwoOptionsToggle;
