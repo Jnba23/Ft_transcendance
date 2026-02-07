@@ -1,35 +1,49 @@
+import axios from "axios";
 import UserBadge from "@ui/UserBadge";
 import friend from "@assets/friend.jpg";
 import RequestActions from "@ui/RequestActions";
 
 type FriendReqItemProps = {
 	reqType: "received" | "sent";
+	reqId: number;
+	removeReq: () => void;
 };
 
-function FriendReqItem({ reqType }: FriendReqItemProps) {
+function FriendReqItem({ reqType, removeReq, reqId }: FriendReqItemProps) {
+
+	const path = "/api/friends/requests/action?id=" + reqId + "&action=";
+
+	const onAccept = () => {removeReq(); axios.post(path + "accept")};
+	const onDecline = () => {removeReq(); axios.post(path + "decline")};
+	const onCancel = () => {removeReq(); axios.post(path + "cancel")};
+
 	return (
 		<div className="flex items-center justify-between">
 			<UserBadge
-			username="PlayerX"
-			avatar={friend}
-			section="friendRequest"
+				username="PlayerX"
+				avatar={friend}
+				section="friendRequest"
 			/>
 			{
 				reqType === "received" ?
-				<RequestActions section="friendRequest" />
+				<RequestActions
+					section="friendRequest"
+					onAccept={onAccept}
+					onDecline={onDecline}
+				/>
 				:
-				<CancelReqButton />
+				<CancelReqButton onCancel={onCancel} />
 			}
 		</div>
 	);
 }
 
-function CancelReqButton() {
+function CancelReqButton({onCancel}: {onCancel: () => void}) {
 	return (
 		<button className={[
 			"px-3 py-1.5 text-xs font-medium text-white/90 rounded-lg",
 			"bg-[#2A3B5A] hover:bg-[#3A4C6A] transition-colors",
-		].join(' ')}>
+		].join(' ')} onClick={onCancel}>
 			Cancel Request
 		</button>
 	)
