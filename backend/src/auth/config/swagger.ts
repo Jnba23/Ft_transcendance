@@ -2,12 +2,12 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import { config } from './index.js';
 
 const options: swaggerJsdoc.Options = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'ft_transcendence API',
-            version: '1.0.0',
-            description: `
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'ft_transcendence API',
+      version: '1.0.0',
+      description: `
 ## Overview
 RESTful API for the ft_transcendence project - a multiplayer gaming platform featuring Pong and Chess.
 
@@ -62,57 +62,57 @@ When 2FA is enabled, the login process requires two steps:
 
 **Step 4:** Call POST /auth/2fa/turn-off → Send password → Disable 2FA
             `,
-            contact: {
-                name: 'ft_transcendence Team',
-            },
-            license: {
-                name: 'MIT',
-                url: 'https://opensource.org/licenses/MIT',
-            },
-        },
-        servers: [
-            {
-                url: `http://localhost:${config.port}/api`,
-                description: 'Development server',
-            },
-        ],
-        tags: [
-            {
-                name: 'Auth',
-                description: 'Authentication endpoints (login, signup, logout, token refresh, 2FA)',
-            },
-            {
-                name: 'Users',
-                description: 'User management and profile endpoints',
-            },
-        ],
-        components: {
-            securitySchemes: {
-                cookieAuth: {
-                    type: 'apiKey',
-                    in: 'cookie',
-                    name: 'accessToken',
-                    description: 'JWT access token stored in HTTP-only cookie. Login/Signup to set the cookie automatically.',
-                },
-            },
-            schemas: {
-                ApiError: {
-                    type: 'object',
-                    properties: {
-                        status: {
-                            type: 'string',
-                            example: 'fail'
-                        },
-                        message: {
-                            type: 'string',
-                            example: 'Error message'
-                        }
-                    }
-                }
-            }
-        },
+      contact: {
+        name: 'ft_transcendence Team',
+      },
+      license: {
+        name: 'MIT',
+        url: 'https://opensource.org/licenses/MIT',
+      },
     },
-    apis: ['./src/auth/routes/*.ts', './src/auth/schemas/*.ts'],
+    servers: [
+      {
+        url: `http://localhost:${config.port}/api`,
+        description: 'Development server',
+      },
+    ],
+    tags: [
+      {
+        name: 'Auth',
+        description: 'Authentication endpoints (login, signup, logout, token refresh, 2FA)',
+      },
+      {
+        name: 'Users',
+        description: 'User management and profile endpoints',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        cookieAuth: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'accessToken',
+          description: 'JWT access token stored in HTTP-only cookie. Login/Signup to set the cookie automatically.',
+        },
+      },
+      schemas: {
+        ApiError: {
+          type: 'object',
+          properties: {
+            status: {
+              type: 'string',
+              example: 'fail'
+            },
+            message: {
+              type: 'string',
+              example: 'Error message'
+            }
+          }
+        }
+      }
+    },
+  },
+  apis: ['./src/auth/routes/*.ts', './src/auth/schemas/*.ts'],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
