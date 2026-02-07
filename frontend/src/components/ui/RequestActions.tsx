@@ -1,8 +1,10 @@
 type RequestActionsProps = {
 	section: 'friendRequest' | 'notification';
+	onAccept?: () => void;
+	onDecline?: () => void;
 };
 
-function RequestActions({ section }: RequestActionsProps) {
+function RequestActions({ section,  onAccept, onDecline}: RequestActionsProps) {
 	return (
 		<div className={[
 			`${section === 'friendRequest' ? '' : 'mt-2'}`,
@@ -17,6 +19,7 @@ function RequestActions({ section }: RequestActionsProps) {
 				'bg-primary hover:bg-primary/90',
 				'text-white text-xs font-bold px-3',
 				].join(' ')}
+				onClick={onAccept}
 			>
 				Accept
 			</button>
@@ -30,6 +33,7 @@ function RequestActions({ section }: RequestActionsProps) {
 				'text-xs font-medium px-3',
 				'hover:bg-white/20',
 				].join(' ')}
+				onClick={onDecline}
 			>
 				Decline
 			</button>
