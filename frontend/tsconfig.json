@@ -12,6 +12,7 @@
       "@utils/*": ["utils/*"],
       "@assets/*": ["assets/*"],
       "@ui/*": ["components/ui/*"],
+      "@stores/*": ["stores/*"],
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
