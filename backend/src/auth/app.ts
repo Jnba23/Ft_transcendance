@@ -29,15 +29,15 @@ app.use(cookieParser());
 // Request details logger (body/params/query)
 const redactKeys = new Set(['password', 'confirmPassword']);
 app.use((req: Request, _res: Response, next: NextFunction) => {
-  const safeBody =
-    req.body && typeof req.body === 'object'
-      ? Object.fromEntries(
-          Object.entries(req.body).map(([key, value]) => [
-            key,
-            redactKeys.has(key) ? '[REDACTED]' : value,
-          ])
-        )
-      : req.body;
+  let safeBody = req.body;
+  if (req.body && typeof req.body === 'object') {
+    safeBody = Object.fromEntries(
+      Object.entries(req.body).map(([key, value]) => [
+        key,
+        redactKeys.has(key) ? '[REDACTED]' : value,
+      ])
+    );
+  }
 
   // eslint-disable-next-line no-console
   console.log('[Request]', {
