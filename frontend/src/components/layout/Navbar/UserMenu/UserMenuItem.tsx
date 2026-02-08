@@ -17,22 +17,29 @@ type UserMenuItemProps = {
   icon: string;
   label: string;
   color?: keyof ColorStyles | undefined;
+  onClick?: () => void;
 };
 
-function UserMenuItem({ icon, label, color = 'white' }: UserMenuItemProps) {
+function UserMenuItem({
+  icon,
+  label,
+  color = 'white',
+  onClick,
+}: UserMenuItemProps) {
   return (
-    <a
-      href="#"
+    <button
+      onClick={onClick}
       className={[
         `${colorStyles[color]}`,
         'text-sm',
         'flex gap-3 items-center',
         'px-3 py-2 rounded-md',
+        'w-full text-left', // Ensure button behaves like block link
       ].join(' ')}
     >
       <span className="material-symbols-outlined !text-base">{icon}</span>
       <span>{label}</span>
-    </a>
+    </button>
   );
 }
 
