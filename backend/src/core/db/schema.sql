@@ -163,8 +163,8 @@ CREATE INDEX IF NOT EXISTS idx_tournament_participants_tournament ON tournament_
 CREATE INDEX IF NOT EXISTS idx_tournament_participants_user ON tournament_participants(user_id);
 
 -- Friends indexes
-CREATE INDEX IF NOT EXISTS idx_friends_user_id ON friends(user_id);
-CREATE INDEX IF NOT EXISTS idx_friends_friend_id ON friends(friend_id);
+CREATE INDEX IF NOT EXISTS idx_friendship_user_id_1 ON friendship(user_id_1);
+CREATE INDEX IF NOT EXISTS idx_friendship_user_id_2 ON friendship(user_id_2);
 
 -- Games indexes
 CREATE INDEX IF NOT EXISTS idx_games_player1 ON games(player1_id);
