@@ -79,7 +79,8 @@ When 2FA is enabled, the login process requires two steps:
     tags: [
       {
         name: 'Auth',
-        description: 'Authentication endpoints (login, signup, logout, token refresh, 2FA)',
+        description:
+          'Authentication endpoints (login, signup, logout, token refresh, 2FA)',
       },
       {
         name: 'Users',
@@ -92,7 +93,8 @@ When 2FA is enabled, the login process requires two steps:
           type: 'apiKey',
           in: 'cookie',
           name: 'accessToken',
-          description: 'JWT access token stored in HTTP-only cookie. Login/Signup to set the cookie automatically.',
+          description:
+            'JWT access token stored in HTTP-only cookie. Login/Signup to set the cookie automatically.',
         },
       },
       schemas: {
@@ -101,15 +103,15 @@ When 2FA is enabled, the login process requires two steps:
           properties: {
             status: {
               type: 'string',
-              example: 'fail'
+              example: 'fail',
             },
             message: {
               type: 'string',
-              example: 'Error message'
-            }
-          }
-        }
-      }
+              example: 'Error message',
+            },
+          },
+        },
+      },
     },
   },
   apis: ['./src/auth/routes/*.ts', './src/auth/schemas/*.ts'],

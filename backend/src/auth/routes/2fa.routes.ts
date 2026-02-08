@@ -4,9 +4,13 @@ import {
   authenticate2FaHandler,
   generate2FaHandler,
   turnOff2FaHandler,
-  turnOn2FaHandler
+  turnOn2FaHandler,
 } from '../controllers/2fa.controller.js';
-import { twoFaSchema, verify2FaSchema, turnOff2FaSchema } from '../schemas/2fa.schema.js';
+import {
+  twoFaSchema,
+  verify2FaSchema,
+  turnOff2FaSchema,
+} from '../schemas/2fa.schema.js';
 import { Router } from 'express';
 
 const router = Router();
@@ -18,7 +22,7 @@ const router = Router();
  *     summary: Verify 2FA code during login
  *     description: |
  *       Complete the 2FA authentication flow after receiving a tempToken from login.
- *       
+ *
  *       **Flow:**
  *       1. Call /auth/login with credentials
  *       2. If 2FA is enabled, receive a temporary token (valid for 5 minutes)
@@ -69,7 +73,11 @@ const router = Router();
  *               status: fail
  *               message: Invalid 2FA code
  */
-router.post('/authenticate', validateResource(verify2FaSchema), authenticate2FaHandler);
+router.post(
+  '/authenticate',
+  validateResource(verify2FaSchema),
+  authenticate2FaHandler
+);
 
 // 2FA - Setup (Protected: You must be logged in to turn it on)
 /**
@@ -79,17 +87,17 @@ router.post('/authenticate', validateResource(verify2FaSchema), authenticate2FaH
  *     summary: Generate 2FA QR Code
  *     description: |
  *       🔒 **Protected Route** - Requires authentication
- *       
+ *
  *       Generate a new TOTP secret and QR code for setting up 2FA.
  *       Authentication is automatic via cookies (no Authorization header needed).
- *       
+ *
  *       **Setup Flow:**
  *       1. Call this endpoint (requires authentication)
  *       2. Display the QR code to the user
  *       3. User scans with authenticator app (Google Authenticator, Authy, etc.)
  *       4. User enters the 6-digit code from the app
  *       5. Call POST /auth/2fa/turn-on to verify and enable 2FA
- *       
+ *
  *       **Note:** The secret is temporarily stored and must be verified within the session.
  *     security:
  *       - cookieAuth: []
@@ -123,14 +131,14 @@ router.post('/generate', requireUser, generate2FaHandler);
  *     summary: Enable 2FA
  *     description: |
  *       🔒 **Protected Route** - Requires authentication
- *       
+ *
  *       Verify the OTP code from the authenticator app and enable 2FA for the account.
  *       Authentication is automatic via cookies (no Authorization header needed).
- *       
+ *
  *       **Prerequisites:**
  *       - Must be authenticated
  *       - Must have called POST /auth/2fa/generate to get a pending secret
- *       
+ *
  *       **After enabling:**
  *       - All future logins will require 2FA verification
  *       - The secret is permanently stored in the database
@@ -173,7 +181,12 @@ router.post('/generate', requireUser, generate2FaHandler);
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
-router.post('/turn-on', requireUser, validateResource(twoFaSchema), turnOn2FaHandler);
+router.post(
+  '/turn-on',
+  requireUser,
+  validateResource(twoFaSchema),
+  turnOn2FaHandler
+);
 
 /**
  * @swagger
@@ -182,14 +195,14 @@ router.post('/turn-on', requireUser, validateResource(twoFaSchema), turnOn2FaHan
  *     summary: Disable 2FA
  *     description: |
  *       🔒 **Protected Route** - Requires authentication
- *       
+ *
  *       Disable two-factor authentication for the account.
  *       Authentication is automatic via cookies (no Authorization header needed).
- *       
+ *
  *       **Security Requirements:**
  *       - Must be authenticated
  *       - Must provide account password for verification
- *       
+ *
  *       **After disabling:**
  *       - Future logins will NOT require 2FA
  *       - The 2FA secret is deleted from the database
@@ -233,6 +246,11 @@ router.post('/turn-on', requireUser, validateResource(twoFaSchema), turnOn2FaHan
  *               status: fail
  *               message: Invalid password
  */
-router.post('/turn-off', requireUser, validateResource(turnOff2FaSchema), turnOff2FaHandler);
+router.post(
+  '/turn-off',
+  requireUser,
+  validateResource(turnOff2FaSchema),
+  turnOff2FaHandler
+);
 
 export default router;

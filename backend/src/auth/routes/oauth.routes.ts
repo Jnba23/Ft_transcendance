@@ -31,7 +31,7 @@ router.get(
  *     description: |
  *       Google redirects here after user authentication.
  *       On success, sets JWT tokens in HTTP-only cookies and redirects to frontend.
- *       
+ *
  *       **Cookies Set:**
  *       - accessToken (expires in 15 min)
  *       - refreshToken (expires in 3 days)

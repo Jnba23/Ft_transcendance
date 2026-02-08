@@ -23,7 +23,7 @@ const router = Router();
  *     summary: Register a new user
  *     description: |
  *       Create a new user account. Access and refresh tokens are automatically set in HTTP-only cookies.
- *       
+ *
  *       **Cookies Set:**
  *       - accessToken (expires in 15 min)
  *       - refreshToken (expires in 3 days)
@@ -70,11 +70,11 @@ router.post('/signup', validateResource(signupSchema), signupHandler);
  *     summary: Log in a user
  *     description: |
  *       Authenticate a user with email and password.
- *       
+ *
  *       **Normal flow:** Tokens set in HTTP-only cookies automatically
- *       
+ *
  *       **2FA enabled:** Returns a temporary token. Use POST /auth/2fa/authenticate to complete login.
- *       
+ *
  *       **Cookies Set (if 2FA disabled):**
  *       - accessToken (expires in 15 min)
  *       - refreshToken (expires in 3 days)
@@ -136,9 +136,9 @@ router.post('/login', validateResource(loginSchema), loginHandler);
  *     summary: Refresh access token
  *     description: |
  *       Get a new access token using the refresh token from cookies.
- *       
+ *
  *       **Cookie Required:** refreshToken (sent automatically by browser)
- *       
+ *
  *       **Cookie Updated:** accessToken (new token set in cookie)
  *     tags: [Auth]
  *     responses:
@@ -165,7 +165,11 @@ router.post('/login', validateResource(loginSchema), loginHandler);
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
-router.post('/refresh', validateResource(refreshSchema), refreshAccessTokenHandler);
+router.post(
+  '/refresh',
+  validateResource(refreshSchema),
+  refreshAccessTokenHandler
+);
 
 // Logout
 /**
@@ -175,9 +179,9 @@ router.post('/refresh', validateResource(refreshSchema), refreshAccessTokenHandl
  *     summary: Logout user
  *     description: |
  *       Blacklist both access and refresh tokens and clear cookies.
- *       
+ *
  *       **Cookies Used:** accessToken and refreshToken (sent automatically)
- *       
+ *
  *       **Actions:**
  *       - Tokens added to blacklist database
  *       - Cookies cleared from browser

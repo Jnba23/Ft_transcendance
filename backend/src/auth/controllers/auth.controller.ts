@@ -7,7 +7,6 @@ import { signJwt, verifyJwt } from '../../utils/jwt.js';
 import { config } from '../config/index.js';
 import { User } from '../types.js';
 import type { JwtPayload } from 'jsonwebtoken';
-import passport from 'passport';
 
 const cookieOptions = {
   httpOnly: true,
@@ -23,11 +22,12 @@ const accessTokenCookieOptions = {
 
 const refreshTokenCookieOptions = {
   ...cookieOptions,
+  path: '/api/auth/refresh',
   maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
 };
 
 export const signupHandler = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const { username, email, password } = req.body;
     const db = getDb();
 
@@ -96,7 +96,11 @@ export const loginHandler = catchAsync(
       .get(identifier, identifier) as User | undefined;
 
     // Check if user exists and has a password (oauth users might not have one)
-    if (!user || !user.password_hash || !(await verifyPassword(password, user.password_hash))) {
+    if (
+      !user ||
+      !user.password_hash ||
+      !(await verifyPassword(password, user.password_hash))
+    ) {
       return next(new AppError('Invalid email/username or password', 401));
     }
 
@@ -216,7 +220,7 @@ export const logoutHandler = catchAsync(async (req: Request, res: Response) => {
 
   // Clear cookies
   res.clearCookie('accessToken', { path: '/' });
-  res.clearCookie('refreshToken', { path: '/' });
+  res.clearCookie('refreshToken', { path: '/api/auth/refresh' });
 
   res.status(200).json({
     status: 'success',
