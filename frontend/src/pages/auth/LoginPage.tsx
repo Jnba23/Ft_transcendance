@@ -205,7 +205,7 @@ function LoginPage(): React.JSX.Element {
         {/* Footer */}
         <div className="mt-8 text-center">
           <p className="text-sm text-white/60">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link
               to="/signup"
               className="font-medium text-[#0d59f2] hover:underline"

@@ -24,8 +24,6 @@ function SignupPage(): React.JSX.Element {
 
   const onSignUpSubmit = async (data: SignupFormData) => {
     try {
-      console.log('Form Data:', data);
-
       await authAPI.signup(data);
 
       // Success! Redirect the user (Auto-login)
