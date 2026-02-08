@@ -79,11 +79,7 @@ function LoginPage(): React.JSX.Element {
       <div className="w-full max-w-md bg-[#16213E]/50 border border-white/10 rounded-xl shadow-2xl p-8">
         {/* Logo & Header */}
         <div className="text-center mb-8">
-          <img
-            src={logo}
-            alt="logo"
-            className="w-24 h-24 mx-auto mb-6"
-          />
+          <img src={logo} alt="logo" className="w-24 h-24 mx-auto mb-6" />
           <h1 className="text-3xl font-bold text-white tracking-tight">
             Welcome Back!
           </h1>
