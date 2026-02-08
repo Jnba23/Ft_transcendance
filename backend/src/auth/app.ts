@@ -32,11 +32,11 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
   const safeBody =
     req.body && typeof req.body === 'object'
       ? Object.fromEntries(
-          Object.entries(req.body).map(([key, value]) => [
-            key,
-            redactKeys.has(key) ? '[REDACTED]' : value,
-          ])
-        )
+        Object.entries(req.body).map(([key, value]) => [
+          key,
+          redactKeys.has(key) ? '[REDACTED]' : value,
+        ])
+      )
       : req.body;
 
   // eslint-disable-next-line no-console

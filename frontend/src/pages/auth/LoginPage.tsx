@@ -8,7 +8,7 @@ import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import logo from '@assets/logo.png'
+import logo from '@assets/logo.png';
 
 function LoginPage(): React.JSX.Element {
   const navigate = useNavigate();

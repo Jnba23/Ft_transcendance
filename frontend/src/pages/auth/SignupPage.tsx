@@ -7,7 +7,7 @@ import { EyeIcon, EyeOffIcon } from '../../components/icons/EyeIcons';
 import { signupSchema, type SignupFormData } from '../../schemas/auth.schema';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import logo from '@assets/logo.png'
+import logo from '@assets/logo.png';
 
 function SignupPage(): React.JSX.Element {
   const navigate = useNavigate();
