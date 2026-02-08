@@ -7,6 +7,7 @@ import { EyeIcon, EyeOffIcon } from '../../components/icons/EyeIcons';
 import { signupSchema, type SignupFormData } from '../../schemas/auth.schema';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
+import logo from '@assets/logo.png'
 
 function SignupPage(): React.JSX.Element {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ function SignupPage(): React.JSX.Element {
         <div className="text-center mb-8">
           <img
             alt="logo"
-            src="/logos/logo.png"
+            src={logo}
             className="w-24 h-24 mx-auto mb-6"
           />
           <h1 className="text-3xl font-bold text-white tracking-tight">

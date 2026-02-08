@@ -19,7 +19,7 @@ function App() {
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
-             {/* Wrap protected pages in the Sidebar/Navbar Layout */}
+            {/* Wrap protected pages in the Sidebar/Navbar Layout */}
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />

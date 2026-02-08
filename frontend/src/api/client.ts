@@ -8,13 +8,6 @@ export const client = axios.create({
   },
 });
 
-// Add token to every request (if you decide to store it in localStorage)
-// Note: Your backend seems to use cookies for main tokens, but 2FA tempToken might need handling if passed in headers?
-// Based on swagger, 2FA temp token is in body.
-// Main auth tokens are in cookies (HttpOnly).
-// So probably don't need to manually attach Bearer token for main auth.
-// But we might need 'withCredentials: true' for cookies to be sent.
-
 client.defaults.withCredentials = true;
 
 // Handle errors

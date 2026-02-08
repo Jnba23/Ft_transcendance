@@ -47,13 +47,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Listen for axios interceptor logout events
     const handleLogoutTrace = () => {
-        setUser(null);
+      setUser(null);
     };
 
     window.addEventListener('auth:logout', handleLogoutTrace);
 
     return () => {
-        window.removeEventListener('auth:logout', handleLogoutTrace);
+      window.removeEventListener('auth:logout', handleLogoutTrace);
     };
   }, []);
 

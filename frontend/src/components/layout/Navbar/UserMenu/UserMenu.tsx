@@ -12,7 +12,6 @@ function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
 
   const handleLogout = async () => {
     await logout();
-    hide();
   };
 
   return (

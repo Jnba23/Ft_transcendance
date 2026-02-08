@@ -8,6 +8,7 @@ import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import logo from '@assets/logo.png'
 
 function LoginPage(): React.JSX.Element {
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ function LoginPage(): React.JSX.Element {
         {/* Logo & Header */}
         <div className="text-center mb-8">
           <img
-            src="/logos/logo.png"
+            src={logo}
             alt="logo"
             className="w-24 h-24 mx-auto mb-6"
           />
