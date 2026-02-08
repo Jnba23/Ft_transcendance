@@ -95,7 +95,8 @@ export const loginHandler = catchAsync(
       .prepare('SELECT * FROM users WHERE email = ? OR username = ?')
       .get(identifier, identifier) as User | undefined;
 
-    if (!user || !(await verifyPassword(password, user.password_hash))) {
+    // Check if user exists and has a password (oauth users might not have one)
+    if (!user || !user.password_hash || !(await verifyPassword(password, user.password_hash))) {
       return next(new AppError('Invalid email/username or password', 401));
     }
 
