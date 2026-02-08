@@ -7,6 +7,7 @@ import { signJwt, verifyJwt } from '../../utils/jwt.js';
 import { config } from '../config/index.js';
 import { User } from '../types.js';
 import type { JwtPayload } from 'jsonwebtoken';
+import passport from 'passport';
 
 const cookieOptions = {
   httpOnly: true,
@@ -31,19 +32,24 @@ export const signupHandler = catchAsync(
     const db = getDb();
 
     const existingUser = db
-      .prepare('SELECT id FROM users WHERE email = ? OR username = ?')
-      .get(email, username);
+      .prepare(
+        'SELECT id, email, username FROM users WHERE email = ? OR username = ?'
+      )
+      .get(email, username) as User | undefined;
     if (existingUser) {
-      return next(
-        new AppError('User with that email or username already exists', 409)
-      );
+      if (existingUser.email === email) {
+        throw new AppError('Email is already taken', 409);
+      }
+      if (existingUser.username === username) {
+        throw new AppError('Username is already taken', 409);
+      }
     }
 
     const passwordHash = await hashPassword(password);
 
     const stmt = db.prepare(`
-    INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)
-  `);
+		INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)
+	`);
     const info = stmt.run(username, email, passwordHash);
 
     const user = db
@@ -81,16 +87,16 @@ export const signupHandler = catchAsync(
 
 export const loginHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body;
 
     const db = getDb();
 
     const user = db
-      .prepare('SELECT * FROM users WHERE email = ?')
-      .get(email) as User | undefined;
+      .prepare('SELECT * FROM users WHERE email = ? OR username = ?')
+      .get(identifier, identifier) as User | undefined;
 
     if (!user || !(await verifyPassword(password, user.password_hash))) {
-      return next(new AppError('Invalid email or password', 401));
+      return next(new AppError('Invalid email/username or password', 401));
     }
 
     if (user.is_2fa_enabled) {
@@ -103,7 +109,7 @@ export const loginHandler = catchAsync(
         status: 'success',
         message: '2Fa required',
         action_required: '2fa_auth',
-        tempToken // Frontend/Postman must send this back with the code
+        tempToken, // Frontend/Postman must send this back with the code
       });
     }
 
@@ -122,7 +128,7 @@ export const loginHandler = catchAsync(
 
     res.status(200).json({
       status: 'success',
-      message: 'Logged in successfully'
+      message: 'Logged in successfully',
     });
   }
 );
@@ -157,8 +163,8 @@ export const refreshAccessTokenHandler = catchAsync(
     }
 
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as
-    | User
-    | undefined;
+      | User
+      | undefined;
 
     if (!user) {
       return next(new AppError('User not found', 401));
@@ -173,7 +179,7 @@ export const refreshAccessTokenHandler = catchAsync(
 
     res.status(200).json({
       status: 'success',
-      message: 'Token refreshed'
+      message: 'Token refreshed',
     });
   }
 );

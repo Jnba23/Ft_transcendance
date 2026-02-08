@@ -34,8 +34,8 @@ main (production-ready code)
 1. **Always work on your assigned feature branch**
 2. **Keep your branch updated with develop:**
    ```bash
+   git pull origin develop
    git checkout feature/<your-feature>
-   git fetch origin
    git merge origin/develop
    ```
 

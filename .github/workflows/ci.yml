@@ -4,7 +4,7 @@ on:
   push:
     branches: [ develop, main ]
   pull_request:
-    branches: [ develo, main ]
+    branches: [ develop, main ]
 jobs:
   test-backend:
     runs-on: ubuntu-latest

@@ -28,8 +28,8 @@
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "semi": ["error", "always"],
-    "quotes": ["error", "single"],
-    "indent": ["error", 2],
+    "quotes": ["error", "single", { "avoidEscape": true }],
+    "indent": ["error", 2, { "SwitchCase": 1 }],
     "no-console": "warn"
   },
   "settings": {

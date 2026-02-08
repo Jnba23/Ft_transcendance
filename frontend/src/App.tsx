@@ -1,21 +1,22 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './pages/auth/LoginPage';
-import SignupPage from './pages/auth/SignupPage';
-import DashboardPage from './pages/DashboardPage';
-import GamePage from './pages/game/GamePage';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from '@components/layout/Layout';
+import LoginPage from '@pages/auth/LoginPage';
+import Dashboard from '@pages/dashboard/Dashboard';
+import Profile from '@pages/profile/Profile';
+import GamePage from '@pages/game/GamePage';
 
-function App(): JSX.Element {
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/game" element={<GamePage />} />
+        <Route element={<Layout />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/game" element={<GamePage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
 }
-
 export default App;
