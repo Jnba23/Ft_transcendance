@@ -7,7 +7,11 @@ CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
+    password_hash TEXT,
+
+    -- OAuth
+    google_id TEXT UNIQUE,
+
     avatar_url TEXT DEFAULT '/default-avatar.png',
     level INTEGER DEFAULT 1,          -- New: Player level (e.g. Lv. 24)
     is_2fa_enabled BOOLEAN DEFAULT 0,
@@ -26,20 +30,6 @@ CREATE TABLE IF NOT EXISTS users (
     win_streak INTEGER DEFAULT 0,     -- New: Track consecutive wins
     
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- OAuth Accounts
-CREATE TABLE IF NOT EXISTS oauth_accounts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    provider TEXT NOT NULL CHECK(provider IN ('42', 'google', 'github')),
-    provider_user_id TEXT NOT NULL,
-    access_token TEXT,
-    refresh_token TEXT,
-    expires_at DATETIME,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE(provider, provider_user_id)
 );
 
 -- Token Blacklist (for server-side logout)
@@ -86,16 +76,16 @@ CREATE TABLE IF NOT EXISTS tournament_participants (
 );
 
 -- Friends system
-CREATE TABLE IF NOT EXISTS friends (
+CREATE TABLE IF NOT EXISTS friendship (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    friend_id INTEGER NOT NULL,
+    user_id_1 INTEGER NOT NULL,
+    user_id_2 INTEGER NOT NULL,
     status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'accepted')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE(user_id, friend_id),
-    CHECK(user_id != friend_id)
+    FOREIGN KEY (user_id_1) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id_2) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE(user_id_1, user_id_2),
+    CHECK(user_id_1 != user_id_2)
 );
 
 -- Games table
@@ -161,9 +151,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
-
--- OAuth indexes
-CREATE INDEX IF NOT EXISTS idx_oauth_user_id ON oauth_accounts(user_id);
+CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
 
 -- Matchmaking indexes
 CREATE INDEX IF NOT EXISTS idx_matchmaking_status ON matchmaking_queue(status);
@@ -175,8 +163,8 @@ CREATE INDEX IF NOT EXISTS idx_tournament_participants_tournament ON tournament_
 CREATE INDEX IF NOT EXISTS idx_tournament_participants_user ON tournament_participants(user_id);
 
 -- Friends indexes
-CREATE INDEX IF NOT EXISTS idx_friends_user_id ON friends(user_id);
-CREATE INDEX IF NOT EXISTS idx_friends_friend_id ON friends(friend_id);
+CREATE INDEX IF NOT EXISTS idx_friendship_user_id_1 ON friendship(user_id_1);
+CREATE INDEX IF NOT EXISTS idx_friendship_user_id_2 ON friendship(user_id_2);
 
 -- Games indexes
 CREATE INDEX IF NOT EXISTS idx_games_player1 ON games(player1_id);

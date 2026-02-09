@@ -5,7 +5,13 @@ import { AppError } from '../../utils/AppError.js';
 import { User } from '../types.js';
 
 const sanitizeUser = (user: User) => {
-  const { password_hash, two_fa_secret, ...safeUser } = user;
+  const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    password_hash: _password_hash,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    two_fa_secret: _two_fa_secret,
+    ...safeUser
+  } = user;
 
   return safeUser;
 };

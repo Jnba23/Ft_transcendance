@@ -22,6 +22,7 @@ export function initDatabase(): SQLiteDatabase {
   const schema = fs.readFileSync(schemaPath, 'utf-8');
   db.exec(schema);
 
+  // eslint-disable-next-line no-console
   console.log('✅ Database initialized');
   return db;
 }
@@ -37,6 +38,7 @@ export function closeDb(): void {
   if (db) {
     db.close();
     db = null;
+    // eslint-disable-next-line no-console
     console.log('Database connection closed');
   }
 }
