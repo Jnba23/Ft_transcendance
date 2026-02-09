@@ -74,6 +74,12 @@ export const mockSentRequests: FriendRequest[] = [
     user_id_2: 42,
     createdAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
   },
+  {
+    id: 102,
+    user_id_1: 1,
+    user_id_2: 43,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+  },
 ];
 
 export const mockReceivedRequests: FriendRequest[] = [
@@ -86,6 +92,12 @@ export const mockReceivedRequests: FriendRequest[] = [
   {
     id: 202,
     user_id_1: 88,
+    user_id_2: 1,
+    createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+  },
+  {
+    id: 203,
+    user_id_1: 99,
     user_id_2: 1,
     createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
   },
