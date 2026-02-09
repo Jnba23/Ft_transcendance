@@ -11,8 +11,8 @@ function FriendReqList({ reqType }: FriendReqListProps) {
 	const removeSent = useFriendRequestsStore((state) => state.removeSent);
 
 	return (
-		<div> {/* Friend Requests List container */}
-			<div>
+		<div className="h-48 overflow-y-auto custom-scrollbar">
+			<div className="flex flex-col gap-3">
 				{
 					requests.map(req => {
 						return (
