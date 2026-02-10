@@ -1,9 +1,8 @@
-// we can work with zustand to fetch the data of the user as well
 import { create } from "zustand";
+import axios from "axios";
 import { FriendRequest } from "types/friendRequest";
 import { mockSentRequests } from "@utils/data";
 import { mockReceivedRequests } from "@utils/data";
-import axios from "axios";
 
 interface FriendRequestsState {
 	sent: FriendRequest[];
