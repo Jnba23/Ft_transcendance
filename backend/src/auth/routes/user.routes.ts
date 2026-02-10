@@ -4,9 +4,13 @@ import {
   getCurrentUserHandler,
   getUserbyIdHandler,
   updateUserHandler,
+  updateUserStatusHandler,
 } from '../controllers/user.controller.js';
 import { requireUser } from '../../middleware/requireUser.js';
-import { updateUserSchema } from '../schemas/user.schema.js';
+import {
+  updateUserSchema,
+  updateStatusSchema,
+} from '../schemas/user.schema.js';
 import { validateResource } from '../../middleware/validateResource.js';
 
 const router = Router();
@@ -206,6 +210,34 @@ router.get('/', getAllUsersHandler); // Simplified list
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
-router.get('/:id', getUserbyIdHandler); // Get by ID
+router.get('/:id', getUserbyIdHandler);
+
+// ... inside the Protected Routes section
+/**
+ * @swagger
+ * /users/status:
+ *   patch:
+ *     summary: Update user online status
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [online, offline, in_game]
+ *     responses:
+ *       200:
+ *         description: Status updated
+ */
+router.patch(
+  '/status',
+  requireUser,
+  validateResource(updateStatusSchema),
+  updateUserStatusHandler
+);
 
 export default router;

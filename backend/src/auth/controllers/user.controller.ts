@@ -119,3 +119,21 @@ export const updateUserHandler = catchAsync(
     });
   }
 );
+
+export const updateUserStatusHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { status } = req.body;
+    const currentUser = res.locals.user as User;
+    const db = getDb();
+
+    db.prepare('UPDATE users SET status = ? WHERE id = ?').run(
+      status,
+      currentUser.id
+    );
+
+    res.status(200).json({
+      status: 'success',
+      data: { status },
+    });
+  }
+);
