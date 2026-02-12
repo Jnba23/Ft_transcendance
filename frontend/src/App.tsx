@@ -12,7 +12,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:id" element={<Profile />} />
           <Route path="/game" element={<GamePage />} />
         </Route>
       </Routes>
