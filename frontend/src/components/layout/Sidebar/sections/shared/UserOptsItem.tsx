@@ -1,9 +1,10 @@
 type UserOptsItemProps = {
   icon: string;
   label: string;
+  onClick: () => void
 };
 
-function UserOptsItem({ icon, label }: UserOptsItemProps) {
+function UserOptsItem({ icon, label, onClick }: UserOptsItemProps) { 
   return (
     <button
       className={[
@@ -11,7 +12,7 @@ function UserOptsItem({ icon, label }: UserOptsItemProps) {
         'flex gap-2 items-center',
         'px-2 py-1.5 rounded-md',
         'hover:bg-white/10 hover:text-white duration-0',
-      ].join(' ')}
+      ].join(' ')} onClick={onClick}
     >
       <span className="material-symbols-outlined !text-sm">{icon}</span>
       <span>{label}</span>
