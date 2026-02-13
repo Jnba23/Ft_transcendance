@@ -14,7 +14,7 @@ function NoMessages({ username }: NoMessagesProps) {
 					</div>
 				</div>
 				<div>
-					<h4 className='text-white text-xl font-bold mb-2'>No message yet.</h4>
+					<h4 className='text-white text-xl font-bold mb-2'>No messages yet.</h4>
 					<p className='text-[#A0A6BD] text-sm leading-relaxed'>Say hi to {username} to start the conversation!</p>
 				</div>
 			</div>
