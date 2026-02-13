@@ -1,19 +1,21 @@
 import { useRef } from 'react';
-import type { User } from '@utils/types.ts';
+import { useChatStore } from '@stores/chat.store';
 import useClickOutside from '@hooks/useClickOutside';
 import getTransitionClasses from '@utils/transitionStyles';
 import ChatHeader from './Header/ChatHeader';
 import Conversation from './Conversation/Conversation';
 import ChatFooter from './Footer/ChatFooter';
+//remove later
+import girl from '@assets/girl.jpg'
 
 type ChatProps = {
-  user: User;
   isOpen: boolean;
   hide: () => void;
 };
 
-function Chat({ user, hide, isOpen }: ChatProps) {
+function Chat({ hide, isOpen }: ChatProps) {
   const chatRef = useRef<HTMLDivElement>(null);
+  const {user, messages} = useChatStore((state) => state);
 
   useClickOutside(isOpen, hide, [chatRef]);
 
@@ -37,8 +39,8 @@ function Chat({ user, hide, isOpen }: ChatProps) {
         ].join(' ')}
         ref={chatRef}
       >
-        <ChatHeader user={user} hide={hide} />
-        <Conversation avatar={user.avatar} messages={user.interaction} />
+        <ChatHeader user={user!} hide={hide} />
+        <Conversation avatar={girl} messages={messages} />
         <ChatFooter />
       </div>
     </>
