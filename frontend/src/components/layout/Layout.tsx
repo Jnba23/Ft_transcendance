@@ -1,8 +1,12 @@
+import useAppHydration from '@hooks/useAppHydration';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar/Navbar';
 import Sidebar from './Sidebar/Sidebar';
 
 function Layout() {
+
+  useAppHydration();
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
