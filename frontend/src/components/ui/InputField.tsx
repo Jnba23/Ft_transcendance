@@ -1,9 +1,12 @@
 type InputFieldProps = {
   placeholder: string;
   icon?: string;
+  value: string,
+  setInputVal: (value: string) => void
 };
 
-function InputField({ placeholder, icon }: InputFieldProps) {
+function InputField({ placeholder, icon, value, setInputVal}: InputFieldProps) {
+
   return (
     <div className="text-white relative w-full">
       <span
@@ -25,6 +28,8 @@ function InputField({ placeholder, icon }: InputFieldProps) {
           'focus:border-primary focus:outline-none',
           'focus:ring-primary focus:ring-1 ',
         ].join(' ')}
+        value={value}
+        onChange={(e) => setInputVal(e.target.value)}
       />
     </div>
   );
