@@ -15,8 +15,7 @@
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "types": ["node"]
+    "strict": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
