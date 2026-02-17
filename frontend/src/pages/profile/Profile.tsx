@@ -1,5 +1,9 @@
+import { useParams } from 'react-router'
+
 function Profile() {
-  return <div>Profile</div>;
+  const { id } = useParams();
+
+  return <div className='text-white text-xl'>{id}</div>;
 }
 
 export default Profile;
