@@ -25,13 +25,13 @@ const messages = [
   },
   {
     id: '3',
-    message: 'Sorry I can\'t. I just remembered I have to walk my dog.',
+    message: "Sorry I can't. I just remembered I have to walk my dog.",
     time: '10:40 pm',
     isSent: true,
   },
   {
     id: '4',
-    message: 'It\'s fine. We can do it another time.',
+    message: "It's fine. We can do it another time.",
     time: '10:41 pm',
     isSent: false,
   },

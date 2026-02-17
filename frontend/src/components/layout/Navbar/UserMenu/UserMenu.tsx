@@ -3,11 +3,16 @@ import useClickOutside from '@hooks/useClickOutside';
 import type { headerMenuProps } from '@utils/types';
 import UserMenuItem from './UserMenuItem';
 import getTransitionClasses from '@utils/transitionStyles';
+import { useAuth } from '../../../../context/AuthContext';
 
 function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
   const userMenuRef = useRef<HTMLDivElement>(null);
-
+  const { logout } = useAuth();
   useClickOutside(isOpen, hide, [buttonRef, userMenuRef]);
+
+  const handleLogout = async () => {
+    await logout();
+  };
 
   return (
     <div
@@ -23,7 +28,12 @@ function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
         <UserMenuItem icon="person" label="Profile" />
         <UserMenuItem icon="settings" label="Settings" />
         <div className="my-1 h-px bg-white/10"></div>
-        <UserMenuItem icon="logout" label="Logout" color="red" />
+        <UserMenuItem
+          icon="logout"
+          label="Logout"
+          color="red"
+          onClick={handleLogout}
+        />
       </div>
     </div>
   );

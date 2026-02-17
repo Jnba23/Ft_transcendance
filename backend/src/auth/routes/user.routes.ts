@@ -19,7 +19,7 @@ const router = Router();
  *     summary: Get current logged-in user
  *     description: |
  *       🔒 **Protected Route** - Requires authentication
- *       
+ *
  *       Retrieve detailed profile information for the authenticated user.
  *       Authentication is automatic via cookies (no Authorization header needed).
  *     security:
@@ -62,7 +62,7 @@ router.get('/me', requireUser, getCurrentUserHandler);
  *     summary: Update current user profile
  *     description: |
  *       🔒 **Protected Route** - Requires authentication
- *       
+ *
  *       Update username or avatar URL for the authenticated user.
  *       Authentication is automatic via cookies (no Authorization header needed).
  *     security:
@@ -115,7 +115,12 @@ router.get('/me', requireUser, getCurrentUserHandler);
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
-router.patch('/me', requireUser, validateResource(updateUserSchema), updateUserHandler);
+router.patch(
+  '/me',
+  requireUser,
+  validateResource(updateUserSchema),
+  updateUserHandler
+);
 
 // Public Routes
 /**

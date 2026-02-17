@@ -26,8 +26,8 @@ import { z } from 'zod';
  *         password:
  *           type: string
  *           format: password
- *           minLength: 6
- *           description: Password (minimum 6 characters)
+ *           minLength: 8
+ *           description: Password (minimum 8 characters)
  *           example: securePass123
  *         confirmPassword:
  *           type: string
@@ -37,14 +37,13 @@ import { z } from 'zod';
  *     LoginReq:
  *       type: object
  *       required:
- *         - email
+ *         - identifier
  *         - password
  *       properties:
- *         email:
+ *         identifier:
  *           type: string
- *           format: email
- *           description: Registered email address
- *           example: john@example.com
+ *           description: Registered email address or username
+ *           example: john@example.com or johndoe
  *         password:
  *           type: string
  *           format: password
@@ -149,7 +148,14 @@ export const signupSchema = z.object({
         .min(4, 'Username must be at least 4 characters')
         .max(30),
       email: z.string().email('Invalid email address'),
-      password: z.string().min(6, 'Password must be at least 6 characters'),
+      password: z
+        .string()
+        .min(8, 'Password must be at least 8 characters')
+        .regex(/[0-9]/, 'Password must contain at least 1 number')
+        .regex(
+          /[^a-zA-Z0-9]/,
+          'Password must contain at least 1 special character'
+        ),
       confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -160,7 +166,7 @@ export const signupSchema = z.object({
 
 export const loginSchema = z.object({
   body: z.object({
-    email: z.string().email('Invalid email address'),
+    identifier: z.string().min(1, 'Email or Username is required'),
     password: z.string().min(1, 'Password is required'),
   }),
 });
