@@ -13,6 +13,7 @@
       "@assets/*": ["assets/*"],
       "@ui/*": ["components/ui/*"],
       "@stores/*": ["stores/*"],
+      "@services/*": ["services/*"],
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
