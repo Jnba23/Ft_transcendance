@@ -3,36 +3,44 @@ import UserBadge from "@components/ui/UserBadge";
 import UserOptions from "../shared/UserOptions";
 import girl from '@assets/girl.jpg';
 import { useChatStore } from "@stores/chat.store";
-import { useRef, useState } from "react";
+import { useRef } from "react";
+import { useDirectMessagesStore } from "@stores/directMessages.store";
 
 type DMListItemProps  = {
   convo: Conversation,
-	openChat: () => void,
   hasOpenOpts: boolean,
   openOptions: () => void
 }
 
 function DMListItem({
   convo,
-  openChat,
   hasOpenOpts,
   openOptions
 }: DMListItemProps) {
 
-  const [isConvoRead, setIsConvoRead] = useState(!convo.unread_count);
-  const markConvoRead = () => setIsConvoRead(true);
+  const isConvoRead = !convo.unread_count;
 
 	const status = "online"; //remove later
   const optsBtnRef = useRef<HTMLButtonElement | null>(null);
 
+  const replaceConversation = useDirectMessagesStore((state) => 
+    state.replaceConversation
+  );
+
+  const openChat = useChatStore((state) => state.openChat);
   const update = useChatStore((state) => state.update);
   const updateChat = (e: React.MouseEvent<HTMLDivElement>) => {
     const isOptsBtnClick = optsBtnRef.current?.contains(e.target as Node);
 
     if (isOptsBtnClick) return;
   
+    const markConvoRead = (convo: Conversation) => {
+      convo.unread_count = 0;
+      replaceConversation(convo);
+    }
+
     openChat();
-    update(convo, markConvoRead);
+    update(convo, convo.user, markConvoRead);
   }
 
 	return (
@@ -61,7 +69,7 @@ function DMListItem({
               'text-white/40',
               'hover:text-white hover:bg-white/10',
             ].join(' ')}
-            onClick={() => true && openOptions()}
+            onClick={openOptions}
             ref={optsBtnRef}
           >
             <span className="material-symbols-outlined !text-base">
