@@ -6,20 +6,14 @@ import { useMemo, useState } from 'react';
 
 type DirectMessagesProps = {
   switchSection: () => void;
-  openChat: () => void;
 };
 
-function DirectMessages({
-  switchSection,
-  openChat,
-}: DirectMessagesProps) {
+function DirectMessages({ switchSection }: DirectMessagesProps) {
 
   const [query, setQuery] = useState('');
   const setInput = (value: string) => setQuery(value);
-  
-  const conversations = useDirectMessagesStore(
-    (state) => state.conversations
-  );
+
+  const conversations = useDirectMessagesStore((state) => state.conversations);
   const filtered = useMemo(() => {
     if (!query) return conversations;
 
@@ -36,7 +30,7 @@ function DirectMessages({
         switchSection={switchSection}
       />
       <InputField placeholder="Find a friend" icon="search" value={query} setInputVal={setInput}/>
-      <DMList conversations={filtered} openChat={openChat}/>
+      <DMList conversations={filtered} isSearching={Boolean(query)} />
     </div>
   );
 }
