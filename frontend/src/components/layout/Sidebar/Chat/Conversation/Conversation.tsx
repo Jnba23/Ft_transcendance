@@ -1,14 +1,15 @@
-import type { Message } from 'types/message';
 import Msg from './Msg';
 import NoMessages from './NoMessages';
+import { useRef } from 'react';
+import { useChatStore } from '@stores/chat.store';
 
 type ConversationProps = {
   username: string,
   avatar: string;
-  messages: Message[];
 };
 
-function Conversation({ username, avatar, messages }: ConversationProps) {
+function Conversation({ username, avatar }: ConversationProps) {
+  const {messages} = useChatStore((state) => state);
 
   if (!messages.length) {
     return (
