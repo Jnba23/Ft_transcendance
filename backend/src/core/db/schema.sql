@@ -22,12 +22,9 @@ CREATE TABLE IF NOT EXISTS users (
     pong_wins INTEGER DEFAULT 0,
     pong_losses INTEGER DEFAULT 0,
     
-    -- Stats: Second Game (Chess)
-    chess_wins INTEGER DEFAULT 0,
-    chess_losses INTEGER DEFAULT 0,
-    
-    -- Stats: General
-    win_streak INTEGER DEFAULT 0,     -- New: Track consecutive wins
+    -- Stats: Second Game (RPS)
+    RPS_wins INTEGER DEFAULT 0,
+    RPS_losses INTEGER DEFAULT 0,
     
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -37,42 +34,6 @@ CREATE TABLE IF NOT EXISTS token_blacklist (
     token TEXT PRIMARY KEY,
     expires_at DATETIME NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Simple Matchmaking Queue
-CREATE TABLE IF NOT EXISTS matchmaking_queue (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    game_mode TEXT DEFAULT 'classic' CHECK(game_mode IN ('classic', 'speed')),
-    status TEXT DEFAULT 'waiting' CHECK(status IN ('waiting', 'matched', 'cancelled')),
-    joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE(user_id)
-);
-
--- Simple Tournaments
-CREATE TABLE IF NOT EXISTS tournaments (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    max_players INTEGER DEFAULT 8,
-    current_players INTEGER DEFAULT 0,
-    status TEXT DEFAULT 'registration' CHECK(status IN ('registration', 'in_progress', 'completed')),
-    winner_id INTEGER,
-    created_by INTEGER NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (winner_id) REFERENCES users(id),
-    FOREIGN KEY (created_by) REFERENCES users(id)
-);
-
--- Tournament Participants
-CREATE TABLE IF NOT EXISTS tournament_participants (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    tournament_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
-    joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE(tournament_id, user_id)
 );
 
 -- Friends system
@@ -96,31 +57,16 @@ CREATE TABLE IF NOT EXISTS games (
     winner_id INTEGER, -- NULL if draw
     player1_score INTEGER DEFAULT 0,
     player2_score INTEGER DEFAULT 0,
-    game_type TEXT DEFAULT 'pong' CHECK(game_type IN ('pong', 'chess')), -- Updated to support Chess
-    game_mode TEXT DEFAULT 'classic', -- For variations (speed, blitz, etc.)
-    tournament_id INTEGER,
-    status TEXT DEFAULT 'completed' CHECK(status IN ('pending', 'in_progress', 'completed')),
-    started_at DATETIME,
-    ended_at DATETIME,
+    game_type TEXT DEFAULT 'pong' CHECK(game_type IN ('pong', 'RPS')),
+    status TEXT DEFAULT 'completed' CHECK(status IN ('pending', 'in_progress', 'completed')), -- no pending status
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (player1_id) REFERENCES users(id),
     FOREIGN KEY (player2_id) REFERENCES users(id),
     FOREIGN KEY (winner_id) REFERENCES users(id),
-    FOREIGN KEY (tournament_id) REFERENCES tournaments(id),
     CHECK(player1_id != player2_id)
 );
 
--- Chat channels
-CREATE TABLE IF NOT EXISTS chat_channels (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    type TEXT DEFAULT 'public' CHECK(type IN ('public', 'private', 'direct')),
-    owner_id INTEGER,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (owner_id) REFERENCES users(id)
-);
-
--- Chat Channel Members
+-- Chat Channel Members // not
 CREATE TABLE IF NOT EXISTS chat_channel_members (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     channel_id INTEGER NOT NULL,
