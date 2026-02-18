@@ -15,10 +15,7 @@ function ChatFooter({ inputValue, setInputValue }: ChatFooterProps) {
     e.preventDefault();
 
     if (inputValue) {
-      const result = await addMessage(inputValue);
-
-      if (result.isNewConversation) addConversation(result.conversation);
-
+      addMessage(inputValue);
       setInputValue('');
     }
   };
