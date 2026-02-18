@@ -1,73 +1,87 @@
-import { getDb } from "../core/database.js";
+import { getDb } from '../core/database.js';
+import * as RpsTypes from '../realTimeGames/types.js';
 
 const db = getDb();
 
 export function saveCompleteGames(data: {
-	gameId: string;
-	gameType: 'pong' | 'rps';
-	player1Id: number;
-	player2Id: number;
-	player1Name: string;
-	player2Name: string;
-	winnerId: number;
-	player1Score: number;
-	player2Score: number;
-  }) : void {
-	try {
-		const transaction = db.transaction(() => {
-			const insertGame = db.prepare(`
+  gameId: string;
+  gameType: 'pong' | 'rps';
+  player1Id: number;
+  player2Id: number;
+  player1Name: string;
+  player2Name: string;
+  winnerId: number;
+  player1Score: number;
+  player2Score: number;
+}): void {
+  try {
+    const transaction = db.transaction(() => {
+      const insertGame = db.prepare(`
 				INSERT INTO games(player1Id, player2Id, winnerId, player1_score,
 				player2_score, game_type)
 				VALUES
 				(?, ?, ?, ?, ?, ?)`);
-			insertGame.run(data.player1Id, data.player2Id, data.winnerId, data.player1Score,
-				data.player2Score, data.gameType === 'rps' ? 'RPS' : 'pong');
-			const loserId = data.winnerId === data.player1Id ? data.player2Id : data.player1Id;
-			if (data.gameType === 'rps'){
-				const updateWinner = db.prepare(`
+      insertGame.run(
+        data.player1Id,
+        data.player2Id,
+        data.winnerId,
+        data.player1Score,
+        data.player2Score,
+        data.gameType === 'rps' ? 'RPS' : 'pong'
+      );
+      const loserId =
+        data.winnerId === data.player1Id ? data.player2Id : data.player1Id;
+      if (data.gameType === 'rps') {
+        const updateWinner = db.prepare(`
 					UPDATE users
 					SET 
 						RPS_wins = RPS_wins + 1
 					WHERE id = ?`);
-				updateWinner.run(data.winnerId);
-				const updateLoser = db.prepare(`
+        updateWinner.run(data.winnerId);
+        const updateLoser = db.prepare(`
 					UPDATE users
 					SET
 						RPS_losses = RPS_losses + 1
 					WHERE id = ?`);
-				updateLoser.run(loserId);
-			} else {
-				const updateWinner = db.prepare(`
+        updateLoser.run(loserId);
+      } else {
+        const updateWinner = db.prepare(`
 					UPDATE users
 					SET 
 						pong_wins = pong_wins + 1
 					WHERE id = ?`);
-				updateWinner.run(data.winnerId);
-				const updateLoser = db.prepare(`
+        updateWinner.run(data.winnerId);
+        const updateLoser = db.prepare(`
 					UPDATE users
 					SET
 						pong_losses = pong_losses + 1
 					WHERE id = ?`);
-				updateLoser.run(loserId);
-			}
-		});
-		transaction();
-	} catch(error) {
-		console.log('Failed to save game:', error);
-	}
+        updateLoser.run(loserId);
+      }
+    });
+    transaction();
+  } catch (error) {
+    console.log('Failed to save game:', error);
   }
+}
 
-  export function getUserGameHistory(userId: number, limit: number = 10): any[] {
-	const query = db.prepare(`
+export function getUserGameHistory(
+  userId: number,
+  limit: number = 10
+): RpsTypes.GameHistoryItem[] {
+  const query = db.prepare<
+    [number, number, number, number, number],
+    RpsTypes.GameHistoryItem
+  >(`
 		SELECT 
 			g.id,
-			g.game_type;
-			g.player1_id;
-			g.player2_id;
-			g.player1_score;
-			g.player2_score;
-			g.winner_id;
-			g.created_at
+			g.game_type,
+			g.player1_id,
+			g.player2_id,
+			g.player1_score,
+			g.player2_score,
+			g.winner_id,
+			g.created_at,
 			CASE
 				WHEN g.player1_id = ? THEN u2.username
 				ELSE u1.username
@@ -78,16 +92,16 @@ export function saveCompleteGames(data: {
 			END as result
 		FROM games g
 		JOIN users u1 ON g.player1_id = u1.id
-		JOIN users u2 ON g.player1_id = u2.id
+		JOIN users u2 ON g.player2_id = u2.id
 		WHERE (g.player1_id = ? OR g.player2_id = ?) AND g.status = 'completed'
 		ORDER BY g.created_at DESC
 		LIMIT ?
-		`)
-		return query.all(userId, userId, userId, userId, limit);
-  }
+		`);
+  return query.all(userId, userId, userId, userId, limit);
+}
 
-  export function getUserStats(userId: number): any {
-    const stmt = db.prepare(`
+export function getUserStats(userId: number): RpsTypes.UserStats | undefined {
+  const stmt = db.prepare<number, RpsTypes.UserStats>(`
       SELECT 
         username,
         level,
@@ -110,6 +124,5 @@ export function saveCompleteGames(data: {
       FROM users
       WHERE id = ?
     `);
-    
-    return stmt.get(userId);
-  }
+  return stmt.get(userId);
+}

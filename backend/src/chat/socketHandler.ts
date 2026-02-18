@@ -1,6 +1,3 @@
-import { io } from "../core/sockets/socketServer.js"
-import { Server } from "socket.io"
+import { Server } from 'socket.io';
 
-export const setupChatHandler = (io: Server) => {
-	
-}
+export const setupChatHandler = (io: Server) => {};
