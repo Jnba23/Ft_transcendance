@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { User } from 'types/user'
-import axios from 'axios';
+import { userAPI, UserSummaryRes } from '@api/user.api';
 
 interface UserDirectoryState {
 	users: User[],
@@ -15,8 +15,8 @@ export const useUserDirectoryStore = create<UserDirectoryState>((set) => ({
 	users: [],
 
 	initialize: async () => {
-		const usersRes = await getUsers();
-		const users: User[] = usersRes.data;
+		const response = await userAPI.getAll();
+		const users: UserSummaryRes[] = response.data.users;
 
 		set({users});
 	},
@@ -33,9 +33,3 @@ export const useUserDirectoryStore = create<UserDirectoryState>((set) => ({
 		}));
 	}
 }));
-
-async function getUsers() {
-	return (
-		axios.get('http://localhost:4950/api/users')
-	);
-}
