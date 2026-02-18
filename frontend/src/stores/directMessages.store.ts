@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { Conversation } from 'types/conversation';
-import axios from 'axios';
+import { chatApi } from '@api/chat.api';
 
 interface DirectMessagesState {
 	conversations: Conversation[],
@@ -19,8 +19,8 @@ export const useDirectMessagesStore = create<DirectMessagesState>((set, get) => 
 	conversations: [],
 
 	initialze: async () => {
-		const convosRes = await axios.get("http://localhost:4950/api/users/1/conversations"); // future take from jwt
-		const conversations = convosRes.data;
+		const data = await chatApi.getConversations();
+		const conversations = data.conversations;
 
 		set({conversations});
 	},
