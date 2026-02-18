@@ -28,8 +28,11 @@ interface GetMessagesRes {
 	messages: Message[]
 }
 
+interface MarkConversationReadRes {
+	status: boolean
+}
+
 export const chatApi = {
-	// 
 	createConversation: async (data: CreateConversationReq) => {
 		const response = await client.post<CreateConversationRes>('/conversations', data); // add path
 		return response.data;
@@ -47,6 +50,11 @@ export const chatApi = {
 
 	getMessages: async (conversation_id: number) => {
 		const response = await client.get<GetMessagesRes>(`/conversations/${conversation_id}/messages`);
+		return response.data;
+	},
+
+	markConversationRead: async (conversation_id: number) => {
+		const response = await client.post<MarkConversationReadRes>(`/conversations/${conversation_id}/read`);
 		return response.data;
 	}
 }
