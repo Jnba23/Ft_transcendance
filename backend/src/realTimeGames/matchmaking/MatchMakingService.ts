@@ -1,12 +1,11 @@
 import { GameType, MatchResult, QueueEntry } from "./types.js"
 import { randomUUID } from 'crypto'
 
-export class MatchmakingService{
-	
+class MatchmakingService{
 	private queue: Map<string, QueueEntry> = new Map();
 	public addToQueue(entry: QueueEntry): null | MatchResult {
 		this.queue.set(entry.userId.toString(), entry);
-		console.log(`Player ${entry.visitorName} was added to the ${entry.gameType}`);
+		console.log(`Player ${entry.username} was added to the ${entry.gameType}`);
 		const opponent = this.findMatch(entry);
 		if (opponent){
 			this.removeFromQueue(entry.userId.toString());
@@ -17,7 +16,7 @@ export class MatchmakingService{
 				player2: opponent,
 				gameType: entry.gameType
 			}
-			console.log(`Match found ${match.gameId}: ${entry.visitorName} vs ${opponent.visitorName}`);
+			console.log(`Match found ${match.gameId}: ${entry.username} vs ${opponent.username}`);
 			return match;
 		}
 		return null;
@@ -35,3 +34,4 @@ export class MatchmakingService{
 		return null;
 	}
 }
+export const mmServ = new MatchmakingService();

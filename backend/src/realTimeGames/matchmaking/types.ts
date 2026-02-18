@@ -1,11 +1,12 @@
+	import { Socket } from "socket.io"
 export type GameType = 'rps' | 'pong';
 
 export interface QueueEntry {
 	userId: number;
-	visitorName: string;
+	username: string;
 	gameType: GameType;
 	joinedAt: Date,
-	socketId: string;
+	socketId : string;
 }
 
 export interface MatchResult {
