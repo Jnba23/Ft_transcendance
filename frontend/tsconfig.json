@@ -4,6 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "jsx": "react-jsx",
+    "ignoreDeprecations": "6.0",
     "baseUrl": "src",
     "paths": {
       "@components/*": ["components/*"],
