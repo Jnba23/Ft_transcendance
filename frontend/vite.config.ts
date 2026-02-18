@@ -23,6 +23,8 @@ export default defineConfig({
       '@ui': path.resolve(__dirname, 'src/components/ui'),
       '@stores': path.resolve(__dirname, 'src/stores'),
       '@services': path.resolve(__dirname, 'src/services'),
+      '@context': path.resolve(__dirname, 'src/context'),
+      '@api': path.resolve(__dirname, 'src/api'),
     },
   },
 });
