@@ -5,6 +5,8 @@ import SignupPage from '@pages/auth/SignupPage';
 import Dashboard from '@pages/dashboard/Dashboard';
 import Profile from '@pages/profile/Profile';
 import GamePage from '@pages/game/GamePage';
+import StartGame from '@pages/game/StartGame';
+import MatchMaking from '@pages/game/MatchMaking';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -25,6 +27,8 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/game" element={<GamePage />} />
+              <Route path="/start_game" element={<StartGame name="Pong" />} />
+              <Route path="/match_making" element={<MatchMaking />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>
           </Route>
