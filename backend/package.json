@@ -17,8 +17,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "multer": "^1.4.5-lts.1",
-    "uuid": "^9.0.0",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.17",
     "bcrypt": "^6.0.0",
@@ -29,13 +27,13 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
+    "multer": "^1.4.5-lts.1",
     "otplib": "^12.0.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "qrcode": "^1.5.3",
     "socket.io": "^4.8.3",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
+    "uuid": "^9.0.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -47,8 +45,6 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/qrcode": "^1.5.6",
-    "@types/swagger-jsdoc": "^6.0.4",
-    "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
     "eslint": "^8.57.1",
