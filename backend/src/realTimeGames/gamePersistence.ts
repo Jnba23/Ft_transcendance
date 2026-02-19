@@ -1,8 +1,6 @@
 import { getDb } from '../core/database.js';
 import * as RpsTypes from '../realTimeGames/types.js';
 
-const db = getDb();
-
 export function saveCompleteGames(data: {
   gameId: string;
   gameType: 'pong' | 'rps';
@@ -14,6 +12,8 @@ export function saveCompleteGames(data: {
   player1Score: number;
   player2Score: number;
 }): void {
+  const db = getDb();
+
   try {
     const transaction = db.transaction(() => {
       const insertGame = db.prepare(`
@@ -69,6 +69,7 @@ export function getUserGameHistory(
   userId: number,
   limit: number = 10
 ): RpsTypes.GameHistoryItem[] {
+  const db = getDb();
   const query = db.prepare<
     [number, number, number, number, number],
     RpsTypes.GameHistoryItem
@@ -101,6 +102,7 @@ export function getUserGameHistory(
 }
 
 export function getUserStats(userId: number): RpsTypes.UserStats | undefined {
+  const db = getDb();
   const stmt = db.prepare<number, RpsTypes.UserStats>(`
       SELECT 
         username,
