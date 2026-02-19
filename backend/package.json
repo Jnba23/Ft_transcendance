@@ -33,7 +33,6 @@
     "passport-google-oauth20": "^2.0.0",
     "qrcode": "^1.5.3",
     "socket.io": "^4.8.3",
-    "uuid": "^9.0.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -44,6 +43,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.0.0",
     "@types/qrcode": "^1.5.6",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
