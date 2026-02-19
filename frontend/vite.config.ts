@@ -25,6 +25,7 @@ export default defineConfig({
       '@services': path.resolve(__dirname, 'src/services'),
       '@context': path.resolve(__dirname, 'src/context'),
       '@api': path.resolve(__dirname, 'src/api'),
+      '@realtime': path.resolve(__dirname, 'src/realtime'),
     },
   },
 });

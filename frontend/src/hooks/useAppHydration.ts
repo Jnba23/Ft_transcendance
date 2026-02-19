@@ -4,7 +4,7 @@ import { useFriendRequestsStore } from '@stores/friendRequests.store';
 import { useDirectMessagesStore } from "@stores/directMessages.store"
 import { getSocket } from '@services/socket';
 import { useAuth } from '@context/AuthContext';
-import { registerSocketEvents } from 'realtime/register';
+import { registerSocketEvents } from '@realtime/register';
 
 function useAppHydration() {
 	const { user: me } = useAuth();

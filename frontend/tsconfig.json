@@ -16,6 +16,7 @@
       "@services/*": ["services/*"],
       "@context/*": ["context/*"],
       "@api/*": ["api/*"],
+      "@realtime/*": ["realtime/*"],
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
