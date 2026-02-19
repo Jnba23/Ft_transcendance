@@ -4,7 +4,7 @@ import { setupMmHandlers } from '../../realTimeGames/matchmaking/socketHandler.j
 import { setupPongHandler } from '../../realTimeGames/game/socketHandler.js';
 import { setupRpsHandler } from '../../realTimeGames/scnd_game/socketHandler.js';
 import { setupChatHandler } from '../../chat/socketHandler.js';
-import { config } from '../../auth/config/index.js';
+import { config } from '../../config/index.js';
 
 export let io: Server;
 

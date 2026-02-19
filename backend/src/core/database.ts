@@ -13,7 +13,7 @@ export function initDatabase(): SQLiteDatabase {
   if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
   }
-
+  
   const dbPath = path.join(dbDir, 'app.db');
   db = new Database(dbPath);
   db.pragma('foreign_keys = ON');
