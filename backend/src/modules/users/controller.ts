@@ -61,13 +61,13 @@ const deleteFile = async (filePath: string): Promise<void> => {
   }
 };
 
-const DEFAULT_AVATR = 'uploads/default-avatar.png';
+const DEFAULT_AVATAR = 'uploads/default-avatar.png';
 
 const isDeletableAvatar = (avatarUrl: string | null | undefined): boolean => {
   return !!(
     avatarUrl && 
     avatarUrl.startsWith('/uploads/') &&
-    avatarUrl !== DEFAULT_AVATR
+    avatarUrl !== DEFAULT_AVATAR
   );
 };
 
@@ -127,7 +127,7 @@ export const resetAvatarHandler = catchAsync (async (req: Request, res: Response
 
   const oldUser = userService.findById(currentUser.id);
 
-  if (oldUser?.avatar_url === DEFAULT_AVATR) {
+  if (oldUser?.avatar_url === DEFAULT_AVATAR) {
     res.status(200).json({
       status: 'success',
       message: 'Already using default avatar',
@@ -142,7 +142,7 @@ export const resetAvatarHandler = catchAsync (async (req: Request, res: Response
     await deleteFile(oldPath);
   }
 
-  userService.updateProfile(currentUser.id, { avatarUrl: DEFAULT_AVATR });
+  userService.updateProfile(currentUser.id, { avatarUrl: DEFAULT_AVATAR });
 
   const updateUser = userService.findById(currentUser.id);
   if (!updateUser) {
@@ -174,6 +174,8 @@ export const updateUserStatusHandler = catchAsync(
 
 export const getAvatarHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-
+    const { filename } = req.params;
+    const filepath = path.join(process.cwd(), 'data', 'uploads', filename);
+    res.sendFile(filepath);
   }
 );

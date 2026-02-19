@@ -59,7 +59,7 @@ export const setupRpsHandler = (io: Server) => {
         [game.player1.userId, game.player2.userId].forEach((userId) => {
           RpsServ.startAutoChoiceTimer(gameId, userId, () => {
             RpsNs.to(gameId).emit('auto-choice-made', {
-              message: `The player ${userId} took too long, random choice mad`,
+              message: `The player ${userId} took too long, random choice made`,
               userId: userId,
             });
           });
@@ -91,7 +91,7 @@ export const setupRpsHandler = (io: Server) => {
       }
       socket.emit('choice-recorded', {
         choice: data.choice,
-        message: 'Waiting for opponnent...',
+        message: 'Waiting for opponent...',
       });
       if (RpsServ.bothPlayersReady(gameId)) {
         game.phase = 'revealing';
@@ -147,7 +147,7 @@ export const setupRpsHandler = (io: Server) => {
               [game.player1.userId, game.player2.userId].forEach((userId) => {
                 RpsServ.startAutoChoiceTimer(gameId, userId, () => {
                   RpsNs.to(gameId).emit('auto-choice-made', {
-                    message: `The player ${userId} took too long, random choice mad`,
+                    message: `The player ${userId} took too long, random choice made`,
                     userId: userId,
                   });
                 });

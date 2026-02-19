@@ -52,7 +52,7 @@ main (production-ready code)
 - All changes must go through Pull Requests
 - PRs(pull request) require two member approvals before merging
 
-## Commmit style :
+## Commit style :
 	<type>(<scope>): <subject>
 
 **Types:** 

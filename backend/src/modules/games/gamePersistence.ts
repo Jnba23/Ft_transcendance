@@ -1,5 +1,5 @@
 import { getDb } from '../../core/database/index.js';
-import * as RpsTypes from '../types.js';
+import * as RpsTypes from './types.js';
 
 export function saveCompleteGames(data: {
   gameId: string;
@@ -85,7 +85,7 @@ export function getUserGameHistory(
 			CASE
 				WHEN g.player1_id = ? THEN u2.username
 				ELSE u1.username
-			END as opponent_name
+			END as opponent_name,
 			CASE
 				WHEN g.winner_id = ? THEN 'win'
 				ELSE 'loss'

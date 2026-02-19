@@ -68,7 +68,7 @@ export const handleFriendAction = catchAsync(
     const isRecipient = request.user_id_2 === userId;
 
     if (!isRecipient && !isSender) {
-      return next(new AppError('Not authorized to perfom this action', 403));
+      return next(new AppError('Not authorized to perform this action', 403));
     }
 
     if (action === 'cancel' && !isSender) {

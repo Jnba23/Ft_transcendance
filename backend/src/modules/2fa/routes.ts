@@ -1,10 +1,10 @@
 import { validateResource } from '../../core/middleware/validateResource.js';
 import { requireUser } from '../../core/middleware/requireUser.js';
 import {
-  authenticate2FaHandler,
-  generate2FaHandler,
-  turnOff2FaHandler,
-  turnOn2FaHandler,
+  authenticate2FAHandler,
+  generate2FAHandler,
+  turnOff2FAHandler,
+  turnOn2FAHandler,
 } from './controller.js';
 import {
   twoFaSchema,
@@ -76,7 +76,7 @@ const router = Router();
 router.post(
   '/authenticate',
   validateResource(verify2FaSchema),
-  authenticate2FaHandler
+  authenticate2FAHandler
 );
 
 // 2FA - Setup (Protected: You must be logged in to turn it on)
@@ -122,7 +122,7 @@ router.post(
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
-router.post('/generate', requireUser, generate2FaHandler);
+router.post('/generate', requireUser, generate2FAHandler);
 
 /**
  * @swagger
@@ -185,7 +185,7 @@ router.post(
   '/turn-on',
   requireUser,
   validateResource(twoFaSchema),
-  turnOn2FaHandler
+  turnOn2FAHandler
 );
 
 /**
@@ -250,7 +250,7 @@ router.post(
   '/turn-off',
   requireUser,
   validateResource(turnOff2FaSchema),
-  turnOff2FaHandler
+  turnOff2FAHandler
 );
 
 export default router;

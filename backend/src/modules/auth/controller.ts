@@ -106,14 +106,14 @@ export const loginHandler = catchAsync(
 
     if (user.is_2fa_enabled) {
       const tempToken = signJwt(
-        { id: user.id, username: user.username, login_step: '2fa' },
+        { id: user.id, username: user.username, login_step: '2FA' },
         { expiresIn: '5m' }
       );
 
       return res.status(200).json({
         status: 'success',
-        message: '2Fa required',
-        action_required: '2fa_auth',
+        message: '2FA required',
+        action_required: '2FA_auth',
         tempToken, // Frontend/Postman must send this back with the code
       });
     }

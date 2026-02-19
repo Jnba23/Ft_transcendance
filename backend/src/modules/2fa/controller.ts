@@ -28,7 +28,7 @@ const refreshTokenCookieOptions = {
 };
 
 // Generate QR Code
-export const generate2FaHandler = catchAsync(
+export const generate2FAHandler = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const user = res.locals.user as User;
 
@@ -60,7 +60,7 @@ export const generate2FaHandler = catchAsync(
 );
 
 // Turn On 2FA (Verify the first code)
-export const turnOn2FaHandler = catchAsync(
+export const turnOn2FAHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { code } = req.body;
     const user = res.locals.user as User;
@@ -80,20 +80,20 @@ export const turnOn2FaHandler = catchAsync(
     });
 
     if (!isValid) {
-      return next(new AppError('Invalid 2Fa code', 400));
+      return next(new AppError('Invalid 2FA code', 400));
     }
 
     db.prepare('UPDATE users SET is_2fa_enabled = 1 WHERE id = ?').run(user.id);
 
     res.status(200).json({
       status: 'success',
-      message: '2Fa has been enabled',
+      message: '2FA has been enabled',
     });
   }
 );
 
 // Authenticate (Login Step 2)
-export const authenticate2FaHandler = catchAsync(
+export const authenticate2FAHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { code, tempToken } = req.body;
 
@@ -103,9 +103,9 @@ export const authenticate2FaHandler = catchAsync(
       !valid ||
       !decoded ||
       typeof decoded === 'string' ||
-      (decoded as JwtPayload).login_step !== '2fa'
+      (decoded as JwtPayload).login_step !== '2FA'
     ) {
-      return next(new AppError('Invalid or expird login session', 401));
+      return next(new AppError('Invalid or expired login session', 401));
     }
 
     const userId = decoded.id;
@@ -115,7 +115,7 @@ export const authenticate2FaHandler = catchAsync(
       | undefined;
 
     if (!user || !user.two_fa_secret) {
-      return next(new AppError('User not found or 2Fa not set up', 401));
+      return next(new AppError('User not found or 2FA not set up', 401));
     }
 
     const isValid = authenticator.verify({
@@ -147,7 +147,7 @@ export const authenticate2FaHandler = catchAsync(
   }
 );
 
-export const turnOff2FaHandler = catchAsync(
+export const turnOff2FAHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password } = req.body;
     const user = res.locals.user as User;
