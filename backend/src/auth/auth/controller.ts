@@ -1,11 +1,11 @@
-import { hashPassword, verifyPassword } from '../../utils/crypt.js';
+import { verifyPassword } from '../../utils/crypt.js';
 import { Request, Response, NextFunction } from 'express';
 import { catchAsync } from '../../utils/catchAsync.js';
 import { AppError } from '../../utils/AppError.js';
-import { getDb } from '../../core/database.js';
 import { signJwt, verifyJwt } from '../../utils/jwt.js';
-import { config } from '../config/index.js';
+import { config } from '../../config/index.js';
 import { User } from '../types.js';
+import { authService } from './service.js';
 import type { JwtPayload } from 'jsonwebtoken';
 
 const cookieOptions = {
@@ -29,32 +29,18 @@ const refreshTokenCookieOptions = {
 export const signupHandler = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const { username, email, password } = req.body;
-    const db = getDb();
 
-    const existingUser = db
-      .prepare(
-        'SELECT id, email, username FROM users WHERE email = ? OR username = ?'
-      )
-      .get(email, username) as User | undefined;
-    if (existingUser) {
-      if (existingUser.email === email) {
+    const existing = authService.checkExistingUser(email, username);
+    if (existing) {
+      if (existing.email) {
         throw new AppError('Email is already taken', 409);
       }
-      if (existingUser.username === username) {
+      if (existing.username) {
         throw new AppError('Username is already taken', 409);
       }
     }
 
-    const passwordHash = await hashPassword(password);
-
-    const stmt = db.prepare(`
-		INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)
-	`);
-    const info = stmt.run(username, email, passwordHash);
-
-    const user = db
-      .prepare('SELECT * FROM users WHERE id = ?')
-      .get(info.lastInsertRowid) as User;
+    const user = await authService.createUser({ username, email, password });
 
     // Create tokens for immediate login after signup
     const accessToken = signJwt(
@@ -89,11 +75,7 @@ export const loginHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { identifier, password } = req.body;
 
-    const db = getDb();
-
-    const user = db
-      .prepare('SELECT * FROM users WHERE email = ? OR username = ?')
-      .get(identifier, identifier) as User | undefined;
+    const user = authService.findByEmailOrUsername(identifier);
 
     // Check if user exists and has a password (oauth users might not have one)
     if (
@@ -158,18 +140,11 @@ export const refreshAccessTokenHandler = catchAsync(
 
     const userId = (decoded as JwtPayload & { id: number }).id;
 
-    const db = getDb();
-    const isBlacklisted = db
-      .prepare('SELECT token FROM token_blacklist WHERE token = ?')
-      .get(refreshToken);
-
-    if (isBlacklisted) {
+    if (authService.isTokenBlacklisted(refreshToken)) {
       return next(new AppError('Token revoked. Please login again', 401));
     }
 
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as
-      | User
-      | undefined;
+    const user = authService.findById(userId);
 
     if (!user) {
       return next(new AppError('User not found', 401));
@@ -193,11 +168,6 @@ export const logoutHandler = catchAsync(async (req: Request, res: Response) => {
   const accessToken = req.cookies.accessToken;
   const refreshToken = req.cookies.refreshToken;
 
-  const db = getDb();
-  const blacklistStmt = db.prepare(
-    'INSERT OR IGNORE INTO token_blacklist (token, expires_at) VALUES (?, ?)'
-  );
-
   const blacklistToken = (token: string) => {
     const { decoded, valid } = verifyJwt(token);
 
@@ -205,7 +175,7 @@ export const logoutHandler = catchAsync(async (req: Request, res: Response) => {
       const exp = (decoded as JwtPayload).exp;
       if (exp) {
         const expiresAt = new Date(exp * 1000).toISOString();
-        blacklistStmt.run(token, expiresAt);
+        authService.blacklistToken(token, expiresAt);
       }
     }
   };
