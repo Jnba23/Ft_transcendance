@@ -1,10 +1,10 @@
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
-import { setupMmHandlers } from '../../modules/games/matchmaking/socketHandler.js';
-import { setupPongHandler } from '../../modules/games/game/socketHandler.js';
-import { setupRpsHandler } from '../../modules/games/scnd_game/socketHandler.js';
-import { setupChatHandler } from '../../modules/chat/socketHandler.js';
-import { config } from '../config/index.js';
+import { setupMmHandlers } from '../../realTimeGames/matchmaking/socketHandler.js';
+import { setupPongHandler } from '../../realTimeGames/game/socketHandler.js';
+import { setupRpsHandler } from '../../realTimeGames/scnd_game/socketHandler.js';
+import { setupChatHandler } from '../../chat/socketHandler.js';
+import { config } from '../../auth/config/index.js';
 
 export let io: Server;
 

@@ -1,6 +1,6 @@
-import { initDatabase, closeDb } from './core/database/index.js';
-import { config } from './core/config/index.js';
-import app from './app.js';
+import { initDatabase, closeDb } from './core/database.js';
+import { config } from './auth/config/index.js';
+import app from './auth/app.js';
 import { startCleanupJob } from './core/cron.js';
 import { createServer } from 'http';
 import { initSocketIo } from './core/sockets/socketServer.js';

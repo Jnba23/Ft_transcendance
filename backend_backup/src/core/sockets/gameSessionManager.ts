@@ -1,4 +1,4 @@
-import { MatchResult } from '../../modules/games/matchmaking/types.js';
+import { MatchResult } from '../../realTimeGames/matchmaking/types.js';
 
 class GameSessions {
   private sessions: Map<string, MatchResult> = new Map();

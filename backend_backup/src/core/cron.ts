@@ -1,4 +1,4 @@
-import { getDb } from './database/index.js';
+import { getDb } from './database.js';
 
 export const startCleanupJob = () => {
   const INTERVAL_MS = 24 * 60 * 60 * 1000;

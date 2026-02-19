@@ -1,0 +1,41 @@
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  password_hash: string;
+  avatar_url: string;
+  level: number;
+  status: 'online' | 'offline' | 'in_game';
+  is_2fa_enabled: number;
+  two_fa_secret?: string | null;
+  google_id?: string | null;
+  created_at: string;
+  // game states
+  pong_wins?: number;
+  pong_losses?: number;
+  chess_wins?: number;
+  chess_losses?: number;
+  RPS_wins?: number;
+  RPS_losses?: number;
+}
+
+export interface UserInput {
+  username: string;
+  email: string;
+  password_hash: string;
+}
+
+export type SafeUser = Omit<User, 'password_hash' | 'two_fa_secret'>;
+
+export interface PublicUser {
+  id: number;
+  username: string;
+  avatar_url: string;
+  level: number;
+  status: 'online' | 'offline' | 'in_game';
+  created_at?: string;
+  pong_wins?: number;
+  pong_losses?: number;
+  chess_wins?: number;
+  chess_losses?: number;
+}
