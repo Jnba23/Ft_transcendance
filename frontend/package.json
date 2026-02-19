@@ -18,7 +18,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@tailwindcss/vite": "^4.1.18",
-    "axios": "^1.5.0",
+    "axios": "^1.13.5",
     "ft_transcendance_shared": "github:Jnba23/ft_transcendance_shared#main",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
