@@ -3,16 +3,19 @@ import useClickOutside from '@hooks/useClickOutside';
 import type { headerMenuProps } from '@utils/types';
 import UserMenuItem from './UserMenuItem';
 import getTransitionClasses from '@utils/transitionStyles';
-import { useAuth } from '../../../../context/AuthContext';
+import { useAuth } from '@context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const { logout } = useAuth();
-  useClickOutside(isOpen, hide, [buttonRef, userMenuRef]);
+  const navigate = useNavigate();
 
+  const { logout, user } = useAuth();
   const handleLogout = async () => {
     await logout();
   };
+
+  useClickOutside(isOpen, hide, [buttonRef, userMenuRef]);
 
   return (
     <div
@@ -25,7 +28,11 @@ function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
       ref={userMenuRef}
     >
       <div className="p-1">
-        <UserMenuItem icon="person" label="Profile" />
+        <UserMenuItem
+          icon="person"
+          label="Profile"
+          onClick={() => navigate(`/profile/${user?.id}`)}
+        />
         <UserMenuItem icon="settings" label="Settings" />
         <div className="my-1 h-px bg-white/10"></div>
         <UserMenuItem
