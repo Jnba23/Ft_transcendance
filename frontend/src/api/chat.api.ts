@@ -34,7 +34,7 @@ interface MarkConversationReadRes {
 
 export const chatApi = {
 	createConversation: async (data: CreateConversationReq) => {
-		const response = await client.post<CreateConversationRes>('/conversations', data); // add path
+		const response = await client.post<CreateConversationRes>('/conversations', data);
 		return response.data;
 	},
 
