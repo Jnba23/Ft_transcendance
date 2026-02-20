@@ -101,4 +101,9 @@ export const userAPI = {
     const response = await client.get<GetUserRes>(`/users/${id}`);
     return response.data;
   },
+
+  getAvatar: async (id: number | string) => {
+    const response = await client.get(`/users/avatar/${id}`);
+    return response.data;
+  }
 };

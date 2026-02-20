@@ -136,43 +136,6 @@ export const updateUserHandler = async (
   }
 };
 
-// export const resetAvatarHandler = catchAsync(
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     const currentUser = res.locals.user as User;
-
-//     const oldUser = userService.findById(currentUser.id);
-
-//     if (oldUser?.avatar_url === DEFAULT_AVATAR) {
-//       return res.status(200).json({
-//         status: 'success',
-//         message: 'Already using default avatar',
-//         data: {
-//           user: userService.getSanitizedUser(oldUser),
-//         },
-//       });
-//     }
-
-//     if (isDeletableAvatar(oldUser?.avatar_url)) {
-//       const oldPath = path.join(process.cwd(), oldUser!.avatar_url);
-//       await deleteFile(oldPath);
-//     }
-
-//     userService.updateProfile(currentUser.id, { avatarUrl: DEFAULT_AVATAR });
-
-//     const updateUser = userService.findById(currentUser.id);
-//     if (!updateUser) {
-//       return next(new AppError('User not found', 404));
-//     }
-
-//     res.status(200).json({
-//       status: 'success',
-//       data: {
-//         user: userService.getSanitizedUser(updateUser),
-//       },
-//     });
-//   }
-// );
-
 export const updateUserStatusHandler = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const { status } = req.body;
@@ -189,7 +152,6 @@ export const updateUserStatusHandler = catchAsync(
 
 export const getAvatarHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    // Example: send avatar file if exists
     const { id } = req.params;
     const user = userService.findByIdPublic(parseInt(id));
     if (!user || !user.avatar_url) {
