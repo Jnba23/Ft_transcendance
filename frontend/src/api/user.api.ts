@@ -21,14 +21,9 @@ export interface MyProfileRes {
   created_at: string;
   pong_wins: number;
   pong_losses: number;
-  chess_wins: number;
-  chess_losses: number;
+  RPS_wins: number;
+  RPS_losses: number;
   win_streak: number;
-}
-
-export interface UpdateProfileReq {
-  username?: string;
-  avatarUrl?: string; // Note: Schema said avatarUrl in request body
 }
 
 export interface UserProfileRes {
@@ -40,8 +35,8 @@ export interface UserProfileRes {
   created_at: string;
   pong_wins: number;
   pong_losses: number;
-  chess_wins: number;
-  chess_losses: number;
+  RPS_wins: number;
+  RPS_losses: number;
   win_streak: number;
 }
 
@@ -56,7 +51,7 @@ export interface GetAllUsersRes {
 export interface GetUserRes {
   status: string;
   data: {
-    user: UserProfileRes; // or MyProfileRes? Schema says UserProfileRes for /:id
+    user: UserProfileRes | MyProfileRes;
   };
 }
 
@@ -75,8 +70,25 @@ export const userAPI = {
     return response.data;
   },
 
-  updateMe: async (data: UpdateProfileReq) => {
-    const response = await client.patch<GetMeRes>('/users/me', data);
+  updateMe: async (data: { username?: string, avatar?: File }) => {
+    // If there's a file, use FormData (multipart)
+    if (data.avatar) {
+      const formData = new FormData();
+      if (data.username) {
+        formData.append('username', data.username);
+      }
+      formData.append('avatar', data.avatar);
+
+      const response = await client.patch<GetMeRes>('/users/me', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    }
+
+    // No file - send Json
+    const response = await client.patch<GetMeRes>('/users/me', {
+      username: data.username,
+    })
     return response.data;
   },
 

@@ -12,7 +12,7 @@ export interface Enable2FAReq {
 }
 
 export interface Disable2FAReq {
-  password: string;
+  code: string;
 }
 
 export interface Generate2FARes {

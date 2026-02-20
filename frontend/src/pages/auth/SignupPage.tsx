@@ -69,7 +69,7 @@ function SignupPage(): React.JSX.Element {
             Create Your Account
           </h1>
           <p className="text-white/60 mt-2">
-            Join the ultimate Pong and Chess community.
+            Join the ultimate Pong and RPS community.
           </p>
         </div>
 
