@@ -3,7 +3,8 @@ import { ZodType, ZodError } from 'zod';
 import { deleteFile } from '../user/users/controller.js';
 
 export const validateResource =
-  (schema: ZodType) => async (req: Request, res: Response, next: NextFunction) => {
+  (schema: ZodType) =>
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       schema.parse({
         body: req.body,
