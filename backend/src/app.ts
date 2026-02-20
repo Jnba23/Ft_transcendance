@@ -11,6 +11,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
+import multer from 'multer';
 import './config/passport.js'; // Initialize passport strategies
 import { apiReference } from '@scalar/express-api-reference';
 
@@ -86,6 +87,31 @@ app.use(
       status: err instanceof AppError ? err.status : 'error',
       message: err.message,
     };
+
+    if (err instanceof multer.MulterError) {
+      let message = 'File upload error';
+
+      switch (err.code) {
+        case 'LIMIT_FILE_SIZE':
+          message = 'File too large. Maximum size is 5MB';
+          break;
+        case 'LIMIT_FILE_COUNT':
+          message = 'Only one file allowed per request';
+          break;
+        case 'LIMIT_FIELD_COUNT':
+          message = 'Too many form fields submitted';
+          break;
+        case 'LIMIT_UNEXPECTED_FILE':
+          message = 'Invalid field name. Use "avatar" for file upload';
+          break;
+      }
+
+      res.status(400).json({
+        status: 'fail',
+        message,
+      });
+      return;
+    }
 
     if (process.env.NODE_ENV === 'development') {
       errorResponse.stack = err.stack;
