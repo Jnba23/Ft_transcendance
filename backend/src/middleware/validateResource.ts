@@ -4,28 +4,28 @@ import { deleteFile } from '../user/users/controller.js';
 
 export const validateResource =
   (schema: ZodType) =>
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        schema.parse({
-          body: req.body,
-          query: req.query,
-          params: req.params,
-        });
-        next();
-      } catch (error: unknown) {
-        if (req.file) {
-          await deleteFile(req.file.path);
-        }
-        if (error instanceof ZodError) {
-          return res.status(400).json({
-            status: 'fail',
-            errors: error.issues.map((err) => ({
-              code: err.code,
-              message: err.message,
-              path: err.path,
-            })),
-          });
-        }
-        return res.status(400).send(error);
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      schema.parse({
+        body: req.body,
+        query: req.query,
+        params: req.params,
+      });
+      next();
+    } catch (error: unknown) {
+      if (req.file) {
+        await deleteFile(req.file.path);
       }
-    };
+      if (error instanceof ZodError) {
+        return res.status(400).json({
+          status: 'fail',
+          errors: error.issues.map((err) => ({
+            code: err.code,
+            message: err.message,
+            path: err.path,
+          })),
+        });
+      }
+      return res.status(400).send(error);
+    }
+  };

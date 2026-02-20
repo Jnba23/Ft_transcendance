@@ -20,9 +20,7 @@ import {
   turnOff2FaSchema,
 } from '../auth/2fa/schema.js';
 import { updateUserSchema, updateStatusSchema } from '../user/users/schema.js';
-import {
-  friendActionSchema,
-} from '../user/friends/schema.js';
+import { friendActionSchema } from '../user/friends/schema.js';
 
 // Extend Zod with OpenAPI
 extendZodWithOpenApi(z);
