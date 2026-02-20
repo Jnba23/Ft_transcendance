@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodType, ZodError } from 'zod';
+import { deleteFile } from '../user/users/controller.js';
 
 export const validateResource =
-  (schema: ZodType) => (req: Request, res: Response, next: NextFunction) => {
+  (schema: ZodType) => async (req: Request, res: Response, next: NextFunction) => {
     try {
       schema.parse({
         body: req.body,
@@ -11,6 +12,9 @@ export const validateResource =
       });
       next();
     } catch (error: unknown) {
+      if (req.file) {
+        await deleteFile(req.file.path);
+      }
       if (error instanceof ZodError) {
         return res.status(400).json({
           status: 'fail',
