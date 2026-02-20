@@ -13,8 +13,8 @@ export interface User {
   // game stats
   pong_wins?: number;
   pong_losses?: number;
-  chess_wins?: number;
-  chess_losses?: number;
+  RPS_wins?: number;
+  RPS_losses?: number;
 }
 
 export interface UserInput {
