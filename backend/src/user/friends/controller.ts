@@ -101,7 +101,7 @@ export const handleFriendAction = catchAsync(
 );
 
 export const checkFriendship = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const userId = (res.locals.user as User).id;
     const otherUserId = parseInt(req.params.id);
 
@@ -148,7 +148,7 @@ export const removeFriendship = catchAsync(
 );
 
 export const getFriends = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const userId = (res.locals.user as User).id;
     const friends = friendService.getFriends(userId);
 

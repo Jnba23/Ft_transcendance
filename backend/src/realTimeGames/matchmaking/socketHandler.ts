@@ -40,6 +40,7 @@ export const setupMmHandlers = (io: Server) => {
       }
     });
     socket.on('disconnect', (reason) => {
+      // eslint-disable-next-line no-console
       console.log(`Client with ${socket.id} disconnected: ${reason}`);
       if (socket.data.userId)
         mmServ.removeFromQueue(socket.data.userId.toString());

@@ -55,6 +55,7 @@ export const deleteFile = async (filePath: string): Promise<void> => {
     await fs.promises.unlink(filePath);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      // eslint-disable-next-line no-console
       console.error('Error deleting file:', error);
     }
   }
@@ -163,7 +164,7 @@ export const resetAvatarHandler = catchAsync(
 );
 
 export const updateUserStatusHandler = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const { status } = req.body;
     const currentUser = res.locals.user as User;
 

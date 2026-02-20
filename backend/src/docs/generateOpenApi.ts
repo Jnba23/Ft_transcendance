@@ -22,7 +22,6 @@ import {
 import { updateUserSchema, updateStatusSchema } from '../user/users/schema.js';
 import {
   friendActionSchema,
-  friendRequestParamSchema,
 } from '../user/friends/schema.js';
 
 // Extend Zod with OpenAPI
@@ -589,4 +588,5 @@ const outputPath = path.resolve(process.cwd(), 'src/docs/openapi.json');
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, JSON.stringify(doc, null, 2));
 
+// eslint-disable-next-line no-console
 console.log(`OpenAPI specification generated at ${outputPath}`);

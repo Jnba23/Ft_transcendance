@@ -28,7 +28,7 @@ const refreshTokenCookieOptions = {
 
 // Generate QR Code
 export const generate2FaHandler = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const user = res.locals.user as User;
 
     // Generate Secret

@@ -61,6 +61,7 @@ export function saveCompleteGames(data: {
     });
     transaction();
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log('Failed to save game:', error);
   }
 }

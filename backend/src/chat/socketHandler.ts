@@ -1,3 +1,3 @@
 import { Server } from 'socket.io';
 
-export const setupChatHandler = (io: Server) => {};
+export const setupChatHandler = (_io: Server) => { };

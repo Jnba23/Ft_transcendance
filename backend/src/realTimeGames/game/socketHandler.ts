@@ -1,3 +1,3 @@
 import { Server } from 'socket.io';
 
-export const setupPongHandler = (io: Server) => {};
+export const setupPongHandler = (_io: Server) => { };
