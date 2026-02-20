@@ -1,15 +1,15 @@
-import { Router } from "express";
-import { requireUser } from "../../middleware/requireUser.js";
-import { validateResource } from "../../middleware/validateResource.js";
+import { Router } from 'express';
+import { requireUser } from '../../middleware/requireUser.js';
+import { validateResource } from '../../middleware/validateResource.js';
 import {
-    createFriendRequest,
-    handleFriendAction,
-    getFriendRequests,
-    removeFriendship,
-    checkFriendship,
-    getFriends
+  createFriendRequest,
+  handleFriendAction,
+  getFriendRequests,
+  removeFriendship,
+  checkFriendship,
+  getFriends,
 } from './controller.js';
-import { friendActionSchema } from "./schema.js";
+import { friendActionSchema } from './schema.js';
 
 const router = Router();
 
@@ -19,7 +19,11 @@ router.get('/', getFriends);
 
 router.get('/requests', getFriendRequests);
 
-router.post('/requests/action', validateResource(friendActionSchema), handleFriendAction);
+router.post(
+  '/requests/action',
+  validateResource(friendActionSchema),
+  handleFriendAction
+);
 
 router.post('/requests/:id', createFriendRequest);
 

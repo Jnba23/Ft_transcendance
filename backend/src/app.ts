@@ -12,6 +12,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import './config/passport.js'; // Initialize passport strategies
+import { apiReference } from '@scalar/express-api-reference';
 
 const app: Application = express();
 
@@ -65,7 +66,15 @@ app.use('/api/oauth', oauthRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/friends', friendRoutes);
 app.use('/api/auth/2fa', twoFatRoutes);
-
+app.use(
+  '/docs',
+  apiReference({
+    content: () =>
+      import('./docs/openapi.json', { with: { type: 'json' } }).then(
+        (m) => m.default
+      ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  })
+);
 // 404 Handler
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

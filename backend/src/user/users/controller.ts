@@ -58,7 +58,7 @@ const deleteFile = async (filePath: string): Promise<void> => {
       console.error('Error deleting file:', error);
     }
   }
-}
+};
 
 const DEFAULT_AVATAR = '/uploads/default-avatar.png';
 
@@ -68,9 +68,13 @@ const isDeletableAvatar = (avatarUrl: string | null | undefined): boolean => {
     avatarUrl.startsWith('/uploads/') &&
     avatarUrl !== DEFAULT_AVATAR
   );
-}
+};
 
-export const updateUserHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateUserHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const { username } = req.body;
   const currentUser = res.locals.user as User;
 
@@ -89,7 +93,7 @@ export const updateUserHandler = async (req: Request, res: Response, next: NextF
     if (req.file) {
       avatarUrl = `/uploads/${req.file.filename}`;
 
-      const oldUser = userService.findById((currentUser.id));
+      const oldUser = userService.findById(currentUser.id);
       if (isDeletableAvatar(oldUser?.avatar_url)) {
         const oldPath = path.join(process.cwd(), oldUser!.avatar_url);
         await deleteFile(oldPath);
@@ -119,43 +123,44 @@ export const updateUserHandler = async (req: Request, res: Response, next: NextF
     }
     next(err);
   }
-}
+};
 
-export const resetAvatarHandler = catchAsync (async (req: Request, res: Response, next: NextFunction) => {
-  const currentUser = res.locals.user as User;
+export const resetAvatarHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const currentUser = res.locals.user as User;
 
-  const oldUser = userService.findById(currentUser.id);
+    const oldUser = userService.findById(currentUser.id);
 
-  if (oldUser?.avatar_url === DEFAULT_AVATAR) {
-    return res.status(200).json({
+    if (oldUser?.avatar_url === DEFAULT_AVATAR) {
+      return res.status(200).json({
+        status: 'success',
+        message: 'Already using default avatar',
+        data: {
+          user: userService.getSanitizedUser(oldUser),
+        },
+      });
+    }
+
+    if (isDeletableAvatar(oldUser?.avatar_url)) {
+      const oldPath = path.join(process.cwd(), oldUser!.avatar_url);
+      await deleteFile(oldPath);
+    }
+
+    userService.updateProfile(currentUser.id, { avatarUrl: DEFAULT_AVATAR });
+
+    const updateUser = userService.findById(currentUser.id);
+    if (!updateUser) {
+      return next(new AppError('User not found', 404));
+    }
+
+    res.status(200).json({
       status: 'success',
-      message: 'Already using default avatar',
       data: {
-        user: userService.getSanitizedUser(oldUser)
-      }
+        user: userService.getSanitizedUser(updateUser),
+      },
     });
   }
-
-  if (isDeletableAvatar(oldUser?.avatar_url)) {
-    const oldPath = path.join(process.cwd(), oldUser!.avatar_url)
-    await deleteFile(oldPath);
-  }
-
-  userService.updateProfile(currentUser.id, { avatarUrl: DEFAULT_AVATAR });
-
-  const updateUser = userService.findById(currentUser.id);
-  if (!updateUser) {
-    return next(new AppError('User not found', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user: userService.getSanitizedUser(updateUser)
-    }
-  })
-})
-
+);
 
 export const updateUserStatusHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -179,7 +184,12 @@ export const getAvatarHandler = catchAsync(
     if (!user || !user.avatar_url) {
       return next(new AppError('User or avatar not found', 404));
     }
-    const avatarPath = path.join(process.cwd(), user.avatar_url.startsWith('/') ? user.avatar_url.slice(1) : user.avatar_url);
+    const avatarPath = path.join(
+      process.cwd(),
+      user.avatar_url.startsWith('/')
+        ? user.avatar_url.slice(1)
+        : user.avatar_url
+    );
     if (!fs.existsSync(avatarPath)) {
       return next(new AppError('Avatar file not found', 404));
     }

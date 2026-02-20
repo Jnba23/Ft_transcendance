@@ -142,21 +142,23 @@ export const turnOff2FaHandler = catchAsync(
     const user = res.locals.user as User;
 
     if (!code) {
-      return next(new AppError('Please provide the 6-digit code to confirm', 400))
+      return next(
+        new AppError('Please provide the 6-digit code to confirm', 400)
+      );
     }
 
     const secret = twoFaService.getSecret(user.id);
     if (!secret) {
-      return next(new AppError('2FA is not currently enabled', 400))
+      return next(new AppError('2FA is not currently enabled', 400));
     }
 
     const isValid = authenticator.verify({
       token: code,
       secret: secret,
-    })
+    });
 
     if (!isValid) {
-      return next(new AppError('Invalid 2FA code', 401))
+      return next(new AppError('Invalid 2FA code', 401));
     }
 
     twoFaService.disable(user.id);

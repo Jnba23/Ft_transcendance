@@ -6,7 +6,7 @@ import {
   updateUserHandler,
   updateUserStatusHandler,
   resetAvatarHandler,
-  getAvatarHandler
+  getAvatarHandler,
 } from './controller.js';
 import { requireUser } from '../../middleware/requireUser.js';
 import { updateUserSchema, updateStatusSchema } from './schema.js';
@@ -15,7 +15,11 @@ import { upload } from '../../utils/fileUpload.js';
 
 const router = Router();
 
-const optionalFileUpload = (req: Request, res: Response, next: NextFunction): void => {
+const optionalFileUpload = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   const contentType = req.headers['content-type'] || '';
 
   if (contentType.includes('multipart/form-data')) {

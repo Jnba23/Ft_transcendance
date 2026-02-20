@@ -13,7 +13,9 @@ const sanitizeUser = (user: User): SafeUser => {
 export const userService = {
   findById(id: number): User | undefined {
     const db = getDb();
-    return db.prepare('SELECT * FROM users WHERE id = ?').get(id) as User | undefined;
+    return db.prepare('SELECT * FROM users WHERE id = ?').get(id) as
+      | User
+      | undefined;
   },
 
   findByIdPublic(id: number): PublicUser | undefined {

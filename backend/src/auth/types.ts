@@ -25,4 +25,7 @@ export interface UserInput {
 
 export type SafeUser = Omit<User, 'password_hash' | 'two_fa_secret'>;
 
-export type PublicUser = Pick<User, 'id' | 'username' | 'avatar_url' | 'level' | 'status'>;
+export type PublicUser = Pick<
+  User,
+  'id' | 'username' | 'avatar_url' | 'level' | 'status'
+>;

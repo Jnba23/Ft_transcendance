@@ -1,66 +1,85 @@
-import { getDb } from "../../core/database.js";
-import { Friendship, FriendRequestWithUser } from "./types.js";
+import { getDb } from '../../core/database.js';
+import { Friendship, FriendRequestWithUser } from './types.js';
 
 export const friendService = {
-    createRequest(senderId: number, recipientId: number): number {
-        const db = getDb();
-        const result = db.prepare(`
+  createRequest(senderId: number, recipientId: number): number {
+    const db = getDb();
+    const result = db
+      .prepare(
+        `
             INSERT INTO friendship (user_id_1, user_id_2, status)
             VALUES (?, ?, 'pending')
-        `).run(senderId, recipientId);
-        return result.lastInsertRowid as number;
-    },
+        `
+      )
+      .run(senderId, recipientId);
+    return result.lastInsertRowid as number;
+  },
 
-    getSentRequests(userId: number): FriendRequestWithUser[] {
-        const db = getDb()
-        return db.prepare(`
+  getSentRequests(userId: number): FriendRequestWithUser[] {
+    const db = getDb();
+    return db
+      .prepare(
+        `
             SELECT f.*, u.username, u.avatar_url, u.status as user_status
             FROM friendship f
             JOIN users u ON u.id = f.user_id_2
             WHERE f.user_id_1 = ? AND f.status = 'pending'
-        `).all(userId) as FriendRequestWithUser[];
-    },
+        `
+      )
+      .all(userId) as FriendRequestWithUser[];
+  },
 
-    getReceivedRequests(userId: number): FriendRequestWithUser[] {
-        const db = getDb()
-        return db.prepare(`
+  getReceivedRequests(userId: number): FriendRequestWithUser[] {
+    const db = getDb();
+    return db
+      .prepare(
+        `
             SELECT f.*, u.username, u.avatar_url, u.status as user_status
             FROM friendship f
             JOIN users u ON u.id = f.user_id_1
             WHERE f.user_id_2 = ? AND f.status = 'pending'
-        `).all(userId) as FriendRequestWithUser[];
-    },
+        `
+      )
+      .all(userId) as FriendRequestWithUser[];
+  },
 
-    getRequestById(requestId: number): Friendship | undefined {
-        const db = getDb();
-        return db.prepare('SELECT * FROM friendship WHERE id = ?')
-            .get(requestId) as Friendship | undefined;
-    },
+  getRequestById(requestId: number): Friendship | undefined {
+    const db = getDb();
+    return db
+      .prepare('SELECT * FROM friendship WHERE id = ?')
+      .get(requestId) as Friendship | undefined;
+  },
 
-    checkExisting(userId1: number, userId2: number): Friendship | undefined {
-        const db = getDb();
-        return db.prepare(`
+  checkExisting(userId1: number, userId2: number): Friendship | undefined {
+    const db = getDb();
+    return db
+      .prepare(
+        `
             SELECT * FROM friendship
             WHERE (user_id_1 = ? AND user_id_2 = ?)
                OR (user_id_1 = ? AND user_id_2 = ?)
-        `).get(userId1, userId2, userId2, userId1) as Friendship | undefined;
-    },
+        `
+      )
+      .get(userId1, userId2, userId2, userId1) as Friendship | undefined;
+  },
 
-    acceptRequest(requestId: number): void {
-        const db = getDb();
-        db.prepare(`UPDATE friendship SET status = 'accepted' WHERE id = ?`)
-          .run(requestId);
-    },
+  acceptRequest(requestId: number): void {
+    const db = getDb();
+    db.prepare("UPDATE friendship SET status = 'accepted' WHERE id = ?").run(
+      requestId
+    );
+  },
 
-    deleteRequest(requestId: number): void {
-        const db = getDb();
-        db.prepare('DELETE FROM friendship WHERE id = ?')
-          .run(requestId);
-    },
+  deleteRequest(requestId: number): void {
+    const db = getDb();
+    db.prepare('DELETE FROM friendship WHERE id = ?').run(requestId);
+  },
 
-    getFriends(userId: number): FriendRequestWithUser[] {
-        const db = getDb();
-        return db.prepare(`
+  getFriends(userId: number): FriendRequestWithUser[] {
+    const db = getDb();
+    return db
+      .prepare(
+        `
             SELECT f.*,
                 CASE WHEN f.user_id_1 = ? THEN u2.username ELSE u1.username END as username,
                 CASE WHEN f.user_id_1 = ? THEN u2.avatar_url ELSE u1.avatar_url END as avatar_url,
@@ -70,6 +89,15 @@ export const friendService = {
             JOIN users u1 ON u1.id = f.user_id_1
             JOIN users u2 ON u2.id = f.user_id_2
             WHERE (f.user_id_1 = ? OR f.user_id_2 = ?) AND f.status = 'accepted'            
-        `).all(userId, userId, userId, userId, userId, userId) as FriendRequestWithUser[];
-    },
-}
+        `
+      )
+      .all(
+        userId,
+        userId,
+        userId,
+        userId,
+        userId,
+        userId
+      ) as FriendRequestWithUser[];
+  },
+};
