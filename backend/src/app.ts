@@ -1,18 +1,19 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
-import authRoutes from './routes/auth.routes.js';
-import oauthRoutes from './routes/oauth.routes.js';
-import userRoutes from './routes/user.routes.js';
-import twoFatRoutes from './routes/2fa.routes.js';
-import { AppError } from '../utils/AppError.js';
-import { deserializeUser } from '../middleware/deserializeUser.js';
+import authRoutes from './auth/auth/routes.js';
+import oauthRoutes from './auth/oauth/routes.js';
+import userRoutes from './user/users/routes.js';
+import friendRoutes from './user/friends/routes.js';
+import twoFatRoutes from './auth/2fa/routes.js';
+import { AppError } from './utils/AppError.js';
+import { deserializeUser } from './middleware/deserializeUser.js';
 import { config } from './config/index.js';
 import morgan from 'morgan';
 import cors from 'cors';
-import { swaggerSpec } from './config/swagger.js';
-import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import './config/passport.js'; // Initialize passport strategies
+import { scalarDocs } from './docs/scalarConfig.js';
+import { globalErrorHandler } from './middleware/errorMiddleware.js';
 
 const app: Application = express();
 
@@ -61,48 +62,21 @@ app.get('/', (req, res) => {
   res.json({ message: 'Auth Service Running 🚀' });
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRoutes);
 app.use('/api/oauth', oauthRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/friends', friendRoutes);
 app.use('/api/auth/2fa', twoFatRoutes);
+
+// Documentation
+app.use('/docs', scalarDocs);
 
 // 404 Handler
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-app.use(
-  (err: AppError | Error, req: Request, res: Response, _next: NextFunction) => {
-    const errorResponse: { status: string; message: string; stack?: string } = {
-      status: err instanceof AppError ? err.status : 'error',
-      message: err.message,
-    };
-
-    if (process.env.NODE_ENV === 'development') {
-      errorResponse.stack = err.stack;
-    }
-
-    if (err instanceof AppError && err.isOperational) {
-      // Trusted error: Send the response we built
-      res.status(err.statusCode).json(errorResponse);
-    } else {
-      // Log error for debugging (disabled in production)
-      // console.log('ERROR 💥', err);
-
-      // IN DEVELOPMENT: You usually want to see the crash details anyway
-      if (process.env.NODE_ENV === 'development') {
-        res.status(500).json(errorResponse);
-      }
-      // IN PRODUCTION: Send generic message (Hide details)
-      else {
-        res.status(500).json({
-          status: 'error',
-          message: 'Something went wrong!',
-        });
-      }
-    }
-  }
-);
+// Global Error Handler
+app.use(globalErrorHandler);
 
 export default app;

@@ -99,15 +99,6 @@ CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
 CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
 
--- Matchmaking indexes
-CREATE INDEX IF NOT EXISTS idx_matchmaking_status ON matchmaking_queue(status);
-CREATE INDEX IF NOT EXISTS idx_matchmaking_mode ON matchmaking_queue(game_mode);
-
--- Tournament indexes
-CREATE INDEX IF NOT EXISTS idx_tournaments_status ON tournaments(status);
-CREATE INDEX IF NOT EXISTS idx_tournament_participants_tournament ON tournament_participants(tournament_id);
-CREATE INDEX IF NOT EXISTS idx_tournament_participants_user ON tournament_participants(user_id);
-
 -- Friends indexes
 CREATE INDEX IF NOT EXISTS idx_friendship_user_id_1 ON friendship(user_id_1);
 CREATE INDEX IF NOT EXISTS idx_friendship_user_id_2 ON friendship(user_id_2);
@@ -115,7 +106,6 @@ CREATE INDEX IF NOT EXISTS idx_friendship_user_id_2 ON friendship(user_id_2);
 -- Games indexes
 CREATE INDEX IF NOT EXISTS idx_games_player1 ON games(player1_id);
 CREATE INDEX IF NOT EXISTS idx_games_player2 ON games(player2_id);
-CREATE INDEX IF NOT EXISTS idx_games_tournament ON games(tournament_id);
 CREATE INDEX IF NOT EXISTS idx_games_type ON games(game_type);
 
 -- Chat indexes

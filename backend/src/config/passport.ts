@@ -5,8 +5,8 @@ import {
   VerifyCallback,
 } from 'passport-google-oauth20';
 import { randomBytes } from 'crypto';
-import { getDb } from '../../core/database.js';
-import { User } from '../types.js';
+import { getDb } from '../core/database.js';
+import { User } from '../auth/types.js';
 import { config } from './index.js';
 
 passport.use(
@@ -42,7 +42,7 @@ passport.use(
             .get(email) as User | undefined;
 
           if (userWithEmail) {
-            // Link the accounts: Add google_id to the existing user
+            // Link Google to existing account (Google has verified email ownership)
             db.prepare('UPDATE users SET google_id = ? WHERE id = ?').run(
               profile.id,
               userWithEmail.id
