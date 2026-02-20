@@ -1,13 +1,16 @@
 import { initDatabase, closeDb } from './core/database.js';
-import { config } from './auth/config/index.js';
-import app from './auth/app.js';
+import { config } from './config/index.js';
+import app from './app.js';
 import { startCleanupJob } from './core/cron.js';
+import { createServer } from 'http';
+import { initSocketIo } from './core/sockets/socketServer.js';
 
 initDatabase();
 startCleanupJob();
+const server = createServer(app);
+initSocketIo(server);
 
-const server = app.listen(config.port, () => {
-  // eslint-disable-next-line no-console
+server.listen(config.port, () => {
   console.log(`🚀 Server is running on http://localhost:${config.port}`);
   // eslint-disable-next-line no-console
   console.log(`Environment: ${config.nodeEnv}`);
