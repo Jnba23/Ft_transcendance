@@ -35,9 +35,13 @@ export const createFriendRequest = catchAsync(
 export const getFriendRequests = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = (res.locals.user as User).id;
-    const type = req.query.type as string;
+    let type = req.query.type as string;
 
-    if (!type || !['sent', 'received'].includes(type)) {
+    if (!type) {
+      type = 'received';
+    }
+
+    if (!['sent', 'received'].includes(type)) {
       return next(
         new AppError('Query param "type" must be "sent" or "received"', 400)
       );
@@ -126,22 +130,20 @@ export const checkFriendship = catchAsync(
 export const removeFriendship = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = (res.locals.user as User).id;
-    const requestId = parseInt(req.params.id);
+    const otherUserId = parseInt(req.params.id);
 
-    const request = friendService.getRequestById(requestId);
+    const request = friendService.checkExisting(userId, otherUserId);
 
     if (!request) {
       return next(new AppError('Friendship not found', 404));
     }
 
-    // Verify user is part of this friendship
-    if (request.user_id_1 !== userId && request.user_id_2 !== userId) {
-      return next(new AppError('Not authorized', 403));
-    }
+    friendService.deleteRequest(request.id);
 
-    friendService.deleteRequest(requestId);
-
-    res.status(204).send();
+    res.status(204).json({
+      status: 'success',
+      message: 'Friendship removed',
+    });
   }
 );
 

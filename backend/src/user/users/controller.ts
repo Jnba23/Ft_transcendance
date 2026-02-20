@@ -60,7 +60,7 @@ const deleteFile = async (filePath: string): Promise<void> => {
   }
 };
 
-const DEFAULT_AVATAR = '/uploads/default-avatar.png';
+const DEFAULT_AVATAR = '/uploads/default-avatar.jpeg';
 
 const isDeletableAvatar = (avatarUrl: string | null | undefined): boolean => {
   return !!(

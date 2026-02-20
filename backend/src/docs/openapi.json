@@ -5,17 +5,12 @@
     "title": "FT_Transcendence API",
     "description": "API Documentation for FT_Transcendence Project"
   },
-  "servers": [
-    {
-      "url": "/api/v1"
-    }
-  ],
   "components": {
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "accessToken"
       }
     },
     "schemas": {},
@@ -208,7 +203,7 @@
         "summary": "Generate 2FA QR Code",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "responses": {
@@ -229,7 +224,7 @@
         "summary": "Enable 2FA",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "requestBody": {
@@ -269,7 +264,7 @@
         "summary": "Disable 2FA",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "requestBody": {
@@ -334,7 +329,7 @@
         "summary": "Get all users",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "parameters": [
@@ -365,7 +360,7 @@
         "summary": "Get current user profile",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "responses": {
@@ -384,7 +379,7 @@
         "summary": "Update current user profile",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "requestBody": {
@@ -434,7 +429,7 @@
         "summary": "Reset user avatar",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "responses": {
@@ -455,7 +450,7 @@
         "summary": "Update user status",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "requestBody": {
@@ -498,7 +493,7 @@
         "summary": "Get user by ID",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "parameters": [
@@ -529,7 +524,7 @@
         "summary": "Get user avatar",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "parameters": [
@@ -568,7 +563,7 @@
         "summary": "Get friends list",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "responses": {
@@ -589,7 +584,22 @@
         "summary": "Get friend requests",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "sent",
+                "received"
+              ],
+              "default": "received"
+            },
+            "description": "Filter by sent or received requests"
           }
         ],
         "responses": {
@@ -610,7 +620,7 @@
         "summary": "Send friend request",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "parameters": [
@@ -640,7 +650,7 @@
         "summary": "Remove friend request",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "parameters": [
@@ -672,7 +682,7 @@
         "summary": "Handle friend request action",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "requestBody": {
@@ -719,7 +729,7 @@
         "summary": "Check friendship status",
         "security": [
           {
-            "bearerAuth": []
+            "cookieAuth": []
           }
         ],
         "parameters": [

@@ -1,4 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
+import fs from 'fs';
+import path from 'path';
 import authRoutes from './auth/auth/routes.js';
 import oauthRoutes from './auth/oauth/routes.js';
 import userRoutes from './user/users/routes.js';
@@ -70,12 +72,47 @@ app.use('/api/auth/2fa', twoFatRoutes);
 app.use(
   '/docs',
   apiReference({
-    content: () =>
-      import('./docs/openapi.json', { with: { type: 'json' } }).then(
-        (m) => m.default
-      ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    theme: 'default',
+    layout: 'modern',
+    defaultHttpClient: {
+      targetKey: 'node',
+      clientKey: 'undici',
+    },
+    content: () => {
+      const specPath = path.join(process.cwd(), 'src/docs/openapi.json');
+      const spec = fs.readFileSync(specPath, 'utf-8');
+      return JSON.parse(spec);
+    },
+    // User Configuration
+    hideClientButton: true,
+    hideModels: true,
+    hideTestRequestButton: true,
+    showSidebar: true,
+    showDeveloperTools: 'localhost',
+    // showToolbar: 'localhost', // Deprecated in types
+    operationTitleSource: 'summary',
+    persistAuth: false,
+    telemetry: true,
+    isEditable: false,
+    isLoading: false,
+    documentDownloadType: 'both',
+    hideSearch: false,
+    showOperationId: false,
+    hideDarkModeToggle: false,
+    withDefaultFonts: true,
+    defaultOpenAllTags: false,
+    expandAllModelSections: false,
+    expandAllResponses: false,
+    orderSchemaPropertiesBy: 'alpha',
+    orderRequiredPropertiesFirst: true,
+    // Attempt to hide AI in search using custom CSS
+    customCss: `
+      .scalar-search-ai { display: none !important; }
+      .scalar-api-client__ai { display: none !important; }
+    `,
   })
 );
+
 // 404 Handler
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
@@ -109,6 +146,14 @@ app.use(
       res.status(400).json({
         status: 'fail',
         message,
+      });
+      return;
+    }
+
+    if (err.message.includes('Multipart: Boundary not found')) {
+      res.status(400).json({
+        status: 'fail',
+        message: 'Invalid multipart request: Boundary not found',
       });
       return;
     }

@@ -129,11 +129,11 @@ registry.registerPath({
 
 const securityScheme = registry.registerComponent(
   'securitySchemes',
-  'bearerAuth',
+  'cookieAuth',
   {
-    type: 'http',
-    scheme: 'bearer',
-    bearerFormat: 'JWT',
+    type: 'apiKey',
+    in: 'cookie',
+    name: 'accessToken',
   }
 );
 
@@ -450,6 +450,18 @@ registry.registerPath({
   tags: ['Friends'],
   summary: 'Get friend requests',
   security: [{ [securityScheme.name]: [] }],
+  parameters: [
+    {
+      name: 'type',
+      in: 'query',
+      schema: {
+        type: 'string',
+        enum: ['sent', 'received'],
+        default: 'received',
+      },
+      description: 'Filter by sent or received requests',
+    },
+  ],
   responses: {
     200: {
       description: 'List of friend requests',
@@ -571,7 +583,6 @@ const doc = generator.generateDocument({
     title: 'FT_Transcendence API',
     description: 'API Documentation for FT_Transcendence Project',
   },
-  servers: [{ url: '/api/v1' }], // Adjust as needed
 });
 
 const outputPath = path.resolve(process.cwd(), 'src/docs/openapi.json');
