@@ -50,7 +50,7 @@ export const getUserbyIdHandler = catchAsync(
   }
 );
 
-const deleteFile = async (filePath: string): Promise<void> => {
+export const deleteFile = async (filePath: string): Promise<void> => {
   try {
     await fs.promises.unlink(filePath);
   } catch (error) {

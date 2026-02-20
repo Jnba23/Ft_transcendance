@@ -396,13 +396,13 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'get',
-  path: '/api/users/avatar/{filename}',
+  path: '/api/users/avatar/{id}',
   tags: ['Users'],
   summary: 'Get user avatar',
   security: [{ [securityScheme.name]: [] }],
   parameters: [
     {
-      name: 'filename',
+      name: 'id',
       in: 'path',
       schema: { type: 'string' },
       required: true,

@@ -516,7 +516,7 @@
         }
       }
     },
-    "/api/users/avatar/{filename}": {
+    "/api/users/avatar/{id}": {
       "get": {
         "tags": [
           "Users"
@@ -529,7 +529,7 @@
         ],
         "parameters": [
           {
-            "name": "filename",
+            "name": "id",
             "in": "path",
             "schema": {
               "type": "string"
