@@ -8,9 +8,11 @@ import { signupSchema, type SignupFormData } from '../../schemas/auth.schema';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import logo from '@assets/logo.png';
+import { useAuth } from '../../context/AuthContext';
 
 function SignupPage(): React.JSX.Element {
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -27,6 +29,7 @@ function SignupPage(): React.JSX.Element {
     try {
       await authAPI.signup(data);
 
+      await checkAuth();
       // Success! Redirect the user (Auto-login)
       navigate('/dashboard');
     } catch (error) {

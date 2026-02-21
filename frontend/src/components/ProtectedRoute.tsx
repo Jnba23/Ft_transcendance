@@ -1,8 +1,11 @@
-import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-export const ProtectedRoute = () => {
+interface ProtectedRouteProps {
+  isPublicOnly?: boolean;
+}
+
+export const ProtectedRoute = ({ isPublicOnly = false }: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
@@ -12,6 +15,13 @@ export const ProtectedRoute = () => {
         Loading...
       </div>
     );
+  }
+
+  if (isPublicOnly) {
+    if (isAuthenticated) {
+      return <Navigate to="/dashboard" replace />;
+    }
+    return <Outlet />;
   }
 
   if (!isAuthenticated) {

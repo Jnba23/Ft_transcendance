@@ -4,6 +4,7 @@ import LoginPage from '@pages/auth/LoginPage';
 import SignupPage from '@pages/auth/SignupPage';
 import Dashboard from '@pages/dashboard/Dashboard';
 import Profile from '@pages/profile/Profile';
+import Settings from '@pages/settings/Settings';
 import GamePage from '@pages/game/GamePage';
 import StartGame from '@pages/game/StartGame';
 import MatchMaking from '@pages/game/MatchMaking';
@@ -16,8 +17,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+          <Route element={<ProtectedRoute isPublicOnly />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Route>
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
@@ -26,6 +29,7 @@ function App() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path='/settings' element={<Settings />} />
               <Route path="/game" element={<GamePage />} />
               <Route path="/start_game" element={<StartGame name="Pong" />} />
               <Route path="/match_making" element={<MatchMaking />} />
