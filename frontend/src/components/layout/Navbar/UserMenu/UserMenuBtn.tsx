@@ -1,5 +1,6 @@
 import Avatar from '@ui/Avatar';
 import boy from '@assets/boy.jpg';
+import { useAuth } from '../../../../context/AuthContext'
 
 type UserMenuBtnProps = {
   isOpen: boolean;
@@ -8,6 +9,7 @@ type UserMenuBtnProps = {
 };
 
 function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
+  const { user } = useAuth();
   return (
     <button
       className={[
@@ -22,7 +24,7 @@ function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
     >
       <Avatar path={boy} section="userMenu" />
       <div className="flex items-center gap-1">
-        <span className="text-white text-sm font-medium">Alex_Gamer99</span>
+        <span className="text-white text-sm font-medium">{user?.username}</span>
         <span
           className={[
             `${isOpen && 'rotate-180'}`,
