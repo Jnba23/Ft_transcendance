@@ -10,6 +10,11 @@ export const client = axios.create({
 
 client.defaults.withCredentials = true;
 
+// Prevent standard 401 console errors on initial load
+client.defaults.validateStatus = (status) => {
+  return status >= 200 && status < 300;
+};
+
 // Handle errors
 client.interceptors.response.use(
   (response) => response,
@@ -23,7 +28,7 @@ client.interceptors.response.use(
       !originalRequest._retry &&
       !originalRequest.url?.includes('/auth/login') &&
       !originalRequest.url?.includes('/auth/signup')
-    ) {
+    ) {           
       originalRequest._retry = true;
 
       try {

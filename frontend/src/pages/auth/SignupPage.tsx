@@ -30,6 +30,9 @@ function SignupPage(): React.JSX.Element {
       await authAPI.signup(data);
 
       await checkAuth();
+
+      localStorage.setItem('auth_sync', Date.now().toString());
+
       // Success! Redirect the user (Auto-login)
       navigate('/dashboard');
     } catch (error) {

@@ -40,6 +40,8 @@ function LoginPage(): React.JSX.Element {
       // Normal login success
       await checkAuth();
 
+      localStorage.setItem('auth_sync', Date.now().toString());
+
       // Success! Redirect the user
       navigate('/dashboard');
     } catch (error) {

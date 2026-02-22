@@ -52,8 +52,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('auth:logout', handleLogoutTrace);
 
+    const syncAcrossTabs = (event: StorageEvent) => {
+      if (event.key === 'auth_sync') {
+        checkAuth();
+      }
+    };
+
+    window.addEventListener('storage', syncAcrossTabs);
+
     return () => {
       window.removeEventListener('auth:logout', handleLogoutTrace);
+      window.removeEventListener('storage', syncAcrossTabs);  
     };
   }, []);
 
