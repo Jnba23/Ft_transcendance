@@ -3,6 +3,7 @@ import authRoutes from './routes/auth.routes.js';
 import oauthRoutes from './routes/oauth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import twoFatRoutes from './routes/2fa.routes.js';
+import chatRoutes from '../chat/routes/chat.routes.js'
 import { AppError } from '../utils/AppError.js';
 import { deserializeUser } from '../middleware/deserializeUser.js';
 import { config } from './config/index.js';
@@ -66,6 +67,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/oauth', oauthRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth/2fa', twoFatRoutes);
+app.use('/api/chat', chatRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {
