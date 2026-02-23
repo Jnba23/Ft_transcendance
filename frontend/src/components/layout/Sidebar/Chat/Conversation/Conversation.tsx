@@ -1,6 +1,6 @@
+import { useEffect, useRef } from 'react';
 import Msg from './Msg';
 import NoMessages from './NoMessages';
-import { useRef } from 'react';
 import { useChatStore } from '@stores/chat.store';
 
 type ConversationProps = {
@@ -9,7 +9,14 @@ type ConversationProps = {
 };
 
 function Conversation({ username, avatar }: ConversationProps) {
-  const {messages} = useChatStore((state) => state);
+  const {messages, isLoading} = useChatStore((state) => state);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages]);
+
+  if (isLoading) return <div className='h-full'></div>
 
   if (!messages.length) {
     return (
@@ -22,6 +29,7 @@ function Conversation({ username, avatar }: ConversationProps) {
       {messages.map((m) => (
         <Msg key={m.id} avatar={avatar} message={m} />
       ))}
+      <div ref={bottomRef}/>
     </div>
   );
 }
