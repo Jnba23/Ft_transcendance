@@ -21,7 +21,7 @@ function UserDirectory({ switchSection }: UserDirectoryProps) {
   }, [query, users]);
 
   return (
-    <div className="w-full flex-shrink-0">
+    <div className="w-full flex-shrink-0 flex flex-col h-full min-h-0">
       <SectionHeader
         icon="close"
         label="user directory"
