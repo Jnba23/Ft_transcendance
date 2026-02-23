@@ -59,7 +59,7 @@ export const setupRpsHandler = (io: Server) => {
         [game.player1.userId, game.player2.userId].forEach((userId) => {
           RpsServ.startAutoChoiceTimer(gameId, userId, () => {
             RpsNs.to(gameId).emit('auto-choice-made', {
-              message: `The player ${userId} took too long, random choice mad`,
+              message: `The player ${userId} took too long, random choice made`,
               userId: userId,
             });
           });
@@ -71,11 +71,11 @@ export const setupRpsHandler = (io: Server) => {
       const userId = socket.data.userId;
 
       if (!gameId || !userId) {
-        socket.emit('Not in a game');
+        socket.emit('erro', {message: 'Not in a game'});
         return;
       }
       if (!['rock', 'paper', 'scissors'].includes(data.choice)) {
-        socket.emit('Invalid choice!');
+        socket.emit('error', {message: 'Invalid choice!'});
         return;
       }
       const success = RpsServ.makeChoice(gameId, userId, data.choice);
@@ -91,14 +91,14 @@ export const setupRpsHandler = (io: Server) => {
       }
       socket.emit('choice-recorded', {
         choice: data.choice,
-        message: 'Waiting for opponnent...',
+        message: 'Waiting for opponent...',
       });
       if (RpsServ.bothPlayersReady(gameId)) {
         game.phase = 'revealing';
         game.timers.roundReveal = setTimeout(() => {
           RpsNs.to(gameId).emit('round-results', {
-            p1Coice: game.player1.currentChoice,
-            p2Coice: game.player2.currentChoice,
+            p1Choice: game.player1.currentChoice,
+            p2Choice: game.player2.currentChoice,
             p1Score: game.player1.score,
             p2Score: game.player2.score,
             round: game.currentRound,
