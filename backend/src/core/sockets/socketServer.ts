@@ -5,6 +5,7 @@ import { setupPongHandler } from '../../realTimeGames/game/socketHandler.js';
 import { setupRpsHandler } from '../../realTimeGames/scnd_game/socketHandler.js';
 import { setupChatHandler } from '../../chat/socketHandler.js';
 import { config } from '../../config/index.js';
+import { setupFriendsHandler } from '../../user/friends/socketHandler.js';
 
 let io: Server;
 
@@ -21,6 +22,7 @@ export const initSocketIo = (server: HttpServer) => {
   setupPongHandler(io);
   setupRpsHandler(io);
   setupChatHandler(io);
+  setupFriendsHandler(io);
   return io;
 };
 

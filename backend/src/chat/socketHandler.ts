@@ -10,7 +10,7 @@ export const setupChatHandler = (io: Server) => {
 		socket.join(`user_${socket.data.userId}`);
 
 		socket.on('disconnect', () => {
-			console.log('Socket disconnected: ', socket.id);
+			console.log('chatNs: Socket disconnected: ', socket.id);
 		})
 	});
 };
