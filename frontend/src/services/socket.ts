@@ -4,7 +4,9 @@ let socket: Socket | null = null;
 
 export function getSocket() {
 	if (!socket) {
-		socket = io('http://localhost:4950');
+		socket = io('http://localhost:3000/chat', {
+			withCredentials: true
+		});
 	}
 	return socket;
 }
