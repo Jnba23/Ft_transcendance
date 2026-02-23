@@ -6,6 +6,7 @@ import { UserSummaryRes } from '@api/user.api'
 
 interface ChatState {
 	isOpen: boolean,
+	isLoading: boolean,
 	conversation_id: number | null,
 	user: UserSummaryRes | null,
 	messages: Message[],
@@ -19,10 +20,10 @@ interface ChatState {
 
 export const useChatStore = create<ChatState>((set, get) => ({ // active chat's state
 	isOpen: false,
+	isLoading: true,
 	conversation_id: null,
 	user: null,
 	messages: [],
-	isLoading: true,
 
 	openChat: () => {
 		set({isOpen: true});
@@ -38,16 +39,21 @@ export const useChatStore = create<ChatState>((set, get) => ({ // active chat's 
 
 	update: async (convo, user, markConvoRead) => {
 		set({
+			isLoading: true,
 			conversation_id: convo?.id,
 			user,
 			messages: [],
 		});
 
-		if (!convo) return;
+		if (!convo) {
+			set({isLoading: false});
+			return;
+		}
 
 		const response = await chatApi.getMessages(convo.id);
+		const messages = response.data.messages;
 
-		set({ messages: response.messages });
+		set({ messages, isLoading: false});
 
 		if (convo.unread_count) {
 			await chatApi.markConversationRead(convo.id);
@@ -67,7 +73,7 @@ export const useChatStore = create<ChatState>((set, get) => ({ // active chat's 
 
 		if (!conversation_id) {
 			const response = await chatApi.createConversation({other_id: user_id!});
-			conversation_id = response.conversation_id;
+			conversation_id = response.data.conversation_id;
 		}
 
 		await chatApi.createMessage({conversation_id, content});
