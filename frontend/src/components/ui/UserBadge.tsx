@@ -1,5 +1,6 @@
 import Avatar from '@ui/Avatar';
 import type { StatusStyle } from '@utils/types.ts';
+import { useUserDirectoryStore } from '@stores/userDirectory.store';
 
 const statusStyle = {
   online: 'bg-win border border-[#16213E]/50',
@@ -26,6 +27,8 @@ type UserBadgeProps = {
 };
 
 function UserBadge({ username, avatar, status, section }: UserBadgeProps) {
+  const me = useUserDirectoryStore((state) => state.me);
+
   return (
     <div className="flex gap-3 items-center ">
       <div className="relative flex items-center">
@@ -46,7 +49,7 @@ function UserBadge({ username, avatar, status, section }: UserBadgeProps) {
           'tracking-wider',
         ].join(' ')}
       >
-        {username}
+        {username === me?.username ? `${username} (You)`: username}
       </span>
     </div>
   );
