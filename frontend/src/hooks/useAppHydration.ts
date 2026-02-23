@@ -4,7 +4,7 @@ import { useFriendRequestsStore } from '@stores/friendRequests.store';
 import { useDirectMessagesStore } from "@stores/directMessages.store"
 import { getSocket } from '@services/socket';
 import { useAuth } from '@context/AuthContext';
-import { registerSocketEvents } from '@realtime/register';
+import { handleNewConversation, handleNewMessage } from '@realtime/handlers';
 
 function useAppHydration() {
 	const { user: me } = useAuth();
@@ -21,7 +21,7 @@ function useAppHydration() {
   	);
 
 	useEffect(() => {
-		intializeUserDirectory();
+		intializeUserDirectory(me);
 		initializeDirectMessages();
 		// initializeFriendRequests();
 	}, [intializeUserDirectory, initializeFriendRequests, initializeDirectMessages]);
@@ -31,7 +31,15 @@ function useAppHydration() {
 
 		const socket = getSocket();
 		socket.emit('register', currentUserId);
-		registerSocketEvents();
+
+		// register socket events
+		socket.on('newConversation', handleNewConversation);
+		socket.on('newMessage', handleNewMessage);
+
+		return () => {
+			socket.off('newConversation', handleNewConversation);
+			socket.off('newMessage', handleNewMessage);
+		};
 	}, [currentUserId]);
 }
 
