@@ -2,13 +2,13 @@ import type { StatusStyle } from '@utils/types.ts';
 import UserBadge from '@ui/UserBadge';
 import UserOptions from '../shared/UserOptions';
 import { useRef } from 'react';
-import { User } from 'types/user';
 import { useChatStore } from '@stores/chat.store';
 import { useDirectMessagesStore } from '@stores/directMessages.store';
 import { Conversation } from 'types/conversation';
+import { UserSummaryRes } from '@api/user.api';
 
 type UserListItemProps = {
-  user: User,
+  user: UserSummaryRes,
   avatarPath: string;
   status: keyof StatusStyle;
   hasOpenOpts: boolean;
