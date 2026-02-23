@@ -1,13 +1,13 @@
 import UserListItem from './UserListItem';
-import type { User } from 'types/user';
 import { useState } from 'react';
-// remove later
-import girl from '@assets/girl.jpg'
 import FindConnections from './FindConnections';
 import NoMatchedUser from '../shared/NoMatchedUser';
+import { UserSummaryRes } from '@api/user.api';
+// remove later
+import girl from '@assets/girl.jpg'
 
 type UserListProps = {
-  users: User[];
+  users: UserSummaryRes[];
   isSearching: boolean
 };
 
@@ -28,21 +28,23 @@ function UserList({ users, isSearching }: UserListProps) {
   }
 
   return (
-    <div className="flex flex-col gap-1 mt-2 ">
-      {users.map((u) => {
-        return (
-          <UserListItem
-            key={u.id}
-            user={u}
-            avatarPath={girl}
-            status={status}
-            hasOpenOpts={openItemId == u.id}
-            openOptions={() =>
-              setOpenItemId((prev) => (prev === u.id ? null : u.id))
-            }
-          />
-        );
-      })}
+    <div className='overflow-y-auto custom-scrollbar mt-2'>
+      <div className="flex flex-col gap-1">
+        {users.map((u) => {
+          return (
+            <UserListItem
+              key={u.id}
+              user={u}
+              avatarPath={girl}
+              status={status}
+              hasOpenOpts={openItemId == u.id}
+              openOptions={() =>
+                setOpenItemId((prev) => (prev === u.id ? null : u.id))
+              }
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
