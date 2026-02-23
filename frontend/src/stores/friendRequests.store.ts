@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { FriendRequest } from "types/friendRequest";
-import { mockSentRequests } from "@utils/data";
-import { mockReceivedRequests } from "@utils/data";
+import { friendsaApi } from "@api/friends.api";
 
 interface FriendRequestsState {
 	sent: FriendRequest[];
@@ -10,14 +9,15 @@ interface FriendRequestsState {
 
 	initialize: () => Promise<void>;
 
+	sendRequest: (other_id: number) => void;
 	addReceived: (request: FriendRequest) => void;
 	removeReceived: (id: number) => void;
 	removeSent: (id: number) => void;
 }
 
 export const useFriendRequestsStore = create<FriendRequestsState>((set) => ({
-	sent: mockSentRequests, //[]
-	received: mockReceivedRequests, //[]
+	sent: [],
+	received: [],
 
 	initialize: async () => {
 		const [sentRes, receivedRes] = await Promise.all([
@@ -29,6 +29,11 @@ export const useFriendRequestsStore = create<FriendRequestsState>((set) => ({
 		const received: FriendRequest[] = receivedRes.data;
 
 		set({ sent, received });
+	},
+
+	sendRequest: async (other_id: number) => {
+		const response = await friendsaApi.createFriendRequest({other_id});
+		// time-left && display 'couldn't send friend request'
 	},
 
 	addReceived: (request) => {
