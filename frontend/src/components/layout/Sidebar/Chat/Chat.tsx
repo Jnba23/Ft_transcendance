@@ -10,9 +10,7 @@ import girl from '@assets/girl.jpg'
 
 function Chat() {
   const chatRef = useRef<HTMLDivElement>(null);
-  const closeChat = useChatStore((state) => state.closeChat);
-  const isChatOpen = useChatStore((state) => state.isOpen);
-  const user = useChatStore((state) => state.user);
+  const {closeChat, isOpen: isChatOpen, user} = useChatStore((state) => state);
   const [inputValue, setInputValue] = useState('');
   const cleanHide = () => {
     closeChat();
