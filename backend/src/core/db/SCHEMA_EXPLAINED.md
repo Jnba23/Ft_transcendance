@@ -1,9 +1,11 @@
 <!-- Presentation: short intro for readers -->
+
 # Schema Overview
 
 This document explains the database schema used by the Ft_transcendance backend. It provides a clear, beginner-friendly description of each table, the purpose of its columns, example SQL queries for common operations, and notes on indexes and performance. Use this page as a quick reference when developing features that read or write data.
 
 1. USERS TABLE - The Heart of Your Application
+
 ```sql
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,           -- Unique ID for each user (auto-increments: 1, 2, 3...)
@@ -24,7 +26,7 @@ How to use:
 
 ```sql
 -- Create a new user
-INSERT INTO users (username, email, password_hash) 
+INSERT INTO users (username, email, password_hash)
 VALUES ('john_doe', 'john@42.fr', 'hashed_password_here');
 
 -- Find a user by username
@@ -35,6 +37,7 @@ UPDATE users SET status = 'online' WHERE id = 1;
 ```
 
 2. OAUTH_ACCOUNTS - For Social Logins (42, Google, GitHub)
+
 ```sql
 CREATE TABLE IF NOT EXISTS oauth_accounts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -54,12 +57,12 @@ How to use:
 
 ```sql
 -- Link a 42 account to a user
-INSERT INTO oauth_accounts (user_id, provider, provider_user_id, access_token) 
+INSERT INTO oauth_accounts (user_id, provider, provider_user_id, access_token)
 VALUES (1, '42', '12345', 'oauth_token_here');
 
 -- Find user by their 42 ID
-SELECT u.* FROM users u 
-JOIN oauth_accounts oa ON u.id = oa.user_id 
+SELECT u.* FROM users u
+JOIN oauth_accounts oa ON u.id = oa.user_id
 WHERE oa.provider = '42' AND oa.provider_user_id = '12345';
 ```
 
@@ -69,6 +72,7 @@ The current auth implementation does not persist refresh tokens in the database.
 Revocation is handled via the `token_blacklist` table.
 
 4. MATCHMAKING_QUEUE - Find Players for Games
+
 ```sql
 CREATE TABLE IF NOT EXISTS matchmaking_queue (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -88,7 +92,7 @@ How to use:
 INSERT INTO matchmaking_queue (user_id, game_mode) VALUES (1, 'classic');
 
 -- Find opponents (matchmaking logic)
-SELECT * FROM matchmaking_queue 
+SELECT * FROM matchmaking_queue
 WHERE game_mode = 'classic' AND status = 'waiting' AND user_id != 1;
 
 -- Remove from queue when matched
@@ -96,6 +100,7 @@ UPDATE matchmaking_queue SET status = 'matched' WHERE user_id = 1;
 ```
 
 5. TOURNAMENTS & PARTICIPANTS - Organize Competitions
+
 ```sql
 CREATE TABLE IF NOT EXISTS tournaments (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -125,7 +130,7 @@ How to use:
 
 ```sql
 -- Create a tournament
-INSERT INTO tournaments (name, max_players, created_by) 
+INSERT INTO tournaments (name, max_players, created_by)
 VALUES ('Winter Championship', 16, 1);
 
 -- Join a tournament
@@ -138,6 +143,7 @@ WHERE tp.tournament_id = 1;
 ```
 
 6. FRIENDS - Social Relationships
+
 ```sql
 CREATE TABLE IF NOT EXISTS friends (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -159,7 +165,7 @@ How to use:
 INSERT INTO friends (user_id, friend_id) VALUES (1, 2);
 
 -- Accept friend request
-UPDATE friends SET status = 'accepted' 
+UPDATE friends SET status = 'accepted'
 WHERE user_id = 2 AND friend_id = 1;
 
 -- Get all friends for a user
@@ -169,6 +175,7 @@ WHERE f.user_id = 1 AND f.status = 'accepted';
 ```
 
 7. GAMES - Match History
+
 ```sql
 CREATE TABLE IF NOT EXISTS games (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -199,12 +206,13 @@ INSERT INTO games (player1_id, player2_id, winner_id, player1_score, player2_sco
 VALUES (1, 2, 1, 5, 3, '2024-01-01 14:00:00', '2024-01-01 14:10:00');
 
 -- Get game history for a user
-SELECT * FROM games 
-WHERE player1_id = 1 OR player2_id = 1 
+SELECT * FROM games
+WHERE player1_id = 1 OR player2_id = 1
 ORDER BY created_at DESC;
 ```
 
 8. CHAT SYSTEM - Messaging
+
 ```sql
 CREATE TABLE IF NOT EXISTS chat_channels (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -251,7 +259,7 @@ INSERT INTO chat_channel_members (channel_id, user_id, role) VALUES (1, 2, 'memb
 INSERT INTO chat_messages (channel_id, sender_id, content) VALUES (1, 1, 'Hello everyone!');
 
 -- Get channel messages with usernames
-SELECT u.username, cm.content, cm.created_at 
+SELECT u.username, cm.content, cm.created_at
 FROM chat_messages cm
 JOIN users u ON u.id = cm.sender_id
 WHERE cm.channel_id = 1
@@ -259,7 +267,7 @@ ORDER BY cm.created_at ASC;
 ```
 
 9. INDEXES - The Performance Boosters
-Indexes are like the "table of contents" for your database - they make searching faster:
+   Indexes are like the "table of contents" for your database - they make searching faster:
 
 ```sql
 -- Find users by email quickly (login operations)
@@ -304,6 +312,7 @@ With indexes: Database jumps directly to relevant rows (fast)
 Essential for tables with thousands of records
 
 Putting It All Together - Example Workflow:
+
 ```sql
 -- 1. User registers
 INSERT INTO users (username, email, password_hash) VALUES ('alice', 'alice@42.fr', 'hash123');
@@ -312,11 +321,11 @@ INSERT INTO users (username, email, password_hash) VALUES ('alice', 'alice@42.fr
 INSERT INTO matchmaking_queue (user_id, game_mode) VALUES (1, 'classic');
 
 -- 3. Game is created when match found
-INSERT INTO games (player1_id, player2_id, status, started_at) 
+INSERT INTO games (player1_id, player2_id, status, started_at)
 VALUES (1, 2, 'in_progress', CURRENT_TIMESTAMP);
 
 -- 4. Game ends - record results
-UPDATE games SET winner_id = 1, player1_score = 5, player2_score = 3, 
+UPDATE games SET winner_id = 1, player1_score = 5, player2_score = 3,
 status = 'completed', ended_at = CURRENT_TIMESTAMP WHERE id = 1;
 
 -- 5. Update user stats
@@ -324,7 +333,6 @@ UPDATE users SET wins = wins + 1 WHERE id = 1;
 UPDATE users SET losses = losses + 1 WHERE id = 2;
 
 -- 6. Users chat about the game
-INSERT INTO chat_messages (channel_id, sender_id, content) 
+INSERT INTO chat_messages (channel_id, sender_id, content)
 VALUES (1, 1, 'Great game! Want a rematch?');
 ```
-

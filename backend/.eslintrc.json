@@ -20,24 +20,13 @@
         "@typescript-eslint/no-unused-vars": [
             "warn",
             {
-                "argsIgnorePattern": "^_"
+                "argsIgnorePattern": "^_",
+                "varsIgnorePattern": "^_"
             }
         ],
-        "semi": [
-            "error",
-            "always"
-        ],
-        "quotes": [
-            "error",
-            "single",
-            {
-                "avoidEscape": true
-            }
-        ],
-        "indent": [
-            "error",
-            2
-        ],
+        "indent": "off",
+        "quotes": "off",
+        "semi": "off",
         "no-console": "warn"
     }
 }

@@ -2,13 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import { signJwt, verifyJwt } from '../../utils/jwt.js';
 import { catchAsync } from '../../utils/catchAsync.js';
 import { AppError } from '../../utils/AppError.js';
-import { getDb } from '../../core/database.js';
 import type { JwtPayload } from 'jsonwebtoken';
-import { config } from '../config/index.js';
+import { config } from '../../config/index.js';
 import { authenticator } from 'otplib';
 import { User } from '../types.js';
 import qrcode from 'qrcode';
-import { verifyPassword } from '../../utils/crypt.js';
+import { twoFaService } from './service.js';
 
 // Cookie options (same as auth controller)
 const accessTokenCookieOptions = {
@@ -43,11 +42,7 @@ export const generate2FaHandler = catchAsync(
     // Generate QR Code Image (Base64)
     const imageUrl = await qrcode.toDataURL(otpauth);
 
-    const db = getDb();
-    db.prepare('UPDATE users SET two_fa_secret = ? WHERE id = ?').run(
-      secret,
-      user.id
-    );
+    twoFaService.saveSecret(user.id, secret);
 
     res.status(200).json({
       status: 'success',
@@ -64,26 +59,23 @@ export const turnOn2FaHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { code } = req.body;
     const user = res.locals.user as User;
-    const db = getDb();
 
-    const userData = db
-      .prepare('SELECT two_fa_secret FROM users WHERE id = ?')
-      .get(user.id) as User;
+    const secret = twoFaService.getSecret(user.id);
 
-    if (!userData.two_fa_secret) {
+    if (!secret) {
       return next(new AppError('Please generate a QR code first', 400));
     }
 
     const isValid = authenticator.verify({
       token: code,
-      secret: userData.two_fa_secret,
+      secret,
     });
 
     if (!isValid) {
       return next(new AppError('Invalid 2Fa code', 400));
     }
 
-    db.prepare('UPDATE users SET is_2fa_enabled = 1 WHERE id = ?').run(user.id);
+    twoFaService.enable(user.id);
 
     res.status(200).json({
       status: 'success',
@@ -109,10 +101,7 @@ export const authenticate2FaHandler = catchAsync(
     }
 
     const userId = decoded.id;
-    const db = getDb();
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as
-      | User
-      | undefined;
+    const user = twoFaService.findById(userId);
 
     if (!user || !user.two_fa_secret) {
       return next(new AppError('User not found or 2Fa not set up', 401));
@@ -149,25 +138,30 @@ export const authenticate2FaHandler = catchAsync(
 
 export const turnOff2FaHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { password } = req.body;
+    const { code } = req.body;
     const user = res.locals.user as User;
-    const db = getDb();
 
-    const userWithSecert = db
-      .prepare('SELECT password_hash FROM users WHERE id = ?')
-      .get(user.id) as User;
-
-    if (
-      !userWithSecert ||
-      !(await verifyPassword(password, userWithSecert.password_hash))
-    ) {
-      return next(new AppError('Invalid password', 401));
+    if (!code) {
+      return next(
+        new AppError('Please provide the 6-digit code to confirm', 400)
+      );
     }
 
-    // 2. Disable 2FA and delete the secret (forcing a new scan if they enable it again)
-    db.prepare(
-      'UPDATE users SET is_2fa_enabled = 0, two_fa_secret = NULL WHERE id = ?'
-    ).run(user.id);
+    const secret = twoFaService.getSecret(user.id);
+    if (!secret) {
+      return next(new AppError('2FA is not currently enabled', 400));
+    }
+
+    const isValid = authenticator.verify({
+      token: code,
+      secret: secret,
+    });
+
+    if (!isValid) {
+      return next(new AppError('Invalid 2FA code', 401));
+    }
+
+    twoFaService.disable(user.id);
 
     res.status(200).json({
       status: 'success',

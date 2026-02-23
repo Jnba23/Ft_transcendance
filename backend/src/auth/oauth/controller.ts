@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { signJwt } from '../../utils/jwt.js';
-import { config } from '../config/index.js';
+import { config } from '../../config/index.js';
 import { User } from '../types.js';
 
 const cookieOptions = {
@@ -26,9 +26,17 @@ const refreshTokenCookieOptions = {
  * Called after successful authentication with Google
  * Creates JWT tokens and redirects user to the frontend
  */
-
 export const googleAuthCallback = (req: Request, res: Response) => {
   const user = req.user as User;
+
+  if (user.is_2fa_enabled) {
+    const tempToken = signJwt(
+      { id: user.id, username: user.username, login_step: '2fa' },
+      { expiresIn: '5m' }
+    );
+
+    return res.redirect(`${config.corsOrigin}/auth/2fa?token=${tempToken}`);
+  }
 
   // Generate access and refresh tokens
   const accessToken = signJwt(

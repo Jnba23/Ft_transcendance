@@ -157,7 +157,7 @@ export const setupRpsHandler = (io: Server) => {
         }, 1000);
       }
     });
-    socket.on('disconnect', (reason) => {
+    socket.on('disconnect', (_reason) => {
       const gameId = socket.data.gameId;
       const userId = socket.data.userId;
 

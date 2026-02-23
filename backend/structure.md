@@ -45,6 +45,7 @@ Now let's look at each file:
 **File: `backend/src/auth/routes.ts`**
 
 This is the **waiter taking orders**. It says:
+
 - "If someone POSTs to /auth/login, send them to the login handler"
 - "If someone POSTs to /auth/register, send them to the register handler"
 
@@ -59,23 +60,26 @@ import { authController } from './controller';
 export async function authRoutes(app: FastifyInstance) {
   // When someone POSTs to /api/auth/login
   app.post('/auth/login', authController.login);
-  
+
   // When someone POSTs to /api/auth/register
   app.post('/auth/register', authController.register);
-  
+
   // When someone POSTs to /api/auth/logout (protected route)
-  app.post('/auth/logout', 
-    { onRequest: [app.authenticate] },  // Must be logged in first!
+  app.post(
+    '/auth/logout',
+    { onRequest: [app.authenticate] }, // Must be logged in first!
     authController.logout
   );
-  
+
   // When someone GETs /api/auth/me (protected route)
-  app.get('/auth/me',
+  app.get(
+    '/auth/me',
     { onRequest: [app.authenticate] },
     authController.getCurrentUser
   );
 }
 ```
+
 ---
 
 ## Layer 2: CONTROLLER (Request Handler)
@@ -83,6 +87,7 @@ export async function authRoutes(app: FastifyInstance) {
 **File: `backend/src/auth/RequestHandler.ts`**
 
 This is the **kitchen staff receiving the order**. It says:
+
 - "Get the email and password from the request"
 - "Call the service to handle it"
 - "Send back the response"
@@ -96,16 +101,19 @@ export const authRequestHandler = {
   // When someone wants to login
   login: async (request: FastifyRequest, reply: FastifyReply) => {
     // 1. Get email and password from request
-    const { email, password } = request.body as { email: string; password: string };
-    
+    const { email, password } = request.body as {
+      email: string;
+      password: string;
+    };
+
     // 2. Ask the service to handle login
     const result = await authService.login(email, password);
-    
+
     // 3. Send back the response
     return reply.send({
       success: true,
       token: result.token,
-      user: result.user
+      user: result.user,
     });
   },
 
@@ -114,7 +122,7 @@ export const authRequestHandler = {
     const result = await authService.register(email, password, username);
     return reply.status(201).send({
       success: true,
-      user: result.user
+      user: result.user,
     });
   },
 
@@ -129,9 +137,10 @@ export const authRequestHandler = {
     const userId = request.user.id;
     const user = await authService.getUserById(userId);
     return reply.send({ user });
-  }
+  },
 };
 ```
+
 ---
 
 ## Layer 3: SERVICE (Business Logic)
@@ -139,6 +148,7 @@ export const authRequestHandler = {
 **File: `backend/src/auth/service.ts`**
 
 This is the **chef cooking**. It says:
+
 - "Here's the email and password"
 - "Check if user exists"
 - "Compare passwords"
@@ -153,10 +163,7 @@ import { db } from '../../core/database';
 export const authService = {
   login: async (email: string, password: string) => {
     // 1. Find user in database
-    const user = await db.query(
-      'SELECT * FROM users WHERE email = ?',
-      [email]
-    );
+    const user = await db.query('SELECT * FROM users WHERE email = ?', [email]);
 
     // 2. User doesn't exist?
     if (!user) {
@@ -178,17 +185,16 @@ export const authService = {
       user: {
         id: user.id,
         email: user.email,
-        username: user.username
-      }
+        username: user.username,
+      },
     };
   },
 
   register: async (email: string, password: string, username: string) => {
     // 1. Check if user already exists
-    const existing = await db.query(
-      'SELECT * FROM users WHERE email = ?',
-      [email]
-    );
+    const existing = await db.query('SELECT * FROM users WHERE email = ?', [
+      email,
+    ]);
 
     if (existing) {
       throw new Error('User already exists');
@@ -208,13 +214,13 @@ export const authService = {
 
   logout: async (userId: string) => {
     // Clear session or token from database
-    await db.query(
-      'UPDATE users SET last_logout = NOW() WHERE id = ?',
-      [userId]
-    );
-  }
+    await db.query('UPDATE users SET last_logout = NOW() WHERE id = ?', [
+      userId,
+    ]);
+  },
 };
 ```
+
 ---
 
 ## Layer 4: TYPES (Data Structure)
@@ -222,6 +228,7 @@ export const authService = {
 **File: `backend/src/auth/types.ts`**
 
 This defines **what shape the data has**. It's like saying:
+
 - "A User always has: id, email, username, password"
 - "A Login request always has: email, password"
 - "A Login response always has: token, user"
@@ -254,6 +261,7 @@ export interface JWTPayload {
   email: string;
 }
 ```
+
 ---
 
 ## Layer 5: SCHEMA (Validation)
@@ -261,6 +269,7 @@ export interface JWTPayload {
 **File: `backend/src/auth/schema.ts`**
 
 This checks **if the data is valid** before using it. It's like:
+
 - "Email must be a real email"
 - "Password must be at least 8 characters"
 
@@ -271,9 +280,9 @@ export const loginSchema = {
     required: ['email', 'password'],
     properties: {
       email: { type: 'string', format: 'email' },
-      password: { type: 'string', minLength: 8 }
-    }
-  }
+      password: { type: 'string', minLength: 8 },
+    },
+  },
 };
 
 export const registerSchema = {
@@ -283,11 +292,12 @@ export const registerSchema = {
     properties: {
       email: { type: 'string', format: 'email' },
       password: { type: 'string', minLength: 8 },
-      username: { type: 'string', minLength: 3 }
-    }
-  }
+      username: { type: 'string', minLength: 3 },
+    },
+  },
 };
 ```
+
 ---
 
 ## Now Let's Look at SHARED LAYERS
@@ -312,11 +322,12 @@ export const db = {
   run: (sql: string, params: any[] = []) => {
     const stmt = sqlite.prepare(sql);
     return stmt.run(...params);
-  }
+  },
 };
 ```
 
 **Usage by anyone:**
+
 ```typescript
 // Auth uses it
 await db.query('SELECT * FROM users WHERE email = ?', [email]);
@@ -325,10 +336,15 @@ await db.query('SELECT * FROM users WHERE email = ?', [email]);
 await db.query('SELECT * FROM games WHERE id = ?', [gameId]);
 
 // RPS uses it
-await db.query('INSERT INTO rps_games VALUES (?, ?, ?)', [player1, player2, winner]);
+await db.query('INSERT INTO rps_games VALUES (?, ?, ?)', [
+  player1,
+  player2,
+  winner,
+]);
 ```
 
 **Simple analogy:** Core is like the **shared kitchen equipment**:
+
 - Everyone can use the oven
 - Everyone can use the fridge
 - Don't duplicate it for each person
@@ -346,7 +362,7 @@ import redis from 'redis';
 
 const redisClient = redis.createClient({
   host: 'redis',
-  port: 6379
+  port: 6379,
 });
 
 export const redisService = {
@@ -363,11 +379,12 @@ export const redisService = {
   // Broadcast to chat users
   publishChatMessage: (message: string) => {
     redisClient.publish('chat', message);
-  }
+  },
 };
 ```
 
 **Usage:**
+
 ```typescript
 // Chat service: notify someone is online
 await redisService.setPlayerStatus(userId, 'online');
@@ -415,10 +432,12 @@ export const authenticateMiddleware = async (
 ```
 
 **Usage in routes:**
+
 ```typescript
 // Protected route - only logged-in users
-app.post('/logout',
-  { onRequest: [authenticateMiddleware] },  // Check token first!
+app.post(
+  '/logout',
+  { onRequest: [authenticateMiddleware] }, // Check token first!
   authRequestHandler.logout
 );
 
@@ -427,6 +446,7 @@ app.post('/login', authRequestHandler.login);
 ```
 
 **Simple analogy:** Middleware is like **security checks**:
+
 - "Show me your ticket"
 - "Your ticket is valid? Come in!"
 - "No ticket? Stay out!"
@@ -457,11 +477,12 @@ export const authUtils = {
     } catch {
       return null;
     }
-  }
+  },
 };
 ```
 
 **Usage everywhere:**
+
 ```typescript
 // Auth service creates token
 const token = authUtils.generateToken(user.id);
@@ -508,6 +529,7 @@ const decoded = authUtils.verifyToken(token);
    └─→ Saves token to localStorage
    └─→ Redirects to dashboard
 ```
+
 ---
 
 ## Why This Pattern?
@@ -522,6 +544,7 @@ const decoded = authUtils.verifyToken(token);
 ✅ **Core** - Share database and cache
 
 Each layer has **ONE JOB**. This makes code:
+
 - **Easy to find** - Where's the login logic? In service!
 - **Easy to test** - Test each layer separately
 - **Easy to change** - Change logic without touching routes
@@ -531,13 +554,13 @@ Each layer has **ONE JOB**. This makes code:
 
 ## Quick Comparison
 
-| Layer | Job | Example |
-|-------|-----|---------|
-| Routes | WHERE to go | /api/auth/login |
-| RequestHandler | WHAT to do with input | Extract email/password |
-| Service | HOW to do it | Query DB, verify password |
-| Types | SHAPE of data | User interface |
-| Schema | VALID data | Email must be email |
-| Middleware | GATE keeper | Must have token |
-| Utils | TOOLS | Hash password, make token |
-| Core | SHARED | Database, Redis |
+| Layer          | Job                   | Example                   |
+| -------------- | --------------------- | ------------------------- |
+| Routes         | WHERE to go           | /api/auth/login           |
+| RequestHandler | WHAT to do with input | Extract email/password    |
+| Service        | HOW to do it          | Query DB, verify password |
+| Types          | SHAPE of data         | User interface            |
+| Schema         | VALID data            | Email must be email       |
+| Middleware     | GATE keeper           | Must have token           |
+| Utils          | TOOLS                 | Hash password, make token |
+| Core           | SHARED                | Database, Redis           |

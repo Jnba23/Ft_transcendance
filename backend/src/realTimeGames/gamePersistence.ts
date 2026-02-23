@@ -15,6 +15,8 @@ export function saveCompleteGames(data: {
   const db = getDb();
 
   try {
+    const db = getDb();
+
     const transaction = db.transaction(() => {
       const insertGame = db.prepare(`
 				INSERT INTO games(player1Id, player2Id, winnerId, player1_score,
@@ -61,6 +63,7 @@ export function saveCompleteGames(data: {
     });
     transaction();
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log('Failed to save game:', error);
   }
 }
