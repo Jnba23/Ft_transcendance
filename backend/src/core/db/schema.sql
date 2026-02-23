@@ -66,26 +66,27 @@ CREATE TABLE IF NOT EXISTS games (
     CHECK(player1_id != player2_id)
 );
 
--- Chat Channel Members // not
-CREATE TABLE IF NOT EXISTS chat_channel_members (
+-- Conversations table
+CREATE TABLE IF NOT EXISTS conversations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    channel_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
-    role TEXT DEFAULT 'member' CHECK(role IN ('owner', 'admin', 'member')),
-    joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (channel_id) REFERENCES chat_channels(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE(channel_id, user_id)
+    user_id_1 INTEGER NOT NULL,
+    user_id_2 INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id_1) REFERENCES users(id),
+    FOREIGN KEY (user_id_2) REFERENCES users(id)
 );
 
--- Chat messages
-CREATE TABLE IF NOT EXISTS chat_messages (
+-- Messages table
+CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    channel_id INTEGER NOT NULL,
+    conversation_id INTEGER NOT NULL,
     sender_id INTEGER NOT NULL,
     content TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (channel_id) REFERENCES chat_channels(id) ON DELETE CASCADE,
+    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_read INTEGER DEFAULT 0,
+
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id),
     FOREIGN KEY (sender_id) REFERENCES users(id)
 );
 
@@ -100,26 +101,26 @@ CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
 CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
 
 -- Matchmaking indexes
-CREATE INDEX IF NOT EXISTS idx_matchmaking_status ON matchmaking_queue(status);
-CREATE INDEX IF NOT EXISTS idx_matchmaking_mode ON matchmaking_queue(game_mode);
+-- CREATE INDEX IF NOT EXISTS idx_matchmaking_status ON matchmaking_queue(status);
+-- CREATE INDEX IF NOT EXISTS idx_matchmaking_mode ON matchmaking_queue(game_mode);
 
 -- Tournament indexes
-CREATE INDEX IF NOT EXISTS idx_tournaments_status ON tournaments(status);
-CREATE INDEX IF NOT EXISTS idx_tournament_participants_tournament ON tournament_participants(tournament_id);
-CREATE INDEX IF NOT EXISTS idx_tournament_participants_user ON tournament_participants(user_id);
+-- CREATE INDEX IF NOT EXISTS idx_tournaments_status ON tournaments(status);
+-- CREATE INDEX IF NOT EXISTS idx_tournament_participants_tournament ON tournament_participants(tournament_id);
+-- CREATE INDEX IF NOT EXISTS idx_tournament_participants_user ON tournament_participants(user_id);
 
--- Friends indexes
-CREATE INDEX IF NOT EXISTS idx_friendship_user_id_1 ON friendship(user_id_1);
-CREATE INDEX IF NOT EXISTS idx_friendship_user_id_2 ON friendship(user_id_2);
+-- -- Friends indexes
+-- CREATE INDEX IF NOT EXISTS idx_friendship_user_id_1 ON friendship(user_id_1);
+-- CREATE INDEX IF NOT EXISTS idx_friendship_user_id_2 ON friendship(user_id_2);
 
 -- Games indexes
-CREATE INDEX IF NOT EXISTS idx_games_player1 ON games(player1_id);
-CREATE INDEX IF NOT EXISTS idx_games_player2 ON games(player2_id);
-CREATE INDEX IF NOT EXISTS idx_games_tournament ON games(tournament_id);
-CREATE INDEX IF NOT EXISTS idx_games_type ON games(game_type);
+-- CREATE INDEX IF NOT EXISTS idx_games_player1 ON games(player1_id);
+-- CREATE INDEX IF NOT EXISTS idx_games_player2 ON games(player2_id);
+-- CREATE INDEX IF NOT EXISTS idx_games_tournament ON games(tournament_id);
+-- CREATE INDEX IF NOT EXISTS idx_games_type ON games(game_type);
 
 -- Chat indexes
-CREATE INDEX IF NOT EXISTS idx_chat_members_channel ON chat_channel_members(channel_id);
-CREATE INDEX IF NOT EXISTS idx_chat_members_user ON chat_channel_members(user_id);
-CREATE INDEX IF NOT EXISTS idx_chat_messages_channel ON chat_messages(channel_id);
-CREATE INDEX IF NOT EXISTS idx_chat_messages_sender ON chat_messages(sender_id);
+-- CREATE INDEX IF NOT EXISTS idx_chat_members_channel ON chat_channel_members(channel_id);
+-- CREATE INDEX IF NOT EXISTS idx_chat_members_user ON chat_channel_members(user_id);
+-- CREATE INDEX IF NOT EXISTS idx_chat_messages_channel ON chat_messages(channel_id);
+-- CREATE INDEX IF NOT EXISTS idx_chat_messages_sender ON chat_messages(sender_id);
