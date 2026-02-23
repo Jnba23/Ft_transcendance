@@ -3,6 +3,7 @@ import DMListItem from "./DMListItem";
 import { useState } from "react";
 import NoMatchedUser from "../shared/NoMatchedUser";
 import NoConversations from "./NoConversations";
+import { useDirectMessagesStore } from "@stores/directMessages.store";
 
 type DMListProps = {
 	conversations: Conversation[],
@@ -11,13 +12,16 @@ type DMListProps = {
 
 function DMList({ conversations, isSearching }: DMListProps) {
 	const [openItemId, setOpenItemId] = useState< number| null>(null);
+	const isLoading = useDirectMessagesStore((state) => state.isLoading);
+
+	if (isLoading) return <div></div>
 
 	if (!conversations.length && !isSearching) {
 		return (
 			<NoConversations />
 		);
 	}
-	
+
 	if (!conversations.length) {
 		return (
 			<NoMatchedUser />
@@ -25,19 +29,21 @@ function DMList({ conversations, isSearching }: DMListProps) {
 	}
 
 	return (
-		<div className="flex flex-col gap-1 mt-2 ">
-			{
-				conversations.map(convo => {
-					return <DMListItem
-								key={convo.id}
-								convo={convo}
-								hasOpenOpts={openItemId === convo.id}
-								openOptions={() =>
-									setOpenItemId(prev => (prev === convo.id ? null : convo.id))
-								}
-							/>
-				})
-			}
+		<div className="overflow-y-auto custom-scrollbar mt-2">
+			<div className="flex flex-col gap-1">
+				{
+					conversations.map(convo => {
+						return <DMListItem
+									key={convo.id}
+									convo={convo}
+									hasOpenOpts={openItemId === convo.id}
+									openOptions={() =>
+										setOpenItemId(prev => (prev === convo.id ? null : convo.id))
+									}
+								/>
+					})
+				}
+			</div>
 		</div>
 	);
 }
