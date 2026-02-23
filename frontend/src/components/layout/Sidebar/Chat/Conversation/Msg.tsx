@@ -1,6 +1,7 @@
 import type { Message } from 'types/message';
 import Avatar from '@ui/Avatar';
 import self from '/src/assets/boy.jpg';
+import { useUserDirectoryStore } from '@stores/userDirectory.store';
 
 type MsgProps = {
   avatar: string;
@@ -8,7 +9,8 @@ type MsgProps = {
 };
 
 function Msg({ avatar, message }: MsgProps) {
-  const isSent = message.sender_id == 1; // replace 1 with authed user id
+  const me = useUserDirectoryStore((state) => state.me);
+  const isSent = message.sender_id === me?.id;
 
   return (
     <div
@@ -18,8 +20,8 @@ function Msg({ avatar, message }: MsgProps) {
       <div className="flex flex-col gap-1">
         <div
           className={[
-            `${(isSent) ? 'bg-primary' : 'bg-[#1F2C4A]'}`,
-            'p-3 rounded-lg rounded-tl-none',
+            `${(isSent) ? 'bg-primary rounded-tr-none' : 'bg-[#1F2C4A] rounded-tl-none'}`,
+            'p-3 rounded-lg',
             'text-sm max-w-md',
           ].join(' ')}
         >
