@@ -4,11 +4,11 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "jsx": "react-jsx",
-    "ignoreDeprecations": "6.0",
     "baseUrl": "src",
     "paths": {
       "@components/*": ["components/*"],
       "@pages/*": ["pages/*"],
+      "@styles/*": ["styles/*"],
       "@hooks/*": ["hooks/*"],
       "@utils/*": ["utils/*"],
       "@assets/*": ["assets/*"],
