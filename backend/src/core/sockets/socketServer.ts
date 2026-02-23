@@ -6,7 +6,7 @@ import { setupRpsHandler } from '../../realTimeGames/scnd_game/socketHandler.js'
 import { setupChatHandler } from '../../chat/socketHandler.js';
 import { config } from '../../auth/config/index.js';
 
-export let io: Server;
+let io: Server;
 
 export const initSocketIo = (server: HttpServer) => {
   io = new Server(server, {
@@ -16,9 +16,17 @@ export const initSocketIo = (server: HttpServer) => {
       credentials: true,
     },
   });
+
   setupMmHandlers(io);
   setupPongHandler(io);
   setupRpsHandler(io);
   setupChatHandler(io);
   return io;
 };
+
+export const getIO = () =>  {
+  if (!io) {
+    throw new Error("Socket.io not initialized");
+  }
+  return io;
+}
