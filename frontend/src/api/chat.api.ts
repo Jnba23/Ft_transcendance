@@ -7,7 +7,10 @@ interface CreateConversationReq {
 }
 
 interface CreateConversationRes {
-	conversation_id: number
+	status: string,
+	data: {
+		conversation_id: number
+	}
 }
 
 interface CreateMessageReq {
@@ -16,45 +19,56 @@ interface CreateMessageReq {
 }
 
 interface CreateMessageRes {
-	message_id: number,
-	sent_at: string
+	status: string,
+	data: {
+		message_id: number,
+		sent_at: string
+	}
 }
 
 interface GetConversationsRes {
-	conversations: Conversation[]
+	status: string,
+	result: number,
+	data: {
+		conversations: Conversation[]
+	}
 }
 
 interface GetMessagesRes {
-	messages: Message[]
+	status: string,
+	result: number,
+	data: {
+		messages: Message[]
+	}
 }
 
 interface MarkConversationReadRes {
-	status: boolean
+	status: string
 }
 
 export const chatApi = {
 	createConversation: async (data: CreateConversationReq) => {
-		const response = await client.post<CreateConversationRes>('/conversations', data);
+		const response = await client.post<CreateConversationRes>('/chat/conversations', data);
 		return response.data;
 	},
 
 	createMessage: async (data: CreateMessageReq) => {
-		const response = await client.post<CreateMessageRes>('/messages', data);
+		const response = await client.post<CreateMessageRes>('/chat/messages', data);
 		return response.data;
 	},
 
 	getConversations: async () => {
-		const response = await client.get<GetConversationsRes>('/conversations');
+		const response = await client.get<GetConversationsRes>('/chat/conversations');
 		return response.data;
 	},
 
 	getMessages: async (conversation_id: number) => {
-		const response = await client.get<GetMessagesRes>(`/conversations/${conversation_id}/messages`);
+		const response = await client.get<GetMessagesRes>(`/chat/conversations/${conversation_id}/messages`);
 		return response.data;
 	},
 
 	markConversationRead: async (conversation_id: number) => {
-		const response = await client.post<MarkConversationReadRes>(`/conversations/${conversation_id}/read`);
+		const response = await client.post<MarkConversationReadRes>(`/chat/conversations/${conversation_id}/read`);
 		return response.data;
 	}
 }
