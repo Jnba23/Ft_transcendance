@@ -25,7 +25,7 @@ router.post(
   handleFriendAction
 );
 
-router.post('/requests/:id', createFriendRequest);
+router.post('/requests', createFriendRequest);
 
 router.get('/requests/check/:id', checkFriendship);
 

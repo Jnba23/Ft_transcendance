@@ -8,7 +8,10 @@ import { FriendAction } from './types.js';
 export const createFriendRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const SenderId = (res.locals.user as User).id;
-    const recipientId = parseInt(req.params.id);
+    const recipientId = req.body.other_id;
+
+    if (!recipientId)
+      return next(new AppError('Recipient ID required', 400));
 
     if (SenderId === recipientId) {
       return next(new AppError('Cannot send friend request to yourself', 400));
