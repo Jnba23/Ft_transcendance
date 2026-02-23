@@ -9,7 +9,6 @@ type ChatFooterProps = {
 
 function ChatFooter({ inputValue, setInputValue }: ChatFooterProps) {
   const addMessage = useChatStore((state) => state.addMessage);
-  const addConversation = useDirectMessagesStore((state) => state.addConversation);
 
   const sendMessage =  async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
