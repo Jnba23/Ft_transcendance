@@ -16,19 +16,20 @@ function Sidebar() {
         'border-r border-white/10',
       ].join(' ')}
     >
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 h-full">
         <Navigation />
-        <div className="overflow-hidden">
+        <div className="overflow-hidden min-h-0">
           <div
             className={[
               `${!isDMOpen && 'transform-[translateX(-100%)]'}`,
               'flex transition-[transform] duration-300',
+              'h-full'
             ].join(' ')}
           >
             <DirectMessages
               switchSection={switchSection}
             />
-            <UserDirectory // send all
+            <UserDirectory
               switchSection={switchSection}
             />
           </div>
