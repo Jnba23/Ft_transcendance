@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useUserDirectoryStore } from "@stores/userDirectory.store";
 import { useFriendRequestsStore } from '@stores/friendRequests.store';
 import { useDirectMessagesStore } from "@stores/directMessages.store"
-import { getSocket } from '@services/socket';
+import { getSocket } from '@services/chat/socket';
 import { useAuth } from '@context/AuthContext';
 import { handleNewConversation, handleNewMessage } from '@realtime/handlers';
 
