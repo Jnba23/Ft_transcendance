@@ -28,7 +28,7 @@ interface CreateMessageRes {
 
 interface GetConversationsRes {
 	status: string,
-	result: number,
+	results: number,
 	data: {
 		conversations: Conversation[]
 	}
@@ -36,7 +36,7 @@ interface GetConversationsRes {
 
 interface GetMessagesRes {
 	status: string,
-	result: number,
+	results: number,
 	data: {
 		messages: Message[]
 	}
