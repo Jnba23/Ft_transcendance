@@ -204,7 +204,7 @@ export function getConversations(req: Request, res: Response) {
 
 	res.status(200).json({
 		status: "success",
-		result: conversations.length,
+		results: conversations.length,
 		data: {
 			conversations
 		}
@@ -244,7 +244,7 @@ export function getMessages(req: Request, res: Response) { // scale with paginat
 
 	res.status(201).json({
 		status: "success",
-		result: messages.length,
+		results: messages.length,
 		data: {
 			messages
 		}
