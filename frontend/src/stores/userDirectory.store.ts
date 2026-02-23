@@ -1,24 +1,26 @@
 import { create } from 'zustand'
-import { User } from 'types/user'
-import { userAPI, UserSummaryRes } from '@api/user.api';
+import { MyProfileRes, userAPI, UserSummaryRes } from '@api/user.api';
 
 interface UserDirectoryState {
-	users: User[],
+	me: MyProfileRes | null,
+	users: UserSummaryRes[],
 
-	initialize: () => void;
+	initialize: (me: MyProfileRes | null) => void;
 
-	addUser: (user: User) => void;
+	addUser: (user: UserSummaryRes) => void;
 	removeUser: (id: number) => void;
 }
 
 export const useUserDirectoryStore = create<UserDirectoryState>((set) => ({
+
+	me: null,
 	users: [],
 
-	initialize: async () => {
+	initialize: async (me) => {
 		const response = await userAPI.getAll();
 		const users: UserSummaryRes[] = response.data.users;
 
-		set({users});
+		set({me, users});
 	},
 
 	addUser: (user) => {
