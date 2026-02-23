@@ -1,16 +1,16 @@
 import { create } from "zustand";
 import axios from "axios";
-import { FriendRequest } from "types/friendRequest";
 import { friendsaApi } from "@api/friends.api";
+import { FriendRequestWithUser } from "types/friendRequest";
 
 interface FriendRequestsState {
-	sent: FriendRequest[];
-	received: FriendRequest[];
+	sent: FriendRequestWithUser[];
+	received: FriendRequestWithUser[];
 
 	initialize: () => Promise<void>;
 
 	sendRequest: (other_id: number) => void;
-	addReceived: (request: FriendRequest) => void;
+	addReceived: (request: FriendRequestWithUser) => void;
 	removeReceived: (id: number) => void;
 	removeSent: (id: number) => void;
 }
@@ -20,15 +20,10 @@ export const useFriendRequestsStore = create<FriendRequestsState>((set) => ({
 	received: [],
 
 	initialize: async () => {
-		const [sentRes, receivedRes] = await Promise.all([
-			axios.get("/api/friend-requests?type=sent"),
-			axios.get("/api/friend-requests?type=received"),
-		]);
+		const response = await friendsaApi.getFriendRequests('received');
+		const received = response.data.requests;
 
-		const sent: FriendRequest[] = sentRes.data;
-		const received: FriendRequest[] = receivedRes.data;
-
-		set({ sent, received });
+		set({ received });
 	},
 
 	sendRequest: async (other_id: number) => {

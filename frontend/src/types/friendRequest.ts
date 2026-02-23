@@ -1,6 +1,13 @@
-export interface FriendRequest {
+export interface Friendship {
   id: number;
   user_id_1: number;
   user_id_2: number;
-  createdAt: string;
+  status: 'pending' | 'accepted';
+  created_at: string;
+}
+
+export interface FriendRequestWithUser extends Friendship {
+  username: string;
+  avatar_url: string;
+  user_status: string;
 }

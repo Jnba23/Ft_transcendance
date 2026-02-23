@@ -23,7 +23,7 @@ function useAppHydration() {
 	useEffect(() => {
 		intializeUserDirectory(me);
 		initializeDirectMessages();
-		// initializeFriendRequests();
+		initializeFriendRequests();
 	}, [intializeUserDirectory, initializeFriendRequests, initializeDirectMessages]);
 
 	useEffect(() => {
