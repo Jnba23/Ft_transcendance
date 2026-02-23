@@ -4,6 +4,7 @@ import { chatApi } from '@api/chat.api';
 
 interface DirectMessagesState {
 	conversations: Conversation[],
+	isLoading: boolean,
 
 	initialze: () => void,
 
@@ -17,12 +18,13 @@ interface DirectMessagesState {
 
 export const useDirectMessagesStore = create<DirectMessagesState>((set, get) => ({
 	conversations: [],
+	isLoading: true,
 
 	initialze: async () => {
-		const data = await chatApi.getConversations();
-		const conversations = data.conversations;
+		const response = await chatApi.getConversations();
+		const { conversations } = response.data;
 
-		set({conversations});
+		set({conversations, isLoading: false});
 	},
 
 	addConversation: (convo) => {
