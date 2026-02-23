@@ -1,6 +1,6 @@
 import Avatar from '@ui/Avatar';
 import boy from '@assets/boy.jpg';
-import { useAuth } from '@context/AuthContext';
+import { useUserDirectoryStore } from '@stores/userDirectory.store';
 
 type UserMenuBtnProps = {
   isOpen: boolean;
@@ -9,8 +9,8 @@ type UserMenuBtnProps = {
 };
 
 function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
-  const { user }= useAuth();
- 
+  const me = useUserDirectoryStore((state) => state.me);
+
   return (
     <button
       className={[
@@ -26,7 +26,7 @@ function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
       <Avatar path={boy} section="userMenu" />
       <div className="flex items-center gap-1">
         <span className="text-white text-sm font-medium">
-          {user?.username}
+          {me?.username}
         </span>
         <span
           className={[
