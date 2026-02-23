@@ -18,7 +18,7 @@ function FriendReqList({ reqType }: FriendReqListProps) {
 						return (
 							<FriendReqItem 
 								key={req.id}
-								reqId={req.id}
+								request={req}
 								reqType={reqType}
 								removeReq={
 									reqType === "received" ?

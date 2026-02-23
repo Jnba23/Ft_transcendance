@@ -2,16 +2,17 @@ import axios from "axios";
 import UserBadge from "@ui/UserBadge";
 import friend from "@assets/friend.jpg";
 import RequestActions from "@ui/RequestActions";
+import { FriendRequestWithUser } from "types/friendRequest";
 
 type FriendReqItemProps = {
-	reqType: "received" | "sent";
-	reqId: number;
-	removeReq: () => void;
+	request: FriendRequestWithUser,
+	reqType: 'received' | 'sent',
+	removeReq: () => void
 };
 
-function FriendReqItem({ reqType, removeReq, reqId }: FriendReqItemProps) {
+function FriendReqItem({ request, reqType, removeReq }: FriendReqItemProps) {
 
-	const path = "/api/friends/requests/action?id=" + reqId + "&action=";
+	const path = "/api/friends/requests/action?id=" + request.id + "&action=";
 
 	const onAccept = () => {removeReq(); axios.post(path + "accept")};
 	const onDecline = () => {removeReq(); axios.post(path + "decline")};
@@ -20,7 +21,7 @@ function FriendReqItem({ reqType, removeReq, reqId }: FriendReqItemProps) {
 	return (
 		<div className="flex items-center justify-between">
 			<UserBadge
-				username="PlayerX"
+				username={request.username}
 				avatar={friend}
 				section="friendRequest"
 			/>
