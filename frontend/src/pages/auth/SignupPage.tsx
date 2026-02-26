@@ -29,7 +29,6 @@ function SignupPage(): React.JSX.Element {
     try {
       await authAPI.signup(data);
 
-      localStorage.setItem('is_authenticated', 'true');
       await checkAuth();
 
       localStorage.setItem('auth_sync', Date.now().toString());

@@ -24,22 +24,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     setIsLoading(true);
-    // If the user was never logged in, skip the network request entirely.
-    // This is the ONLY way to prevent the browser from logging "GET /users/me 401"
-    // because the browser logs failed XHR requests at the engine level (C++ code),
-    // which JavaScript cannot override.
-    if (localStorage.getItem('is_authenticated') !== 'true') {
-      setUser(null);
-      setIsLoading(false);
-      return;
-    }
 
     try {
       const response = await userAPI.getMe();
       setUser(response.data.user);
     } catch (error) {
       setUser(null);
-      localStorage.removeItem('is_authenticated');
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authAPI.logout();
     } finally {
       setUser(null);
-      localStorage.removeItem('is_authenticated');
       localStorage.setItem('auth_sync', Date.now().toString());
     }
   };

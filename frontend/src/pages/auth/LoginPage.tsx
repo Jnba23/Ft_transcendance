@@ -38,7 +38,6 @@ function LoginPage(): React.JSX.Element {
       }
 
       // Normal login success
-      localStorage.setItem('is_authenticated', 'true');
       await checkAuth();
 
       localStorage.setItem('auth_sync', Date.now().toString());
