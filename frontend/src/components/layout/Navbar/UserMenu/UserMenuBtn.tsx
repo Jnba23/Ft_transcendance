@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react';
 import Avatar from '@ui/Avatar';
-import boy from '@assets/boy.jpg';
-import { useAuth } from '../../../../context/AuthContext'
+import { useAuth } from '../../../../context/AuthContext';
+import { userAPI } from '../../../../api/user.api';
 
 type UserMenuBtnProps = {
   isOpen: boolean;
@@ -10,6 +11,36 @@ type UserMenuBtnProps = {
 
 function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
   const { user } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string>(user?.avatar_url || '');
+
+  useEffect(() => {
+    let objectUrl = '';
+
+    const fetchAvatar = async () => {
+      // Only fetch if the user has a real avatar_url stored in the DB
+      if (user?.id && user?.avatar_url && user.avatar_url.trim() !== '') {
+        try {
+          const url = await userAPI.getAvatar(user.id);
+          setAvatarUrl(url);
+          objectUrl = url;
+        } catch (error) {
+          console.error('Failed to load user avatar:', error);
+          setAvatarUrl('');
+        }
+      } else {
+        setAvatarUrl('');
+      }
+    };
+
+    fetchAvatar();
+
+    return () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [user?.id, user?.avatar_url]);
+
   return (
     <button
       className={[
@@ -22,7 +53,7 @@ function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
       onClick={toggle}
       ref={buttonRef}
     >
-      <Avatar path={boy} section="userMenu" />
+      <Avatar path={avatarUrl} section="userMenu" />
       <div className="flex items-center gap-1">
         <span className="text-white text-sm font-medium">{user?.username}</span>
         <span
