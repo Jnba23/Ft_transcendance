@@ -82,4 +82,13 @@ export const authService = {
       'INSERT OR IGNORE INTO token_blacklist (token, expires_at) VALUES (?, ?)'
     ).run(token, expiresAt);
   },
+
+  updateOnlineStatus(userId: number, status: 'online' | 'offline') {
+    const db = getDb();
+    db.prepare(`
+      UPDATE users
+      SET status = ?
+      WHERE id = ? 
+    `).run(status, userId);
+  },
 };
