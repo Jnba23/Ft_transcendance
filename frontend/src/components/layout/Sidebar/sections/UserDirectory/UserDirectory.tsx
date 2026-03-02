@@ -11,7 +11,6 @@ type UserDirectoryProps = {
 function UserDirectory({ switchSection }: UserDirectoryProps) {
   const users = useUserDirectoryStore((state) => state.users);
   const [query, setQuery] = useState('');
-  const setInput = (value: string) => setQuery(value);
   const filtered = useMemo(() => {
     if (!query) return [];
 
@@ -27,7 +26,7 @@ function UserDirectory({ switchSection }: UserDirectoryProps) {
         label="user directory"
         switchSection={switchSection}
       />
-      <InputField placeholder="Find users" icon="search" value={query} setInputVal={setInput}/>
+      <InputField placeholder="Find users" icon="search" value={query} setInputVal={setQuery}/>
       <UserList users={filtered} isSearching={Boolean(query)} />
     </div>
   );
