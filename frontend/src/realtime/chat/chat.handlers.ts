@@ -6,17 +6,17 @@ import { UserSummaryRes } from "@api/user.api"
 import { Conversation } from "types/conversation"
 import { useUserDirectoryStore } from "@stores/userDirectory.store"
 
-interface newConversationPayload {
+interface NewConversationPayload {
 	conversation_id: number,
 	user: UserSummaryRes
 }
 
-interface newMessagePayload {
+interface NewMessagePayload {
 	conversation_id: number,
 	message: Message
 }
 
-export const handleNewConversation = (payload: newConversationPayload) => {
+export const handleNewConversation = (payload: NewConversationPayload) => {
 	const dmStore = useDirectMessagesStore.getState();
 	const chatstore = useChatStore.getState();
 
@@ -34,7 +34,7 @@ export const handleNewConversation = (payload: newConversationPayload) => {
 	}
 };
 
-export const handleNewMessage = async (payload: newMessagePayload) => {
+export const handleNewMessage = async (payload: NewMessagePayload) => {
 	const chatStore = useChatStore.getState();
 	const dmStore = useDirectMessagesStore.getState();
 	const me = useUserDirectoryStore.getState().me;
