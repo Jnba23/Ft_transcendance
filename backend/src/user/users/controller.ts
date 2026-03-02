@@ -166,6 +166,7 @@ export const getAvatarHandler = catchAsync(
     if (!fs.existsSync(avatarPath)) {
       return next(new AppError('Avatar file not found', 404));
     }
+
     res.sendFile(avatarPath);
   }
 );

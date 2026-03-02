@@ -107,7 +107,7 @@ export const userAPI = {
   },
 
   getAvatar: async (id: number | string) => {
-    const response = await client.get(`/users/avatar/${id}`, {
+    const response = await client.get(`/users/avatar/${id}?t=${Date.now()}`, {
       responseType: 'blob'
     });
     return URL.createObjectURL(response.data);
