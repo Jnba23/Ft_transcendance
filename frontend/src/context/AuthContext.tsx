@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { userAPI, MyProfileRes } from '../api/user.api';
 import { authAPI } from '../api/auth.api';
+import { destroyManager} from '@services/manager';
 
 interface AuthContextType {
   user: MyProfileRes | null;
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authAPI.logout();
     } finally {
       setUser(null);
+      destroyManager();
       // Optionally redirect here or let the ProtectedRoute handle it
     }
   };
