@@ -1,8 +1,10 @@
+import React from "react";
+
 type InputFieldProps = {
   placeholder: string;
   icon?: string;
   value: string,
-  setInputVal: (value: string) => void
+  setInputVal: React.Dispatch<React.SetStateAction<string>>
 };
 
 function InputField({ placeholder, icon, value, setInputVal}: InputFieldProps) {
