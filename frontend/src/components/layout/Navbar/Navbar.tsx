@@ -23,7 +23,7 @@ function Navbar() {
   };
 
   return (
-    <header className="flex gap-3 items-center justify-end">
+    <header className="flex gap-3 items-center justify-end mb-8">
       <div className="relative">
         <NotificationsBtn
           onClick={notifsMenu.toggle}
