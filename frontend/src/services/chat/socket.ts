@@ -1,12 +1,5 @@
-import { io, Socket } from 'socket.io-client'
+import { getManager } from '@services/manager';
 
-let socket: Socket | null = null;
-
-export function getSocket() {
-	if (!socket) {
-		socket = io('http://localhost:3000/chat', {
-			withCredentials: true
-		});
-	}
-	return socket;
+export function createChatSocket() {
+	return getManager().socket('/chat');
 }
