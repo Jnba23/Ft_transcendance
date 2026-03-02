@@ -1,8 +1,8 @@
-import axios from "axios";
 import UserBadge from "@ui/UserBadge";
 import friend from "@assets/friend.jpg";
 import RequestActions from "@ui/RequestActions";
 import { FriendRequestWithUser } from "types/friendRequest";
+import { friendsApi } from "@api/friends.api";
 
 type FriendReqItemProps = {
 	request: FriendRequestWithUser,
@@ -12,11 +12,15 @@ type FriendReqItemProps = {
 
 function FriendReqItem({ request, reqType, removeReq }: FriendReqItemProps) {
 
-	const path = "/api/friends/requests/action?id=" + request.id + "&action=";
-
-	const onAccept = () => {removeReq(); axios.post(path + "accept")};
-	const onDecline = () => {removeReq(); axios.post(path + "decline")};
-	const onCancel = () => {removeReq(); axios.post(path + "cancel")};
+	const onAccept = () => {
+		friendsApi.updateFriendRequestStatus({request_id: request.id, action: 'accept'})
+	};
+	const onDecline = () => {
+		friendsApi.updateFriendRequestStatus({request_id: request.id, action: 'decline'});
+	};
+	const onCancel = () => {
+		friendsApi.updateFriendRequestStatus({request_id: request.id, action: 'cancel'});
+	};
 
 	return (
 		<div className="flex items-center justify-between">
