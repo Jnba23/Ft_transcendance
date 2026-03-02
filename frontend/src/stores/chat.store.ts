@@ -15,7 +15,9 @@ interface ChatState {
 	setConversationId: (conversation_id: number) => void,
 	update: (convo: Conversation | null, user: UserSummaryRes, markConvoRead: ((convo: Conversation) => void) | null) => void
 	appendMessage: (message: Message) => void,	
-	addMessage: (content: string) => void,
+	sendMessage: (content: string) => void,
+	setHasFriendRequest: (userId: number, hasFriendReq: number) => void,
+	updateUserStatus: (userId: number, status: 'online' | 'offline') => void,
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({ // active chat's state
@@ -67,7 +69,7 @@ export const useChatStore = create<ChatState>((set, get) => ({ // active chat's 
 		}));
 	},
 
-	addMessage: async (content) => {
+	sendMessage: async (content) => {
 		let conversation_id = get().conversation_id;
 		const user_id = get().user?.id;
 
@@ -77,5 +79,23 @@ export const useChatStore = create<ChatState>((set, get) => ({ // active chat's 
 		}
 
 		await chatApi.createMessage({conversation_id, content});
+	},
+
+	setHasFriendRequest: (userId, hasFriendReq) => {
+		const user = get().user;
+
+		if (user?.id !== userId) return;
+
+		user.hasFriendRequest = hasFriendReq;
+		set({ user });
+	},
+
+	updateUserStatus: (userId, status) => {
+		const user = get().user;
+
+		if (user?.id !== userId) return;
+
+		user.status = status;
+		set({ user });
 	}
 }))

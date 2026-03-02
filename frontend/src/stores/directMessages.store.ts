@@ -13,7 +13,9 @@ interface DirectMessagesState {
 	getConversationById: (id: number) => Conversation | undefined,
 	getConversationByUserId: (userId: number) => Conversation | undefined,
 	replaceConversation: (updated: Conversation) => void,
-	incrementUnread: (convo_id: number) => void
+	incrementUnread: (convo_id: number) => void,
+	setHasFriendRequest: (userId: number, hasFriendReq: number) => void,
+	updateUserStatus: (id: number, status: 'online' | 'offline') => void
 }
 
 export const useDirectMessagesStore = create<DirectMessagesState>((set, get) => ({
@@ -69,4 +71,22 @@ export const useDirectMessagesStore = create<DirectMessagesState>((set, get) => 
 		get().removeConversation(convo_id);
 		get().addConversation(convo!);
 	},
+
+	setHasFriendRequest: (userId, hasFriendReq) => {
+		const convo = get().getConversationByUserId(userId);
+		
+		if (!convo) return;
+
+		convo.user.hasFriendRequest = hasFriendReq;
+		get().replaceConversation(convo);
+	},
+
+	updateUserStatus: (userId, status) => {
+		const convo = get().getConversationByUserId(userId);
+
+		if (!convo || convo.user.status === status) return;
+
+		convo.user.status = status;
+		get().replaceConversation(convo);
+	}
 }));
