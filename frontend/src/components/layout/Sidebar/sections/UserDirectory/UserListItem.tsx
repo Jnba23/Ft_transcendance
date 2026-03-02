@@ -6,22 +6,16 @@ import { useChatStore } from '@stores/chat.store';
 import { useDirectMessagesStore } from '@stores/directMessages.store';
 import { Conversation } from 'types/conversation';
 import { UserSummaryRes } from '@api/user.api';
+// remove later
+import girl from '@assets/girl.jpg'
 
 type UserListItemProps = {
   user: UserSummaryRes,
-  avatarPath: string;
-  status: keyof StatusStyle;
   hasOpenOpts: boolean;
   openOptions: () => void;
 };
 
-function UserListItem({
-  user,
-  avatarPath,
-  status,
-  hasOpenOpts,
-  openOptions,
-}: UserListItemProps) {
+function UserListItem({ user, hasOpenOpts, openOptions, }: UserListItemProps) {
   const optsBtnRef = useRef<HTMLButtonElement | null>(null);
   
   const getConversationByUserId = useDirectMessagesStore((state) =>
@@ -60,9 +54,8 @@ function UserListItem({
       <div className="p-2" onClick={updateChat}>
         <div className="flex items-center justify-between">
           <UserBadge
-            username={user.username}
-            avatar={avatarPath}
-            status={status}
+            {...user}
+            avatar={girl}
             section="DM"
           />
           <button
@@ -80,7 +73,11 @@ function UserListItem({
           </button>
         </div>
       </div>
-      <UserOptions isOpen={hasOpenOpts} user_id={user.id}/>
+      <UserOptions
+        isOpen={hasOpenOpts}
+        user_id={user.id}
+        hasFriendRequest={!!user.hasFriendRequest}
+      />
     </div>
   );
 }

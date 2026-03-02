@@ -1,10 +1,8 @@
 import UserListItem from './UserListItem';
 import { useState } from 'react';
 import FindConnections from './FindConnections';
-import NoMatchedUser from '../shared/NoMatchedUser';
+import NoMatchedUser from '@ui/NoMatchedUser';
 import { UserSummaryRes } from '@api/user.api';
-// remove later
-import girl from '@assets/girl.jpg'
 
 type UserListProps = {
   users: UserSummaryRes[];
@@ -12,7 +10,6 @@ type UserListProps = {
 };
 
 function UserList({ users, isSearching }: UserListProps) {
-  const status = "online"; // remove later
   const [openItemId, setOpenItemId] = useState<number | null>(null); // for options menu
 
   if (!users.length && !isSearching) {
@@ -35,8 +32,6 @@ function UserList({ users, isSearching }: UserListProps) {
             <UserListItem
               key={u.id}
               user={u}
-              avatarPath={girl}
-              status={status}
               hasOpenOpts={openItemId == u.id}
               openOptions={() =>
                 setOpenItemId((prev) => (prev === u.id ? null : u.id))
