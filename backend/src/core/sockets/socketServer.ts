@@ -6,23 +6,32 @@ import { setupRpsHandler } from '../../realTimeGames/scnd_game/socketHandler.js'
 import { setupChatHandler } from '../../chat/socketHandler.js';
 import { config } from '../../config/index.js';
 import { setupFriendsHandler } from '../../user/friends/socketHandler.js';
+import { instrument } from '@socket.io/admin-ui';
+import { setupRootHandler } from './socketHandler.js';
+import { setupUsersHandler } from '../../user/users/socketHandler.js';
 
 let io: Server;
 
 export const initSocketIo = (server: HttpServer) => {
   io = new Server(server, {
     cors: {
-      origin: config.corsOrigin,
+      origin: ["https://admin.socket.io", "http://localhost:5713"],
       methods: ['GET', 'POST'],
       credentials: true,
     },
   });
 
+  instrument(io, {
+    auth: false,
+  });
+
+  setupRootHandler(io);
   setupMmHandlers(io);
   setupPongHandler(io);
   setupRpsHandler(io);
   setupChatHandler(io);
   setupFriendsHandler(io);
+  setupUsersHandler(io);
   return io;
 };
 
