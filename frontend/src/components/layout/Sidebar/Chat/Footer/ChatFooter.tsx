@@ -1,6 +1,7 @@
 import { useChatStore } from '@stores/chat.store';
-import { useDirectMessagesStore } from '@stores/directMessages.store';
 import InputField from '@ui/InputField';
+import { messageSchema } from '@schemas/chat.schema';
+import { useErrorStore } from '@stores/error.store';
 
 type ChatFooterProps = {
   inputValue: string
@@ -8,20 +9,28 @@ type ChatFooterProps = {
 }
 
 function ChatFooter({ inputValue, setInputValue }: ChatFooterProps) {
-  const addMessage = useChatStore((state) => state.addMessage);
+  const sendMessage = useChatStore((state) => state.sendMessage);
+  const showError = useErrorStore((state) => state.showError);
 
-  const sendMessage =  async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit =  async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (inputValue) {
-      addMessage(inputValue);
-      setInputValue('');
+    const result = messageSchema.safeParse({
+      message: inputValue
+    });
+
+    if (!result.success) {
+      showError(result.error.issues[0].message);
+      return;
     }
+
+    sendMessage(inputValue);
+    setInputValue('');
   };
 
   return (
     <div className="p-4 flex-shrink-0 border-t border-white/10">
-      <form className="flex items-center gap-2" onSubmit={sendMessage}>
+      <form className="flex items-center gap-2" onSubmit={handleSubmit}>
         <InputField placeholder="Type a message..." value={inputValue} setInputVal={setInputValue}/>
         <button
           className={[
