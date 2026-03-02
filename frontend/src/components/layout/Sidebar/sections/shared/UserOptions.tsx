@@ -1,14 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import UserOptsItem from './UserOptsItem';
 import { useFriendRequestsStore } from "@stores/friendRequests.store";
+import { useUserDirectoryStore } from "@stores/userDirectory.store";
 
 type UserOptionsProps = {
   isOpen: boolean;
-  isFriend?: boolean;
   user_id: number
+  hasFriendRequest: boolean
 };
 
-function UserOptions({ isOpen, isFriend, user_id }: UserOptionsProps) {
+function UserOptions({ isOpen, user_id, hasFriendRequest }: UserOptionsProps) {
+
+  const me = useUserDirectoryStore((state) => state.me);
+  const showAddFriend = !hasFriendRequest && user_id !== me?.id;
   const navigate = useNavigate();
   const toProfile = () => {
     navigate(`/profile/${user_id}`);
@@ -28,7 +32,7 @@ function UserOptions({ isOpen, isFriend, user_id }: UserOptionsProps) {
         ].join(' ')}
       >
         <UserOptsItem icon="visibility" label="View Profile" onClick={toProfile}/>
-        {!isFriend && (
+        {showAddFriend && (
           <UserOptsItem icon="person_add" label="Send Friend Request" onClick={sendFriendRequest}/>
         )}
       </div>
