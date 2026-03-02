@@ -1,7 +1,7 @@
 import { Conversation } from "types/conversation";
 import DMListItem from "./DMListItem";
 import { useState } from "react";
-import NoMatchedUser from "../shared/NoMatchedUser";
+import NoMatchedUser from "@ui/NoMatchedUser";
 import NoConversations from "./NoConversations";
 import { useDirectMessagesStore } from "@stores/directMessages.store";
 

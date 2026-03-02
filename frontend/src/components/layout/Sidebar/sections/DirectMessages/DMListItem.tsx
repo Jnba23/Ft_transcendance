@@ -19,10 +19,7 @@ function DMListItem({
 }: DMListItemProps) {
 
   const isConvoRead = !convo.unread_count;
-
-	const status = "online"; //remove later
   const optsBtnRef = useRef<HTMLButtonElement | null>(null);
-
   const replaceConversation = useDirectMessagesStore((state) => 
     state.replaceConversation
   );
@@ -46,7 +43,7 @@ function DMListItem({
 	return (
 	  <div
       className={[
-        `${isConvoRead ? 'hover:bg-white/5' : 'bg-white/10'}`,
+        `${!hasOpenOpts ? 'hover:bg-white/5' : 'bg-white/10'}`,
         'flex flex-col rounded-lg cursor-pointer',
         'trasition-[background-color] duration-300',
         'overflow-hidden'
@@ -58,9 +55,8 @@ function DMListItem({
         >
         <div className="flex items-center justify-between">
           <UserBadge
-            username={convo.user.username}
+            {...convo.user}
             avatar={girl}
-            status={status}
             section="DM"
           />
           <button
@@ -78,7 +74,11 @@ function DMListItem({
           </button>
         </div>
       </div>
-      <UserOptions isOpen={hasOpenOpts} user_id={convo.user.id}/>
+      <UserOptions
+        isOpen={hasOpenOpts}
+        user_id={convo.user.id}
+        hasFriendRequest={!!convo.user.hasFriendRequest}
+      />
     </div>
 	);
 }
