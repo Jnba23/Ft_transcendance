@@ -4,11 +4,9 @@ import type { headerMenuProps } from '@utils/types';
 import UserMenuItem from './UserMenuItem';
 import getTransitionClasses from '@utils/transitionStyles';
 import { useAuth } from '@context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   const { logout, user } = useAuth();
   const handleLogout = async () => {
@@ -23,7 +21,7 @@ function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
         `${getTransitionClasses(isOpen, 'navbar')}`,
         'rounded-lg shadow-lg mt-2',
         'bg-[#1F2C4A] border border-white/10',
-        'absolute w-48 right-0',
+        'absolute w-48 right-0 z-[40]',
       ].join(' ')}
       ref={userMenuRef}
     >
@@ -31,14 +29,21 @@ function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
         <UserMenuItem
           icon="person"
           label="Profile"
-          onClick={() => navigate(`/profile/${user?.id}`)}
+          path={`/profile/${user?.id}`}
+          onClick={hide}
         />
-        <UserMenuItem icon="settings" label="Settings" />
+        <UserMenuItem
+          icon="settings"
+          label="Settings"
+          path={'/'}
+          onClick={hide}
+        />
         <div className="my-1 h-px bg-white/10"></div>
         <UserMenuItem
           icon="logout"
           label="Logout"
           color="red"
+          path='/login'
           onClick={handleLogout}
         />
       </div>
