@@ -8,6 +8,8 @@ type SectionSizes = {
   chat: string;
   msg: string;
   friendRequest: string;
+  profile: string,
+  friends: string
 };
 
 const sectionSizes = {
@@ -17,6 +19,8 @@ const sectionSizes = {
   chat: 'size-10',
   msg: 'size-8',
   friendRequest: 'size-10',
+  profile: 'size-32',
+  friends: 'size-8'
 } satisfies SectionSizes;
 
 type AvatarProps = {
