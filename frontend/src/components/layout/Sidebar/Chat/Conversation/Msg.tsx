@@ -21,7 +21,7 @@ function Msg({ avatar, message }: MsgProps) {
         <div
           className={[
             `${(isSent) ? 'bg-primary rounded-tr-none' : 'bg-[#1F2C4A] rounded-tl-none'}`,
-            'p-3 rounded-lg',
+            'p-3 rounded-lg wrap-break-word',
             'text-sm max-w-md',
           ].join(' ')}
         >
