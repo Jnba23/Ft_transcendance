@@ -18,6 +18,7 @@
       "@context/*": ["context/*"],
       "@api/*": ["api/*"],
       "@realtime/*": ["realtime/*"],
+      "@schemas/*": ["schemas/*"],
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

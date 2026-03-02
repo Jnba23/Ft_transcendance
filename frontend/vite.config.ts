@@ -27,6 +27,7 @@ export default defineConfig({
       '@context': path.resolve(__dirname, 'src/context'),
       '@api': path.resolve(__dirname, 'src/api'),
       '@realtime': path.resolve(__dirname, 'src/realtime'),
+      '@schemas': path.resolve(__dirname, 'src/schemas'),
     },
   },
 });
