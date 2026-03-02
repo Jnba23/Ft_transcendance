@@ -11,3 +11,5 @@ export interface FriendRequestWithUser extends Friendship {
   avatar_url: string;
   user_status: string;
 }
+
+export type FriendAction = 'accept' | 'decline' | 'cancel' | 'remove';
