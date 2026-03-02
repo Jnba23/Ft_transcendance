@@ -4,7 +4,7 @@ import oauthRoutes from './auth/oauth/routes.js';
 import userRoutes from './user/users/routes.js';
 import friendRoutes from './user/friends/routes.js';
 import twoFatRoutes from './auth/2fa/routes.js';
-import chatRoutes from './chat/routes/chat.routes.js'
+import chatRoutes from './chat/routes.js'
 import { AppError } from './utils/AppError.js';
 import { deserializeUser } from './middleware/deserializeUser.js';
 import { config } from './config/index.js';
