@@ -20,14 +20,17 @@ const sectionSizes = {
 } satisfies SectionSizes;
 
 type UserBadgeProps = {
+  id?: number;
   username: string;
   avatar: string;
   status?: keyof StatusStyle;
   section: keyof SectionSizes;
 };
 
-function UserBadge({ username, avatar, status, section }: UserBadgeProps) {
+function UserBadge({ id, username, avatar, status, section }: UserBadgeProps) {
   const me = useUserDirectoryStore((state) => state.me);
+
+  status = id === me?.id ? 'online' : status;
 
   return (
     <div className="flex gap-3 items-center ">
