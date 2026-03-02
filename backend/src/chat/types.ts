@@ -19,6 +19,7 @@ export interface ConversationListRow {
 	avatar_url: string,
 	level: number,
 	status: string
+	hasFriendRequest: number
 	//
 	unread_count: number
 }
