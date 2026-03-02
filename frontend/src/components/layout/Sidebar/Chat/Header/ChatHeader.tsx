@@ -2,13 +2,13 @@ import { useRef, useState } from 'react';
 import UserBadge from '@ui/UserBadge';
 import HeaderBtn from './HeaderBtn';
 import ChatOptions from './ChatOptions';
-import type { User } from 'types/user';
+import { UserSummaryRes } from '@api/user.api';
 // remove later
 import girl from '@assets/girl.jpg'
 
 
 type ChatHeaderProps = {
-  user: User;
+  user: UserSummaryRes;
   hide: () => void;
 };
 
@@ -18,12 +18,9 @@ function ChatHeader({ user, hide }: ChatHeaderProps) {
   const toggleChatOpts = () => setIsChatOptsOpen(!isChatOptsOpen);
   const hideChatOpts = () => setIsChatOptsOpen(false);
 
-  //remove later
-  const status = "online";
-
   return (
     <header className="flex justify-between p-4 border-b border-white/10">
-      <UserBadge {...user} status={status} avatar={girl} section="chat" />
+      <UserBadge {...user} avatar={girl} section="chat" />
       <div className="flex gap-2">
         <div className="relative">
           <HeaderBtn
@@ -36,6 +33,7 @@ function ChatHeader({ user, hide }: ChatHeaderProps) {
             hide={hideChatOpts}
             hideChat={hide}
             user_id={user?.id}
+            hasFriendRequest={!!user?.hasFriendRequest}
             btnRef={optsBtnRef}
           />
         </div>
