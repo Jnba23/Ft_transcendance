@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
     level INTEGER DEFAULT 1,          -- New: Player level (e.g. Lv. 24)
     is_2fa_enabled BOOLEAN DEFAULT 0,
     two_fa_secret TEXT,
-    status TEXT DEFAULT 'offline' CHECK(status IN ('online', 'offline', 'in_game')),
+    status TEXT DEFAULT 'offline' CHECK(status IN ('online', 'offline')),
     
     -- Stats: Pong
     pong_wins INTEGER DEFAULT 0,
@@ -108,9 +108,3 @@ CREATE INDEX IF NOT EXISTS idx_friendship_user_id_2 ON friendship(user_id_2);
 CREATE INDEX IF NOT EXISTS idx_games_player1 ON games(player1_id);
 CREATE INDEX IF NOT EXISTS idx_games_player2 ON games(player2_id);
 CREATE INDEX IF NOT EXISTS idx_games_type ON games(game_type);
-
--- Chat indexes
--- CREATE INDEX IF NOT EXISTS idx_chat_members_channel ON chat_channel_members(channel_id);
--- CREATE INDEX IF NOT EXISTS idx_chat_members_user ON chat_channel_members(user_id);
--- CREATE INDEX IF NOT EXISTS idx_chat_messages_channel ON chat_messages(channel_id);
--- CREATE INDEX IF NOT EXISTS idx_chat_messages_sender ON chat_messages(sender_id);
