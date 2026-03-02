@@ -11,7 +11,6 @@ type DirectMessagesProps = {
 function DirectMessages({ switchSection }: DirectMessagesProps) {
 
   const [query, setQuery] = useState('');
-  const setInput = (value: string) => setQuery(value);
 
   const conversations = useDirectMessagesStore((state) => state.conversations);
   const filtered = useMemo(() => {
@@ -29,7 +28,7 @@ function DirectMessages({ switchSection }: DirectMessagesProps) {
         label="direct messages"
         switchSection={switchSection}
       />
-      <InputField placeholder="Find a friend" icon="search" value={query} setInputVal={setInput}/>
+      <InputField placeholder="Find a friend" icon="search" value={query} setInputVal={setQuery}/>
       <DMList conversations={filtered} isSearching={Boolean(query)} />
     </div>
   );
