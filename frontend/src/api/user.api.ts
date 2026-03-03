@@ -75,7 +75,7 @@ export const userAPI = {
     }
   },
 
-  updateMe: async (data: { username?: string, avatar?: File }) => {
+  updateMe: async (data: { username?: string; avatar?: File }) => {
     // If there's a file, use FormData (multipart)
     if (data.avatar) {
       const formData = new FormData();
@@ -93,7 +93,7 @@ export const userAPI = {
     // No file - send Json
     const response = await client.patch<GetMeRes>('/users/me', {
       username: data.username,
-    })
+    });
     return response.data;
   },
 
@@ -109,9 +109,8 @@ export const userAPI = {
 
   getAvatar: async (id: number | string) => {
     const response = await client.get(`/users/avatar/${id}?t=${Date.now()}`, {
-      responseType: 'blob'
+      responseType: 'blob',
     });
     return URL.createObjectURL(response.data);
-  }
+  },
 };
-

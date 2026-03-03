@@ -100,10 +100,11 @@ function LoginPage(): React.JSX.Element {
             <input
               type="text"
               placeholder="Enter your username or email"
-              className={`w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-4 text-white placeholder:text-white/50 text-sm focus:ring-[#0d59f2] focus:border-[#0d59f2] transition-colors focus:outline-none ${errors.identifier
-                ? 'border-[#E94560] focus:border-[#E94560]'
-                : ''
-                }`}
+              className={`w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-4 text-white placeholder:text-white/50 text-sm focus:ring-[#0d59f2] focus:border-[#0d59f2] transition-colors focus:outline-none ${
+                errors.identifier
+                  ? 'border-[#E94560] focus:border-[#E94560]'
+                  : ''
+              }`}
               {...register('identifier')}
             />
             {errors.identifier && (
@@ -124,10 +125,11 @@ function LoginPage(): React.JSX.Element {
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
-                className={`w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-4 text-white placeholder:text-white/50 text-sm focus:ring-[#0d59f2] focus:border-[#0d59f2] transition-colors focus:outline-none ${errors.password
-                  ? 'border-[#E94560] focus:border-[#E94560]'
-                  : ''
-                  }`}
+                className={`w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-4 text-white placeholder:text-white/50 text-sm focus:ring-[#0d59f2] focus:border-[#0d59f2] transition-colors focus:outline-none ${
+                  errors.password
+                    ? 'border-[#E94560] focus:border-[#E94560]'
+                    : ''
+                }`}
                 {...register('password')}
               />
               <button
@@ -181,8 +183,9 @@ function LoginPage(): React.JSX.Element {
           <button
             type="button"
             onClick={() => {
-              window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
-                }/oauth/google`;
+              window.location.href = `${
+                import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+              }/oauth/google`;
             }}
             className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-white/10 rounded-lg text-sm font-medium text-white bg-white/5 hover:bg-white/10 transition-colors"
           >

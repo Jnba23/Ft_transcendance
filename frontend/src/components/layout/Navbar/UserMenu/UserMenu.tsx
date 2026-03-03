@@ -8,7 +8,6 @@ import { useAuth } from '@context/AuthContext';
 function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-
   const { logout, user } = useAuth();
   const handleLogout = async () => {
     await logout();

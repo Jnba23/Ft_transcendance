@@ -31,7 +31,7 @@ function App() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile/:id" element={<Profile />} />
-              <Route path='/settings' element={<Settings />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="/game" element={<GamePage />} />
               <Route path="/start_game" element={<StartGame name="Pong" />} />
               <Route path="/match_making" element={<MatchMaking />} />

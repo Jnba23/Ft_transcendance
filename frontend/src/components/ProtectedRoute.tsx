@@ -5,7 +5,9 @@ interface ProtectedRouteProps {
   isPublicOnly?: boolean;
 }
 
-export const ProtectedRoute = ({ isPublicOnly = false }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({
+  isPublicOnly = false,
+}: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
