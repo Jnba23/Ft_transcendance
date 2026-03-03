@@ -1,7 +1,7 @@
 // add [color: color_utility_classes] mapping for
 // the color you wish to use
 
-import { NavLink } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 
 type ColorStyles = {
   // color: string [!always]

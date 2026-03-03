@@ -1,9 +1,9 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 
 type NavItemProps = {
   icon: string;
   label: string;
-  path?: string
+  path?: string;
 };
 
 function NavItem({ icon, label, path }: NavItemProps) {

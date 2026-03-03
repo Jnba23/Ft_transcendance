@@ -1,4 +1,3 @@
-import type { StatusStyle } from '@utils/types.ts';
 import UserBadge from '@ui/UserBadge';
 import UserOptions from '../shared/UserOptions';
 import { useRef } from 'react';
@@ -7,22 +6,22 @@ import { useDirectMessagesStore } from '@stores/directMessages.store';
 import { Conversation } from 'types/conversation';
 import { UserSummaryRes } from '@api/user.api';
 // remove later
-import girl from '@assets/girl.jpg'
+import girl from '@assets/girl.jpg';
 
 type UserListItemProps = {
-  user: UserSummaryRes,
+  user: UserSummaryRes;
   hasOpenOpts: boolean;
   openOptions: () => void;
 };
 
-function UserListItem({ user, hasOpenOpts, openOptions, }: UserListItemProps) {
+function UserListItem({ user, hasOpenOpts, openOptions }: UserListItemProps) {
   const optsBtnRef = useRef<HTMLButtonElement | null>(null);
-  
-  const getConversationByUserId = useDirectMessagesStore((state) =>
-    state.getConversationByUserId
+
+  const getConversationByUserId = useDirectMessagesStore(
+    (state) => state.getConversationByUserId
   );
-  const replaceConversation = useDirectMessagesStore((state) =>
-    state.replaceConversation
+  const replaceConversation = useDirectMessagesStore(
+    (state) => state.replaceConversation
   );
 
   const openChat = useChatStore((state) => state.openChat);
@@ -31,17 +30,17 @@ function UserListItem({ user, hasOpenOpts, openOptions, }: UserListItemProps) {
     const isOptsBtnClick = optsBtnRef.current?.contains(e.target as Node);
 
     if (isOptsBtnClick) return;
-  
+
     const convo = getConversationByUserId(user.id);
 
     const markConvoRead = (convo: Conversation) => {
       convo.unread_count = 0;
       replaceConversation(convo);
-    }
+    };
 
     openChat();
     update(convo ?? null, user, markConvoRead);
-  }
+  };
 
   return (
     <div
@@ -53,11 +52,7 @@ function UserListItem({ user, hasOpenOpts, openOptions, }: UserListItemProps) {
     >
       <div className="p-2" onClick={updateChat}>
         <div className="flex items-center justify-between">
-          <UserBadge
-            {...user}
-            avatar={girl}
-            section="DM"
-          />
+          <UserBadge {...user} avatar={girl} section="DM" />
           <button
             className={[
               'p-1 rounded-md transition-colors',

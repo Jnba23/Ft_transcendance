@@ -1,14 +1,18 @@
-import React from "react";
+import React from 'react';
 
 type InputFieldProps = {
   placeholder: string;
   icon?: string;
-  value: string,
-  setInputVal: React.Dispatch<React.SetStateAction<string>>
+  value: string;
+  setInputVal: React.Dispatch<React.SetStateAction<string>>;
 };
 
-function InputField({ placeholder, icon, value, setInputVal}: InputFieldProps) {
-
+function InputField({
+  placeholder,
+  icon,
+  value,
+  setInputVal,
+}: InputFieldProps) {
   return (
     <div className="text-white relative w-full">
       <span

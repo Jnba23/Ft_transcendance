@@ -8,7 +8,7 @@ export interface UserSummaryRes {
   avatar_url: string;
   level: number;
   status: 'online' | 'offline';
-  hasFriendRequest: number
+  hasFriendRequest: number;
 }
 
 export interface MyProfileRes {

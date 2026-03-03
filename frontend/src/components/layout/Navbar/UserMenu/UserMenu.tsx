@@ -43,7 +43,7 @@ function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
           icon="logout"
           label="Logout"
           color="red"
-          path='/login'
+          path="/login"
           onClick={handleLogout}
         />
       </div>

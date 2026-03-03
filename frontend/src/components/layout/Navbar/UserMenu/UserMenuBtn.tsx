@@ -25,9 +25,7 @@ function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
     >
       <Avatar path={boy} section="userMenu" />
       <div className="flex items-center gap-1">
-        <span className="text-white text-sm font-medium">
-          {me?.username}
-        </span>
+        <span className="text-white text-sm font-medium">{me?.username}</span>
         <span
           className={[
             `${isOpen && 'rotate-180'}`,

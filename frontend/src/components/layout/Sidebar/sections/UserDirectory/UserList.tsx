@@ -6,26 +6,22 @@ import { UserSummaryRes } from '@api/user.api';
 
 type UserListProps = {
   users: UserSummaryRes[];
-  isSearching: boolean
+  isSearching: boolean;
 };
 
 function UserList({ users, isSearching }: UserListProps) {
   const [openItemId, setOpenItemId] = useState<number | null>(null); // for options menu
 
   if (!users.length && !isSearching) {
-    return (
-      <FindConnections />
-    );
+    return <FindConnections />;
   }
 
   if (!users.length) {
-    return (
-        <NoMatchedUser />
-    );
+    return <NoMatchedUser />;
   }
 
   return (
-    <div className='overflow-y-auto custom-scrollbar mt-2'>
+    <div className="overflow-y-auto custom-scrollbar mt-2">
       <div className="flex flex-col gap-1">
         {users.map((u) => {
           return (

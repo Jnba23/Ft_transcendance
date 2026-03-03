@@ -1,33 +1,33 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface ErrorStoreState {
-	error: string | null,
-	timeoutId: ReturnType<typeof setTimeout> | null,
-	showError: (message: string, duration?: number) => void,
-	clearError: () => void
+  error: string | null;
+  timeoutId: ReturnType<typeof setTimeout> | null;
+  showError: (message: string, duration?: number) => void;
+  clearError: () => void;
 }
 
 export const useErrorStore = create<ErrorStoreState>((set, get) => ({
-	error: null,
-	timeoutId: null,
-	
-	showError: (message, duration = 3000) => {
-		const existingTimeout = get().timeoutId;
-		
-		if (existingTimeout) clearTimeout(existingTimeout);
+  error: null,
+  timeoutId: null,
 
-		const timeoutId = setTimeout(() => {
-			set({ error: null, timeoutId: null})
-		}, duration);
+  showError: (message, duration = 3000) => {
+    const existingTimeout = get().timeoutId;
 
-		set({error: message, timeoutId});
-	},
+    if (existingTimeout) clearTimeout(existingTimeout);
 
-	clearError: () => {
-		const existingTimeout = get().timeoutId;
+    const timeoutId = setTimeout(() => {
+      set({ error: null, timeoutId: null });
+    }, duration);
 
-		if (existingTimeout) clearTimeout(existingTimeout);
-		
-		set({ error: null, timeoutId: null });
-	}
+    set({ error: message, timeoutId });
+  },
+
+  clearError: () => {
+    const existingTimeout = get().timeoutId;
+
+    if (existingTimeout) clearTimeout(existingTimeout);
+
+    set({ error: null, timeoutId: null });
+  },
 }));

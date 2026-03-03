@@ -4,8 +4,7 @@ import HeaderBtn from './HeaderBtn';
 import ChatOptions from './ChatOptions';
 import { UserSummaryRes } from '@api/user.api';
 // remove later
-import girl from '@assets/girl.jpg'
-
+import girl from '@assets/girl.jpg';
 
 type ChatHeaderProps = {
   user: UserSummaryRes;

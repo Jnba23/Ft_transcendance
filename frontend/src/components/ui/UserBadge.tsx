@@ -52,7 +52,7 @@ function UserBadge({ id, username, avatar, status, section }: UserBadgeProps) {
           'tracking-wider',
         ].join(' ')}
       >
-        {username === me?.username ? `${username} (You)`: username}
+        {username === me?.username ? `${username} (You)` : username}
       </span>
     </div>
   );

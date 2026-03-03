@@ -14,8 +14,8 @@ function UserDirectory({ switchSection }: UserDirectoryProps) {
   const filtered = useMemo(() => {
     if (!query) return [];
 
-    return users.filter(
-      u => u.username.toLowerCase().includes(query.toLowerCase())
+    return users.filter((u) =>
+      u.username.toLowerCase().includes(query.toLowerCase())
     );
   }, [query, users]);
 
@@ -26,7 +26,12 @@ function UserDirectory({ switchSection }: UserDirectoryProps) {
         label="user directory"
         switchSection={switchSection}
       />
-      <InputField placeholder="Find users" icon="search" value={query} setInputVal={setQuery}/>
+      <InputField
+        placeholder="Find users"
+        icon="search"
+        value={query}
+        setInputVal={setQuery}
+      />
       <UserList users={filtered} isSearching={Boolean(query)} />
     </div>
   );

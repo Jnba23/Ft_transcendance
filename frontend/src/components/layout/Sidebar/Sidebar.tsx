@@ -23,15 +23,11 @@ function Sidebar() {
             className={[
               `${!isDMOpen && 'transform-[translateX(-100%)]'}`,
               'flex transition-[transform] duration-300',
-              'h-full'
+              'h-full',
             ].join(' ')}
           >
-            <DirectMessages
-              switchSection={switchSection}
-            />
-            <UserDirectory
-              switchSection={switchSection}
-            />
+            <DirectMessages switchSection={switchSection} />
+            <UserDirectory switchSection={switchSection} />
           </div>
         </div>
       </div>

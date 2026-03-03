@@ -13,14 +13,12 @@ function Msg({ avatar, message }: MsgProps) {
   const isSent = message.sender_id === me?.id;
 
   return (
-    <div
-      className={`flex items-start gap-3 ${isSent && 'flex-row-reverse'}`}
-    >
+    <div className={`flex items-start gap-3 ${isSent && 'flex-row-reverse'}`}>
       <Avatar path={isSent ? self : avatar} section="msg" />
       <div className="flex flex-col gap-1">
         <div
           className={[
-            `${(isSent) ? 'bg-primary rounded-tr-none' : 'bg-[#1F2C4A] rounded-tl-none'}`,
+            `${isSent ? 'bg-primary rounded-tr-none' : 'bg-[#1F2C4A] rounded-tl-none'}`,
             'p-3 rounded-lg wrap-break-word',
             'text-sm max-w-md',
           ].join(' ')}

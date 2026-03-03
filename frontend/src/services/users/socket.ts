@@ -1,5 +1,5 @@
-import { getManager } from "@services/manager";
+import { getManager } from '@services/manager';
 
 export function createUsersSocket() {
-	return getManager().socket('/users');
+  return getManager().socket('/users');
 }

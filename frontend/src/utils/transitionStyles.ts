@@ -30,8 +30,8 @@ const modalTransition = {
 
 const errorTransition = {
   enter: 'opacity-100 translate-y-12 duration-300 ease-out',
-  leave: 'opacity-0 translate-y-0 duration-200 ease-in'
-}
+  leave: 'opacity-0 translate-y-0 duration-200 ease-in',
+};
 
 function getTransitionClasses(isOpen: boolean, section: string) {
   switch (section) {
@@ -55,7 +55,7 @@ function getTransitionClasses(isOpen: boolean, section: string) {
       if (isOpen) return modalTransition.enter;
 
       return modalTransition.leave;
-    
+
     case 'error':
       if (isOpen) return errorTransition.enter;
 

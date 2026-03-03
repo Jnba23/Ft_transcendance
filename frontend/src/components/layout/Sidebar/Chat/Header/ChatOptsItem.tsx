@@ -1,7 +1,7 @@
 type ChatOptsItemProps = {
   icon: string;
   label: string;
-  onClick?: () => void,
+  onClick?: () => void;
 };
 
 function ChatOptsItem({ icon, label, onClick }: ChatOptsItemProps) {

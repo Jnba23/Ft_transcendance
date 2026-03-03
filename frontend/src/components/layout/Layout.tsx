@@ -5,7 +5,6 @@ import Sidebar from './Sidebar/Sidebar';
 import ErrorAlert from './ErrorAlert/ErrorAlert';
 
 function Layout() {
-
   useAppHydration();
 
   return (

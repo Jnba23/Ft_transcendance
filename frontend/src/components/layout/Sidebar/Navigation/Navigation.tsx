@@ -9,7 +9,7 @@ function Navigation() {
         <span className="text-white text-lg font-semibold">Pongoose</span>
       </div>
       <nav className="flex flex-col gap-8">
-        <NavItem icon="dashboard" label="Dashboard" path='/dashboard'/>
+        <NavItem icon="dashboard" label="Dashboard" path="/dashboard" />
         <div className="pt-2">
           <h2
             className={[

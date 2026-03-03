@@ -4,19 +4,19 @@ import { messageSchema } from '@schemas/chat.schema';
 import { useErrorStore } from '@stores/error.store';
 
 type ChatFooterProps = {
-  inputValue: string
-  setInputValue: React.Dispatch<React.SetStateAction<string>>,
-}
+  inputValue: string;
+  setInputValue: React.Dispatch<React.SetStateAction<string>>;
+};
 
 function ChatFooter({ inputValue, setInputValue }: ChatFooterProps) {
   const sendMessage = useChatStore((state) => state.sendMessage);
   const showError = useErrorStore((state) => state.showError);
 
-  const handleSubmit =  async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const result = messageSchema.safeParse({
-      message: inputValue
+      message: inputValue,
     });
 
     if (!result.success) {
@@ -31,7 +31,11 @@ function ChatFooter({ inputValue, setInputValue }: ChatFooterProps) {
   return (
     <div className="p-4 flex-shrink-0 border-t border-white/10">
       <form className="flex items-center gap-2" onSubmit={handleSubmit}>
-        <InputField placeholder="Type a message..." value={inputValue} setInputVal={setInputValue}/>
+        <InputField
+          placeholder="Type a message..."
+          value={inputValue}
+          setInputVal={setInputValue}
+        />
         <button
           className={[
             'text-sm font-bold text-white bg-primary',

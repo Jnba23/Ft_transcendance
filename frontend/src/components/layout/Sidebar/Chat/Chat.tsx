@@ -6,16 +6,20 @@ import ChatHeader from './Header/ChatHeader';
 import Conversation from './Conversation/Conversation';
 import ChatFooter from './Footer/ChatFooter';
 //remove later
-import girl from '@assets/girl.jpg'
+import girl from '@assets/girl.jpg';
 
 function Chat() {
   const chatRef = useRef<HTMLDivElement>(null);
-  const {closeChat, isOpen: isChatOpen, user} = useChatStore((state) => state);
+  const {
+    closeChat,
+    isOpen: isChatOpen,
+    user,
+  } = useChatStore((state) => state);
   const [inputValue, setInputValue] = useState('');
   const cleanHide = () => {
     closeChat();
     setInputValue('');
-  }
+  };
 
   useClickOutside(isChatOpen, cleanHide, [chatRef]);
 
@@ -40,8 +44,8 @@ function Chat() {
         ref={chatRef}
       >
         <ChatHeader user={user!} hide={cleanHide} />
-        <Conversation username={user?.username!} avatar={girl}/>
-        <ChatFooter inputValue={inputValue} setInputValue={setInputValue}/>
+        <Conversation username={user?.username} avatar={girl} />
+        <ChatFooter inputValue={inputValue} setInputValue={setInputValue} />
       </div>
     </>
   );

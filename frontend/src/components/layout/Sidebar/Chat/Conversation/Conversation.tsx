@@ -4,24 +4,22 @@ import NoMessages from './NoMessages';
 import { useChatStore } from '@stores/chat.store';
 
 type ConversationProps = {
-  username: string,
+  username: string;
   avatar: string;
 };
 
 function Conversation({ username, avatar }: ConversationProps) {
-  const {messages, isLoading} = useChatStore((state) => state);
+  const { messages, isLoading } = useChatStore((state) => state);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  if (isLoading) return <div className='h-full'></div>
+  if (isLoading) return <div className="h-full"></div>;
 
   if (!messages.length) {
-    return (
-      <NoMessages username={username} />
-    )
+    return <NoMessages username={username} />;
   }
 
   return (
@@ -29,7 +27,7 @@ function Conversation({ username, avatar }: ConversationProps) {
       {messages.map((m) => (
         <Msg key={m.id} avatar={avatar} message={m} />
       ))}
-      <div ref={bottomRef}/>
+      <div ref={bottomRef} />
     </div>
   );
 }

@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { userAPI, MyProfileRes } from '../api/user.api';
 import { authAPI } from '../api/auth.api';
-import { destroyManager} from '@services/manager';
+import { destroyManager } from '@services/manager';
 
 interface AuthContextType {
   user: MyProfileRes | null;
