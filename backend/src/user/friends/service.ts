@@ -95,4 +95,17 @@ export const friendService = {
         AND f.status = 'accepted'
     `).all(userId, userId, userId) as FriendRequestWithUser[];
   },
+
+  getFriendRequestWithUser(friendshipId: number, userId: number):  FriendRequestWithUser {
+    const db = getDb();
+
+    return db.prepare(
+      `
+        SELECT f.*, u.username, u.avatar_url, u.status as user_status
+        FROM friendship f
+        JOIN users u ON u.id = ?
+        WHERE f.id = ? AND ? IN (f.user_id_1, f.user_id_2)
+      `
+    ).get(userId, friendshipId, userId) as FriendRequestWithUser;
+  }
 };
