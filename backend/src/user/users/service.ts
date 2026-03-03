@@ -1,5 +1,10 @@
 import { getDb } from '../../core/database.js';
-import { User, SafeUser, PublicUser, PublicUserWithStats } from '../../auth/types.js';
+import {
+  User,
+  SafeUser,
+  PublicUser,
+  PublicUserWithStats,
+} from '../../auth/types.js';
 
 const sanitizeUser = (user: User): SafeUser => {
   const {
@@ -30,7 +35,8 @@ export const userService = {
   findAll(userId: number): PublicUser[] {
     const db = getDb();
     return db
-      .prepare(`
+      .prepare(
+        `
         SELECT id, username, avatar_url, level, status,
         EXISTS (
           SELECT 1
@@ -41,7 +47,8 @@ export const userService = {
             (f.user_id_2 = ? AND f.user_id_1 = u.id)
         ) AS hasFriendRequest
         FROM users u
-      `)
+      `
+      )
       .all(userId, userId) as PublicUser[];
   },
 

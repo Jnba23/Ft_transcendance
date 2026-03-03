@@ -1,30 +1,32 @@
-import { Request, Response } from "express";
-import { getDb } from "../core/database.js";
-import { emitNewConversation, emitNewMessage } from "./realtime.service.js";
-import { ConversationListRow, ConversationRow, MessageRow } from "./types.js";
-import { User } from "../auth/types.js";
+import { Request, Response } from 'express';
+import { getDb } from '../core/database.js';
+import { emitNewConversation, emitNewMessage } from './realtime.service.js';
+import { ConversationListRow, ConversationRow, MessageRow } from './types.js';
+import { User } from '../auth/types.js';
 
 // POST
 
-export function createConversation (req: Request, res: Response) {
-	const db = getDb();
-	const creatorId = res.locals.user.id;
-	const otherUserId = req.body.other_id;
+export function createConversation(req: Request, res: Response) {
+  const db = getDb();
+  const creatorId = res.locals.user.id;
+  const otherUserId = req.body.other_id;
 
-	if (!otherUserId) {
-		return res.status(400).json({ error: 'Other user ID required' })
-	}
+  if (!otherUserId) {
+    return res.status(400).json({ error: 'Other user ID required' });
+  }
 
-	const insertStmt = db.prepare(`
+  const insertStmt = db.prepare(`
 		INSERT INTO conversations (user_id_1, user_id_2)
 		VALUES (?, ?)
 	`);
 
-	const info = insertStmt.run(creatorId, otherUserId);
-	const conversationId = info.lastInsertRowid;
+  const info = insertStmt.run(creatorId, otherUserId);
+  const conversationId = info.lastInsertRowid;
 
-	// fetch both users
-	const creator = db.prepare(`
+  // fetch both users
+  const creator = db
+    .prepare(
+      `
 		SELECT id, username, avatar_url, level, status,
 		EXISTS (
           SELECT 1
@@ -36,9 +38,13 @@ export function createConversation (req: Request, res: Response) {
         ) AS hasFriendRequest
 		FROM users u
 		WHERE id = ?
-	`).get(otherUserId, otherUserId, creatorId) as Partial<User>;
+	`
+    )
+    .get(otherUserId, otherUserId, creatorId) as Partial<User>;
 
-	const otherUser = db.prepare(`
+  const otherUser = db
+    .prepare(
+      `
 		SELECT id, username, avatar_url, level, status,
 		EXISTS (
           SELECT 1
@@ -50,112 +56,129 @@ export function createConversation (req: Request, res: Response) {
         ) AS hasFriendRequest
 		FROM users u
 		WHERE id = ?
-	`).get(creatorId, creatorId, otherUserId) as Partial<User>;
+	`
+    )
+    .get(creatorId, creatorId, otherUserId) as Partial<User>;
 
-	emitNewConversation({conversationId, creator, otherUser});
+  emitNewConversation({ conversationId, creator, otherUser });
 
-	res.status(201).json({
-		status: "success",
-		data: {
-			conversation_id: info.lastInsertRowid
-		}
-	});
+  res.status(201).json({
+    status: 'success',
+    data: {
+      conversation_id: info.lastInsertRowid,
+    },
+  });
 }
 
 export function createMessage(req: Request, res: Response) {
-	const db = getDb();
-	const senderId = res.locals.user.id;
-	const { conversation_id, content } = req.body;
+  const db = getDb();
+  const senderId = res.locals.user.id;
+  const { conversation_id, content } = req.body;
 
-	if (!conversation_id || !content) {
-		return res.status(400).json({ error: 'Missing fields' });
-	}
+  if (!conversation_id || !content) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
 
-	const convo = db.prepare(`
+  const convo = db
+    .prepare(
+      `
 		SELECT user_id_1, user_id_2
 		FROM conversations
 		WHERE id = ?
-	`).get(conversation_id) as ConversationRow;
+	`
+    )
+    .get(conversation_id) as ConversationRow;
 
-	if (!convo)
-	{
-		return res.status(404).json({ error: 'Conversation not found' });
-	}
+  if (!convo) {
+    return res.status(404).json({ error: 'Conversation not found' });
+  }
 
-	if (senderId != convo.user_id_1 && senderId != convo.user_id_2) {
-		return res.status(403).json({ error: 'Sender not part of this conversation' });
-	}
+  if (senderId != convo.user_id_1 && senderId != convo.user_id_2) {
+    return res
+      .status(403)
+      .json({ error: 'Sender not part of this conversation' });
+  }
 
-	const stmt = db.prepare(`
+  const stmt = db.prepare(`
 		INSERT INTO messages (conversation_id, sender_id, content)
 		VALUES (?, ?, ?)
 	`);
 
-	const info = stmt.run(conversation_id, senderId, content);
+  const info = stmt.run(conversation_id, senderId, content);
 
-	const message = db.prepare(`
+  const message = db
+    .prepare(
+      `
 		SELECT id, conversation_id, sender_id, content, sent_at
 		FROM messages
 		WHERE id = ?
-	`).get(info.lastInsertRowid) as MessageRow;
+	`
+    )
+    .get(info.lastInsertRowid) as MessageRow;
 
-	const receiverId = senderId === convo.user_id_1
-		? convo.user_id_2 : convo.user_id_1;
+  const receiverId =
+    senderId === convo.user_id_1 ? convo.user_id_2 : convo.user_id_1;
 
-	emitNewMessage({senderId, receiverId, message});
+  emitNewMessage({ senderId, receiverId, message });
 
-	res.status(201).json({
-		status: "sucess",
-		data: {
-			message_id: message.id,
-			sent_at: message.sent_at
-		}
-	});
+  res.status(201).json({
+    status: 'sucess',
+    data: {
+      message_id: message.id,
+      sent_at: message.sent_at,
+    },
+  });
 }
 
 export function markConversationRead(req: Request, res: Response) {
-	const db = getDb();
-	const userId = res.locals.user.id;
-	const conversationId = parseInt(req.params.id);
+  const db = getDb();
+  const userId = res.locals.user.id;
+  const conversationId = parseInt(req.params.id);
 
-	if (isNaN(conversationId)) {
-		return res.status(400).json({ error: 'invalid conversation ID' });
-	}
+  if (isNaN(conversationId)) {
+    return res.status(400).json({ error: 'invalid conversation ID' });
+  }
 
-	const convo = db.prepare(`
+  const convo = db
+    .prepare(
+      `
 		SELECT user_id_1, user_id_2
 		FROM conversations
 		WHERE id = ?
-	`).get(conversationId) as ConversationRow;
+	`
+    )
+    .get(conversationId) as ConversationRow;
 
-	if (!convo) {
-		return res.status(404).json({ error: 'Conversations not found' });
-	}
+  if (!convo) {
+    return res.status(404).json({ error: 'Conversations not found' });
+  }
 
-	if (userId != convo.user_id_1 && userId != convo.user_id_2) {
-		return res.status(403).json({ error: 'Not part of this conversation' });
-	}
+  if (userId != convo.user_id_1 && userId != convo.user_id_2) {
+    return res.status(403).json({ error: 'Not part of this conversation' });
+  }
 
-	db.prepare(`
+  db.prepare(
+    `
 		UPDATE messages
 		SET is_read = 1
 		WHERE conversation_id = ?
 		AND sender_id != ?
 		AND is_read = 0
-	`).run(conversationId, userId);
+	`
+  ).run(conversationId, userId);
 
-	res.status(200).json({
-		success: "success"
-	});
+  res.status(200).json({
+    success: 'success',
+  });
 }
 
 // GET
 
 export function getConversations(req: Request, res: Response) {
-	const db = getDb();
-	const userId = (res.locals.user as User).id;
+  const db = getDb();
+  const userId = (res.locals.user as User).id;
 
-	const stmt = db.prepare(`
+  const stmt = db.prepare(`
 		SELECT
 			c.id AS conversation_id,
 
@@ -215,66 +238,70 @@ export function getConversations(req: Request, res: Response) {
 			latest_message_at DESC;
 	`);
 
-	const rows = stmt.all({ userId }) as ConversationListRow[];
+  const rows = stmt.all({ userId }) as ConversationListRow[];
 
-	const conversations = rows.map(row => ({
-		id: row.conversation_id,
-		user: {
-			id: row.user_id,
-			username: row.username,
-			avatar_url: row.avatar_url,
-			level: row.level,
-			status: row.status,
-			hasFriendRequest: row.hasFriendRequest
-		},
-		unread_count: row.unread_count
-	}));
+  const conversations = rows.map((row) => ({
+    id: row.conversation_id,
+    user: {
+      id: row.user_id,
+      username: row.username,
+      avatar_url: row.avatar_url,
+      level: row.level,
+      status: row.status,
+      hasFriendRequest: row.hasFriendRequest,
+    },
+    unread_count: row.unread_count,
+  }));
 
-	res.status(200).json({
-		status: "success",
-		results: conversations.length,
-		data: {
-			conversations
-		}
-	});
+  res.status(200).json({
+    status: 'success',
+    results: conversations.length,
+    data: {
+      conversations,
+    },
+  });
 }
 
 export function getMessages(req: Request, res: Response) {
-	const db = getDb();
-	const userId = res.locals.user.id;
-	const conversationId = parseInt(req.params.id);
+  const db = getDb();
+  const userId = res.locals.user.id;
+  const conversationId = parseInt(req.params.id);
 
-	if (isNaN(conversationId)) {
-		return res.status(400).json({ error: 'Invalid conversation ID' });
-	}
+  if (isNaN(conversationId)) {
+    return res.status(400).json({ error: 'Invalid conversation ID' });
+  }
 
-	const conversation = db.prepare(`
+  const conversation = db
+    .prepare(
+      `
 		SELECT user_id_1, user_id_2
 		FROM conversations
 		WHERE id = ?
-	`).get(conversationId) as ConversationRow;
+	`
+    )
+    .get(conversationId) as ConversationRow;
 
-	if (!conversation) {
-		return res.status(404).json({ error: 'Conversation not found' });
-	}
+  if (!conversation) {
+    return res.status(404).json({ error: 'Conversation not found' });
+  }
 
-	if (userId !== conversation.user_id_1 && userId !== conversation.user_id_2) {
-		return res.status(403).json({ error: 'Not authorized' });
-	}
+  if (userId !== conversation.user_id_1 && userId !== conversation.user_id_2) {
+    return res.status(403).json({ error: 'Not authorized' });
+  }
 
-	const stmt = db.prepare(`
+  const stmt = db.prepare(`
 		SELECT * FROM messages
 		WHERE conversation_id = ?
 		ORDER BY sent_at ASC
 	`);
 
-	const messages = stmt.all(conversationId);
+  const messages = stmt.all(conversationId);
 
-	res.status(201).json({
-		status: "success",
-		results: messages.length,
-		data: {
-			messages
-		}
-	});
+  res.status(201).json({
+    status: 'success',
+    results: messages.length,
+    data: {
+      messages,
+    },
+  });
 }

@@ -85,10 +85,12 @@ export const authService = {
 
   updateOnlineStatus(userId: number, status: 'online' | 'offline') {
     const db = getDb();
-    db.prepare(`
+    db.prepare(
+      `
       UPDATE users
       SET status = ?
       WHERE id = ? 
-    `).run(status, userId);
+    `
+    ).run(status, userId);
   },
 };

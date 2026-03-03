@@ -4,15 +4,17 @@ import { AppError } from '../../utils/AppError.js';
 import { friendService } from './service.js';
 import { User } from '../../auth/types.js';
 import { FriendAction } from './types.js';
-import { emitUpdateFriendRequest, emitNewFriendRequest } from './realtime.service.js';
+import {
+  emitUpdateFriendRequest,
+  emitNewFriendRequest,
+} from './realtime.service.js';
 
 export const createFriendRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const SenderId = (res.locals.user as User).id;
     const recipientId = req.body.other_id;
 
-    if (!recipientId)
-      return next(new AppError('Recipient ID required', 400));
+    if (!recipientId) return next(new AppError('Recipient ID required', 400));
 
     if (SenderId === recipientId) {
       return next(new AppError('Cannot send friend request to yourself', 403));
@@ -28,11 +30,17 @@ export const createFriendRequest = catchAsync(
 
     const requestId = friendService.createRequest(SenderId, recipientId);
 
-    const requestWithCreator = friendService.getFriendRequestWithUser(requestId, SenderId);
-    const requestWithOther = friendService.getFriendRequestWithUser(requestId, recipientId);
+    const requestWithCreator = friendService.getFriendRequestWithUser(
+      requestId,
+      SenderId
+    );
+    const requestWithOther = friendService.getFriendRequestWithUser(
+      requestId,
+      recipientId
+    );
 
     // broadcast to creator and other
-    emitNewFriendRequest({requestWithCreator, requestWithOther});
+    emitNewFriendRequest({ requestWithCreator, requestWithOther });
 
     res.status(201).json({
       status: 'success',
@@ -108,7 +116,7 @@ export const handleFriendAction = catchAsync(
       res.json({ status: 'success', message: `Friend request ${action}ed` });
     }
 
-    emitUpdateFriendRequest({request, userId, isSender, action});
+    emitUpdateFriendRequest({ request, userId, isSender, action });
   }
 );
 

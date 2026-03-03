@@ -12,8 +12,6 @@ export function saveCompleteGames(data: {
   player1Score: number;
   player2Score: number;
 }): void {
-  const db = getDb();
-
   try {
     const db = getDb();
 
