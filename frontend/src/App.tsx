@@ -6,11 +6,12 @@ import TwoFactorAuth from '@pages/auth/TwoFactorAuth';
 import Dashboard from '@pages/dashboard/Dashboard';
 import Profile from '@pages/profile/Profile';
 import Settings from '@pages/settings/Settings';
-import GamePage from '@pages/game/GamePage';
+import PongGame from './pages/game/PongGame';
 import StartGame from '@pages/game/StartGame';
 import MatchMaking from '@pages/game/MatchMaking';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import EndMatch from '@pages/game/EndMatch';
 
 function App() {
   return (
@@ -25,19 +26,20 @@ function App() {
           </Route>
 
           {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            {/* Wrap protected pages in the Sidebar/Navbar Layout */}
-            <Route element={<Layout />}>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/profile/:id" element={<Profile />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/game" element={<GamePage />} />
-              <Route path="/start_game" element={<StartGame name="Pong" />} />
-              <Route path="/match_making" element={<MatchMaking />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Route>
+          {/* <Route element={<ProtectedRoute />}> */}
+          {/* Wrap protected pages in the Sidebar/Navbar Layout */}
+          <Route element={<Layout />}>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/pong/:gameId" element={<PongGame />} />
+            <Route path="/start_game" element={<StartGame name="Pong" />} />
+            <Route path="/match_making" element={<MatchMaking />} />
+            <Route path="/end_match" element={<EndMatch />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
+          {/* </Route> */}
         </Routes>
       </BrowserRouter>
     </AuthProvider>

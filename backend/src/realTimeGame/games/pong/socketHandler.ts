@@ -6,7 +6,6 @@ import { saveCompleteGames } from '../../persistence/gamePersistence.js';
 
 export const setupPongHandler = (io: Server) => {
   const PongNs = io.of('/pong').use(socketAuthMiddleware);
-  
 
   PongNs.on('connection', (socket) => {
     socket.on('join-game', ({ gameId }) => {

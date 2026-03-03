@@ -9,6 +9,7 @@ import {
   BALL_INITIAL_SPEED,
   WINNING_SCORE,
 } from './constants.js';
+
 import type { GameState, KeyboardState } from './game.types.js';
 
 const MAX_SPEED = 1200;

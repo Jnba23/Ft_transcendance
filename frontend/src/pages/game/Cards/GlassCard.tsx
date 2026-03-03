@@ -4,6 +4,7 @@ interface CardInfo {
   highestScore: string;
 }
 
+
 const Card = ({ gameName, winLoss, highestScore }: CardInfo) => {
   return (
     <div className="flex flex-col gap-4 bg-white/5 backdrop-blur-[10px] border border-white/10 rounded-xl p-6 text-white w-[25rem] h-60">
