@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import Card from './Cards/GlassCard';
+import Card from '../../components/ui/Cards/GlassCard';
 
 const StartGame = ({ name }: { name: string }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative flex flex-col justify-center items-center min-h-screen w-full bg-[#101622] p-4 gap-6 text-center isolate">
+    <div className="text-white relative flex flex-col justify-center items-center min-h-screen w-full bg-background-dark p-4 gap-6 text-center isolate">
       <span
         className="material-symbols-outlined absolute text-white/5 -z-10"
         style={{ fontSize: '40rem' }}

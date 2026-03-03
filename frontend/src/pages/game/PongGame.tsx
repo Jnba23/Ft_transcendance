@@ -32,9 +32,9 @@ const PongGame = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let finalStats: any = null;
+    let finalStats: GameState | null = null;
 
-    const handleMatchResults = (data: any) => {
+    const handleMatchResults = (data: GameState) => {
       finalStats = data;
       // console.log(finalStats);
     };
@@ -144,7 +144,7 @@ const PongGame = () => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen w-full bg-[#101622] p-4 gap-4">
+    <div className="flex flex-col justify-center items-center min-h-screen w-full bg-background-dark p-4 gap-4">
       {state?.isPaused && state?.isPlaying ? (
         <span className="text-white/60 text-[2rem] font-light tracking-wide">
           {formatTimer()}
