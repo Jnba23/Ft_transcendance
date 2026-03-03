@@ -5,8 +5,6 @@ import {
   createFriendRequest,
   handleFriendAction,
   getFriendRequests,
-  removeFriendship,
-  checkFriendship,
   getFriends,
 } from './controller.js';
 import { friendActionSchema } from './schema.js';
@@ -25,10 +23,6 @@ router.post(
   handleFriendAction
 );
 
-router.post('/requests/:id', createFriendRequest);
-
-router.get('/requests/check/:id', checkFriendship);
-
-router.delete('/requests/:id', removeFriendship);
+router.post('/requests', createFriendRequest);
 
 export default router;

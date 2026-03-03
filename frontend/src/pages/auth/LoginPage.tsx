@@ -1,8 +1,8 @@
-import { type LoginFormData, loginSchema } from '../../schemas/auth.schema';
+import { type LoginFormData, loginSchema } from '@schemas/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { authAPI } from '../../api/auth.api';
+import { authAPI } from '@api/auth.api';
 import { Link } from 'react-router-dom';
-import { EyeIcon, EyeOffIcon } from '../../components/icons/EyeIcons';
+import { EyeIcon, EyeOffIcon } from '@components/ui/icons/EyeIcons';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';

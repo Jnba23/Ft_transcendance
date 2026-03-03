@@ -80,24 +80,41 @@ export const friendService = {
     return db
       .prepare(
         `
-            SELECT f.*,
-                CASE WHEN f.user_id_1 = ? THEN u2.username ELSE u1.username END as username,
-                CASE WHEN f.user_id_1 = ? THEN u2.avatar_url ELSE u1.avatar_url END as avatar_url,
-                CASE WHEN f.user_id_1 = ? THEN u2.status ELSE u1.status END as user_status,
-                CASE WHEN f.user_id_1 = ? THEN u2.id ELSE u1.id END as friend_id
-            FROM friendship f
-            JOIN users u1 ON u1.id = f.user_id_1
-            JOIN users u2 ON u2.id = f.user_id_2
-            WHERE (f.user_id_1 = ? OR f.user_id_2 = ?) AND f.status = 'accepted'            
-        `
+      SELECT
+        f.*,
+        u.username,
+        u.avatar_url,
+        u.status AS user_status
+      FROM friendship f
+
+      JOIN users u ON u.id =
+        CASE
+          WHEN f.user_id_1 = ? THEN f.user_id_2
+          ELSE f.user_id_1
+        END
+
+      WHERE (f.user_id_1 = ? OR f.user_id_2 = ?)
+        AND f.status = 'accepted'
+    `
       )
-      .all(
-        userId,
-        userId,
-        userId,
-        userId,
-        userId,
-        userId
-      ) as FriendRequestWithUser[];
+      .all(userId, userId, userId) as FriendRequestWithUser[];
+  },
+
+  getFriendRequestWithUser(
+    friendshipId: number,
+    userId: number
+  ): FriendRequestWithUser {
+    const db = getDb();
+
+    return db
+      .prepare(
+        `
+        SELECT f.*, u.username, u.avatar_url, u.status as user_status
+        FROM friendship f
+        JOIN users u ON u.id = ?
+        WHERE f.id = ? AND ? IN (f.user_id_1, f.user_id_2)
+      `
+      )
+      .get(userId, friendshipId, userId) as FriendRequestWithUser;
   },
 };

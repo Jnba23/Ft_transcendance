@@ -2,16 +2,39 @@ import { useRef } from 'react';
 import getTransitionClasses from '@utils/transitionStyles';
 import ChatOptsItem from './ChatOptsItem';
 import useClickOutside from '@hooks/useClickOutside';
+import { useNavigate } from 'react-router-dom';
+import { useUserDirectoryStore } from '@stores/userDirectory.store';
+import { useFriendRequestsStore } from '@stores/friendRequests.store';
 
 type ChatOptionsProps = {
   isOpen: boolean;
-  isFriend?: boolean;
-  btnRef: React.RefObject<HTMLButtonElement | null>;
   hide: () => void;
+  hideChat: () => void;
+  user_id: number;
+  hasFriendRequest: boolean | null;
+  btnRef: React.RefObject<HTMLButtonElement | null>;
 };
 
-function ChatOptions({ isOpen, isFriend, btnRef, hide }: ChatOptionsProps) {
+function ChatOptions({
+  isOpen,
+  hide,
+  hideChat,
+  user_id,
+  hasFriendRequest,
+  btnRef,
+}: ChatOptionsProps) {
+  const me = useUserDirectoryStore((state) => state.me);
+  const showAddFriend = !hasFriendRequest && user_id !== me?.id;
   const optsRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const toProfile = () => {
+    hideChat();
+    navigate(`/profile/${user_id}`);
+  };
+  const sendRequest = useFriendRequestsStore((state) => state.sendRequest);
+  const sendFriendRequest = () => {
+    sendRequest(user_id);
+  };
 
   useClickOutside(isOpen, hide, [optsRef, btnRef]);
 
@@ -25,11 +48,17 @@ function ChatOptions({ isOpen, isFriend, btnRef, hide }: ChatOptionsProps) {
       ].join(' ')}
       ref={optsRef}
     >
-      <ChatOptsItem icon="visibility" label="View Profile" />
-      <ChatOptsItem icon="block" label="Block User" />
-      <ChatOptsItem icon="sports_esports" label="Send Game Request" />
-      {isFriend && (
-        <ChatOptsItem icon="sports_esports" label="Send Game Request" />
+      <ChatOptsItem
+        icon="visibility"
+        label="View Profile"
+        onClick={toProfile}
+      />
+      {showAddFriend && (
+        <ChatOptsItem
+          icon="person_add"
+          label="Send Friend Request"
+          onClick={sendFriendRequest}
+        />
       )}
     </div>
   );

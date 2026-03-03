@@ -9,7 +9,6 @@ export const ProtectedRoute = ({ isPublicOnly = false }: ProtectedRouteProps) =>
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    // You can replace this with a proper loading spinner
     return (
       <div className="flex h-screen items-center justify-center text-white">
         Loading...

@@ -9,6 +9,11 @@
   --color-win: #50c878;
 }
 
+a.active {
+  color: #0d59f2;
+  background-color: rgb(13 89 242 / 0.2);
+}
+
 button {
   cursor: pointer;
 }

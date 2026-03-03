@@ -1,4 +1,5 @@
 import scannerGif from '@assets/scanner.gif';
+import '@styles/matchMaking/matchMaking.css';
 
 const MatchMaking = () => {
   return (

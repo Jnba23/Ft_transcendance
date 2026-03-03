@@ -19,7 +19,8 @@ export const getCurrentUserHandler = (req: Request, res: Response) => {
 
 export const getAllUsersHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const users = userService.findAll();
+    const user = res.locals.user as User;
+    const users = userService.findAll(user.id);
 
     res.status(200).json({
       status: 'success',
@@ -45,7 +46,7 @@ export const getUserbyIdHandler = catchAsync(
       });
     }
 
-    const user = userService.findByIdPublic(parseInt(id));
+    const user = userService.findUserById(parseInt(id));
 
     if (!user) {
       return next(new AppError('User not found', 404));
@@ -153,7 +154,7 @@ export const updateUserStatusHandler = catchAsync(
 export const getAvatarHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
-    const user = userService.findByIdPublic(parseInt(id));
+    const user = userService.findUserById(parseInt(id));
     if (!user || !user.avatar_url) {
       return next(new AppError('User or avatar not found', 404));
     }

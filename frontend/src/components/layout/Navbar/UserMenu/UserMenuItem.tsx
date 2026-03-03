@@ -1,6 +1,8 @@
 // add [color: color_utility_classes] mapping for
 // the color you wish to use
 
+import { NavLink } from 'react-router-dom';
+
 type ColorStyles = {
   // color: string [!always]
   white: string;
@@ -17,6 +19,7 @@ type UserMenuItemProps = {
   icon: string;
   label: string;
   color?: keyof ColorStyles | undefined;
+  path?: string;
   onClick?: () => void;
 };
 
@@ -24,10 +27,12 @@ function UserMenuItem({
   icon,
   label,
   color = 'white',
+  path,
   onClick,
 }: UserMenuItemProps) {
   return (
-    <button
+    <NavLink
+      to={path ?? '/'}
       onClick={onClick}
       className={[
         `${colorStyles[color]}`,
@@ -39,7 +44,7 @@ function UserMenuItem({
     >
       <span className="material-symbols-outlined !text-base">{icon}</span>
       <span>{label}</span>
-    </button>
+    </NavLink>
   );
 }
 

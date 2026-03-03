@@ -12,6 +12,9 @@
       "@pages/*": [
         "pages/*"
       ],
+      "@styles/*": [
+        "styles/*"
+      ],
       "@hooks/*": [
         "hooks/*"
       ],
@@ -23,6 +26,24 @@
       ],
       "@ui/*": [
         "components/ui/*"
+      ],
+      "@stores/*": [
+        "stores/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@context/*": [
+        "context/*"
+      ],
+      "@api/*": [
+        "api/*"
+      ],
+      "@realtime/*": [
+        "realtime/*"
+      ],
+      "@schemas/*": [
+        "schemas/*"
       ],
     },
     "esModuleInterop": true,

@@ -1,23 +1,12 @@
 import Navigation from './Navigation/Navigation';
-import DirectMessages from './sections/DirectMessages';
-import UserDirectory from './sections/UserDirectory';
+import DirectMessages from './sections/DirectMessages/DirectMessages';
+import UserDirectory from './sections/UserDirectory/UserDirectory';
 import Chat from './Chat/Chat';
 import { useState } from 'react';
-import { users } from '@utils/data';
 
 function Sidebar() {
   const [isDMOpen, setIsDMOpen] = useState(true);
   const switchSection = () => setIsDMOpen(!isDMOpen);
-
-  const [openChatId, setOpenChatId] = useState<string | null>(null);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const setOpenChatUserId = (id: string) => {
-    setOpenChatId(id);
-    setIsChatOpen(true);
-  };
-  const hideChat = () => setIsChatOpen(false);
-  const openChatUser =
-    users.find((user) => user.id == openChatId) ?? users[users.length - 1];
 
   return (
     <aside
@@ -27,29 +16,22 @@ function Sidebar() {
         'border-r border-white/10',
       ].join(' ')}
     >
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 h-full">
         <Navigation />
-        <div className="overflow-hidden">
+        <div className="overflow-hidden min-h-0">
           <div
             className={[
               `${!isDMOpen && 'transform-[translateX(-100%)]'}`,
               'flex transition-[transform] duration-300',
+              'h-full',
             ].join(' ')}
           >
-            <DirectMessages
-              users={users} // send interacted with only
-              switchSection={switchSection}
-              setOpenChatUserId={setOpenChatUserId}
-            />
-            <UserDirectory // send all
-              users={users}
-              switchSection={switchSection}
-              setOpenChatUserId={setOpenChatUserId}
-            />
+            <DirectMessages switchSection={switchSection} />
+            <UserDirectory switchSection={switchSection} />
           </div>
         </div>
       </div>
-      <Chat isOpen={isChatOpen} user={openChatUser!} hide={hideChat} />
+      <Chat />
     </aside>
   );
 }

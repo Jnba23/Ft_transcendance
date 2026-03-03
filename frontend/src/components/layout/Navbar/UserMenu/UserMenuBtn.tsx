@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Avatar from '@ui/Avatar';
-import { useAuth } from '../../../../context/AuthContext';
-import { userAPI } from '../../../../api/user.api';
+import { useUserDirectoryStore } from '@stores/userDirectory.store';
+import { userAPI } from '@api/user.api';
 
 type UserMenuBtnProps = {
   isOpen: boolean;
@@ -10,17 +10,17 @@ type UserMenuBtnProps = {
 };
 
 function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
-  const { user } = useAuth();
-  const [avatarUrl, setAvatarUrl] = useState<string>(user?.avatar_url || '');
+  const me = useUserDirectoryStore((state) => state.me);
+  const [avatarUrl, setAvatarUrl] = useState<string>(me?.avatar_url || '');
 
   useEffect(() => {
     let objectUrl = '';
 
     const fetchAvatar = async () => {
       // Only fetch if the user has a real avatar_url stored in the DB
-      if (user?.id && user?.avatar_url && user.avatar_url.trim() !== '') {
+      if (me?.id && me?.avatar_url && me.avatar_url.trim() !== '') {
         try {
-          const url = await userAPI.getAvatar(user.id);
+          const url = await userAPI.getAvatar(me.id);
           setAvatarUrl(url);
           objectUrl = url;
         } catch (error) {
@@ -39,7 +39,7 @@ function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [user?.id, user?.avatar_url]);
+  }, [me?.id, me?.avatar_url]);
 
   return (
     <button
@@ -55,7 +55,7 @@ function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
     >
       <Avatar path={avatarUrl} section="userMenu" />
       <div className="flex items-center gap-1">
-        <span className="text-white text-sm font-medium">{user?.username}</span>
+        <span className="text-white text-sm font-medium">{me?.username}</span>
         <span
           className={[
             `${isOpen && 'rotate-180'}`,
