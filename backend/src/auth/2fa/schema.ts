@@ -15,6 +15,6 @@ export const verify2FaSchema = z.object({
 
 export const turnOff2FaSchema = z.object({
   body: z.object({
-    password: z.string().min(1, 'Password is required to disable 2FA'),
+    code: z.string().length(6, 'Code must be exactly 6 digits'),
   }),
 });
