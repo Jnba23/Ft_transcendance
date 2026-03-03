@@ -91,6 +91,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const handleLogoutTrace = () => {
       setUser(null);
       localStorage.removeItem('has_session');
+      destroyManager();
+      useUserDirectoryStore.getState().reset();
+      useDirectMessagesStore.getState().reset();
+      useFriendRequestsStore.getState().reset();
+      useFriendsStore.getState().reset();
+      localStorage.setItem('auth_sync', Date.now().toString());
     };
 
     window.addEventListener('auth:logout', handleLogoutTrace);
