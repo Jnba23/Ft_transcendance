@@ -46,13 +46,6 @@ router.get('/', requireUser, getAllUsersHandler);
 
 router.get('/:id', requireUser, getUserbyIdHandler);
 
-router.patch(
-  '/status',
-  requireUser,
-  validateResource(updateStatusSchema),
-  updateUserStatusHandler
-);
-
 router.get('/avatar/:id', requireUser, getAvatarHandler);
 
 export default router;

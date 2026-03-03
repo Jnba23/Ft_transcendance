@@ -137,20 +137,6 @@ export const updateUserHandler = async (
   }
 };
 
-export const updateUserStatusHandler = catchAsync(
-  async (req: Request, res: Response, _next: NextFunction) => {
-    const { status } = req.body;
-    const currentUser = res.locals.user as User;
-
-    userService.updateStatus(currentUser.id, status);
-
-    res.status(200).json({
-      status: 'success',
-      data: { status },
-    });
-  }
-);
-
 export const getAvatarHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
