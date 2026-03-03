@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { getDb } from "../../core/database.js";
-import { emitNewConversation, emitNewMessage } from "../services/realtime.service.js";
-import { ConversationListRow, ConversationRow, MessageRow } from "../types.js";
-import { User } from "../../auth/types.js";
+import { getDb } from "../core/database.js";
+import { emitNewConversation, emitNewMessage } from "./realtime.service.js";
+import { ConversationListRow, ConversationRow, MessageRow } from "./types.js";
+import { User } from "../auth/types.js";
 
 // POST
 
@@ -25,14 +25,32 @@ export function createConversation (req: Request, res: Response) {
 
 	// fetch both users
 	const creator = db.prepare(`
-		SELECT id, username, avatar_url, level, status
-		FROM users WHERE id = ?	
-	`).get(creatorId) as Partial<User>;
+		SELECT id, username, avatar_url, level, status,
+		EXISTS (
+          SELECT 1
+          FROM friendship f
+          WHERE
+            (f.user_id_1 = ? AND f.user_id_2 = u.id)
+            OR
+            (f.user_id_2 = ? AND f.user_id_1 = u.id)
+        ) AS hasFriendRequest
+		FROM users u
+		WHERE id = ?
+	`).get(otherUserId, otherUserId, creatorId) as Partial<User>;
 
 	const otherUser = db.prepare(`
-		SELECT id, username, avatar_url, level, status
-		FROM users WHERE id = ?		
-	`).get(otherUserId) as Partial<User>;
+		SELECT id, username, avatar_url, level, status,
+		EXISTS (
+          SELECT 1
+          FROM friendship f
+          WHERE
+            (f.user_id_1 = ? AND f.user_id_2 = u.id)
+            OR
+            (f.user_id_2 = ? AND f.user_id_1 = u.id)
+        ) AS hasFriendRequest
+		FROM users u
+		WHERE id = ?
+	`).get(creatorId, creatorId, otherUserId) as Partial<User>;
 
 	emitNewConversation({conversationId, creator, otherUser});
 
@@ -44,7 +62,7 @@ export function createConversation (req: Request, res: Response) {
 	});
 }
 
-export function createMessage(req: Request, res: Response) { // refactor ?
+export function createMessage(req: Request, res: Response) {
 	const db = getDb();
 	const senderId = res.locals.user.id;
 	const { conversation_id, content } = req.body;
@@ -152,6 +170,15 @@ export function getConversations(req: Request, res: Response) {
 			u.level,
 			u.status,
 
+			EXISTS (
+				SELECT 1
+				FROM friendship f
+				WHERE
+				(f.user_id_1 = @userId AND f.user_id_2 = u.id)
+				OR
+				(f.user_id_2 = @userId AND f.user_id_1 = u.id)
+			) AS hasFriendRequest,
+
 			COUNT(
 				CASE
 					WHEN m.sender_id != @userId AND m.is_read = 0 THEN 1
@@ -197,7 +224,8 @@ export function getConversations(req: Request, res: Response) {
 			username: row.username,
 			avatar_url: row.avatar_url,
 			level: row.level,
-			status: row.status
+			status: row.status,
+			hasFriendRequest: row.hasFriendRequest
 		},
 		unread_count: row.unread_count
 	}));
@@ -211,7 +239,7 @@ export function getConversations(req: Request, res: Response) {
 	});
 }
 
-export function getMessages(req: Request, res: Response) { // scale with pagination and maybe protect against user not being in convo 
+export function getMessages(req: Request, res: Response) {
 	const db = getDb();
 	const userId = res.locals.user.id;
 	const conversationId = parseInt(req.params.id);

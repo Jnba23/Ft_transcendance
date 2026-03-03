@@ -1,6 +1,6 @@
-import { User } from "../../auth/types.js";
-import { getIO } from "../../core/sockets/socketServer.js";
-import { MessageRow } from "../types.js";
+import { User } from "../auth/types.js";
+import { getIO } from "../core/sockets/socketServer.js";
+import { MessageRow } from "./types.js";
 
 type EmitNewConversationProps = {
 	conversationId: number | bigint,

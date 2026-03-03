@@ -1,18 +1,20 @@
 import { Router } from 'express'
+import { validateResource } from '../middleware/validateResource.js';
+import { createMessageSchema } from './schema.js';
 import {
 	createConversation,
 	createMessage,
 	getConversations,
 	getMessages,
 	markConversationRead
-} from '../controllers/chat.controller.js';
+} from './controller.js';
 
 const router = Router();
 
 // POST
 
 router.post('/conversations', createConversation);
-router.post('/messages', createMessage);
+router.post('/messages', validateResource(createMessageSchema), createMessage);
 router.post('/conversations/:id/read', markConversationRead);
 
 // GET
