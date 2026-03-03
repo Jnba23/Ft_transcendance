@@ -7,8 +7,6 @@ type FRSectionHeaderProps = {
 function FRSectionHeader({ setReqType }: FRSectionHeaderProps) {
   return (
     <div className="flex flex-col gap-4">
-      {' '}
-      {/* Header: Title + Toggle */}
       <h3
         className={[
           'text-white text-lg font-bold',
