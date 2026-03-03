@@ -10,6 +10,7 @@
 			- `game`
 			- `scnd_game`
 			- `user_mgmnt`
+			- `Apis-GameCust`
 	
 - Keep your branch updated:
 
@@ -27,7 +28,8 @@ main (production-ready code)
        ├── feature/chat_matchmaking
        ├── feature/game
        ├── feature/scnd_game
-       └── feature/user_mgmnt
+       ├── feature/user_mgmnt
+       └── feature/Apis-GameCust
 ```
 ### Working on Your Feature
 
@@ -228,6 +230,7 @@ Replace `[your-part]` with:
 - `game` (if you're doing main game)
 - `scnd_game` (if you're doing RPS)
 - `chat_matchmaking` (if you're doing chat)
+- `Apis-GameCust` (if you're doing APIs & game customization)
 
 #### Daily Workflow
 
