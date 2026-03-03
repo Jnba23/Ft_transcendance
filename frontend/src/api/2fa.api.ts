@@ -37,6 +37,8 @@ export const twoFaAPI = {
       '/auth/2fa/authenticate',
       data
     );
+    // Mark session for checkAuth
+    localStorage.setItem('has_session', 'true');
     return response.data;
   },
 

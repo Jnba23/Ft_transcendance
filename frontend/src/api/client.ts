@@ -10,6 +10,10 @@ export const client = axios.create({
 
 client.defaults.withCredentials = true;
 
+// Shared refresh state to deduplicate concurrent refresh attempts
+let isRefreshing = false;
+let refreshPromise: Promise<void> | null = null;
+
 // Handle errors
 client.interceptors.response.use(
   (response) => response,
@@ -20,18 +24,32 @@ client.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
+      !originalRequest._skipAuthRefresh &&
       !originalRequest.url?.includes('/auth/login') &&
       !originalRequest.url?.includes('/auth/signup') &&
-      !originalRequest.url?.includes('/auth/refresh')
+      !originalRequest.url?.includes('/auth/refresh') &&
+      localStorage.getItem('has_session')
     ) {
       originalRequest._retry = true;
 
       try {
-        await client.post('/auth/refresh');
+        // Deduplicate: if a refresh is already in flight, wait for it
+        if (!isRefreshing) {
+          isRefreshing = true;
+          refreshPromise = client
+            .post('/auth/refresh')
+            .then(() => {})
+            .finally(() => {
+              isRefreshing = false;
+              refreshPromise = null;
+            });
+        }
+
+        await refreshPromise;
         return client(originalRequest);
-      } catch (refreshError) {
+      } catch {
         window.dispatchEvent(new Event('auth:logout'));
-        return Promise.reject(refreshError);
+        return Promise.reject(error);
       }
     }
 
