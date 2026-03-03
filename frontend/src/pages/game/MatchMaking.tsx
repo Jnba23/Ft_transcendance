@@ -19,8 +19,7 @@ const MatchMaking = () => {
   useEffect(() => {
     mmSocket.emit('join-queue', gameType);
     mmSocket.on('reconnect-game', (gameId: string) => {
-      if (gameId)
-        navigate(`/${gameType}/${gameId}`);
+      if (gameId) navigate(`/${gameType}/${gameId}`);
     });
     const handleMatchFound = ({ gameId }: { gameId: string }) =>
       setTimeout(() => navigate(`/${gameType}/${gameId}`), 1500);

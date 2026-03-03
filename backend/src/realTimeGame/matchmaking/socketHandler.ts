@@ -12,7 +12,6 @@ export const setupMmHandlers = (io: Server) => {
     socket.on('join-queue', (data) => {
       const userId = socket.data.userId;
 
-
       const gameId = SessionManager.getGameId(userId);
       if (gameId) {
         socket.emit('reconnect-game', gameId);
