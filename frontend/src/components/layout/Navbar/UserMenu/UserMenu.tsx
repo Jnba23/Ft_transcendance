@@ -35,7 +35,7 @@ function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
         <UserMenuItem
           icon="settings"
           label="Settings"
-          path={'/'}
+          path="/settings"
           onClick={hide}
         />
         <div className="my-1 h-px bg-white/10"></div>

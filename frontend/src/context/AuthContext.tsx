@@ -21,9 +21,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<MyProfileRes | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const checkAuth = async () => {
+    setIsLoading(true);
+
     try {
       const response = await userAPI.getMe();
       setUser(response.data.user);
@@ -40,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setUser(null);
       destroyManager();
-      // Optionally redirect here or let the ProtectedRoute handle it
+      localStorage.setItem('auth_sync', Date.now().toString());
     }
   };
 
@@ -54,8 +56,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('auth:logout', handleLogoutTrace);
 
+    const syncAcrossTabs = (event: StorageEvent) => {
+      if (event.key === 'auth_sync') {
+        checkAuth();
+      }
+    };
+
+    window.addEventListener('storage', syncAcrossTabs);
+
     return () => {
       window.removeEventListener('auth:logout', handleLogoutTrace);
+      window.removeEventListener('storage', syncAcrossTabs);
     };
   }, []);
 

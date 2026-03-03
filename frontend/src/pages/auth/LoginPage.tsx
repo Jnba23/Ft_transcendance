@@ -30,15 +30,14 @@ function LoginPage(): React.JSX.Element {
 
       // Check if 2FA is required
       if ('action_required' in res && res.action_required === '2fa_auth') {
-        // TODO: Redirect to 2FA verification page
-        alert(
-          '2FA is enabled for this account. Please implement the 2FA verification flow.'
-        );
+        navigate('/auth/2fa', { state: { tempToken: res.tempToken } });
         return;
       }
 
       // Normal login success
       await checkAuth();
+
+      localStorage.setItem('auth_sync', Date.now().toString());
 
       // Success! Redirect the user
       navigate('/dashboard');

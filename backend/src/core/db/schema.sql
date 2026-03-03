@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     -- OAuth
     google_id TEXT UNIQUE,
 
-    avatar_url TEXT DEFAULT '/default-avatar.png',
+    avatar_url TEXT DEFAULT '/uploads/default-avatar.jpeg',
     level INTEGER DEFAULT 1,          -- New: Player level (e.g. Lv. 24)
     is_2fa_enabled BOOLEAN DEFAULT 0,
     two_fa_secret TEXT,
