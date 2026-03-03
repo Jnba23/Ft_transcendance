@@ -443,7 +443,7 @@ function SecuritySection({
                 </div>
 
                 {/* -- 2FA status line -- */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                <div className="p-6 pt-0 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-t border-white/10 mt-6 pt-6">
                     <label className="text-sm font-medium text-white/80 sm:w-1/3">
                         Two-Factor Authentication
                     </label>
@@ -452,8 +452,8 @@ function SecuritySection({
                         {/* Status badge */}
                         <span
                             className={`text-xs font-semibold px-3 py-1 rounded-full ${is2faEnabled
-                                    ? 'bg-green-500/10 text-green-400'
-                                    : 'bg-white/10 text-white/50'
+                                ? 'bg-green-500/10 text-green-400'
+                                : 'bg-white/10 text-white/50'
                                 }`}
                         >
                             {is2faEnabled ? 'Enabled' : 'Disabled'}
@@ -551,7 +551,7 @@ function SecuritySection({
                                     />
                                 </div>
 
-                                <div className="flex gap-3">
+                                <div className="flex gap-3 mt-4">
                                     <button
                                         type="button"
                                         onClick={resetState}
@@ -611,7 +611,7 @@ function SecuritySection({
                                     />
                                 </div>
 
-                                <div>
+                                <div className="flex gap-3 mt-4">
                                     <button
                                         type="button"
                                         onClick={resetState}
