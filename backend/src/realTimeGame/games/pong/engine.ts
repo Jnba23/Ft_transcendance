@@ -124,7 +124,10 @@ export const updateGame = (
   ) {
     const speed = Math.min(MAX_SPEED, Math.sqrt(dx * dx + dy * dy) * 1.05);
     const intersectY = y - (p1y + PADDLE_HEIGHT / 2);
-    const normalizedIntersectY = Math.max(-1, Math.min(1, intersectY / (PADDLE_HEIGHT / 2)));
+    const normalizedIntersectY = Math.max(
+      -1,
+      Math.min(1, intersectY / (PADDLE_HEIGHT / 2))
+    );
     const bounceAngle = normalizedIntersectY * (Math.PI / 4);
 
     dx = speed * Math.cos(bounceAngle);
@@ -139,7 +142,10 @@ export const updateGame = (
   ) {
     const speed = Math.min(MAX_SPEED, Math.sqrt(dx * dx + dy * dy) * 1.05);
     const intersectY = y - (p2y + PADDLE_HEIGHT / 2);
-    const normalizedIntersectY = Math.max(-1, Math.min(1, intersectY / (PADDLE_HEIGHT / 2)));
+    const normalizedIntersectY = Math.max(
+      -1,
+      Math.min(1, intersectY / (PADDLE_HEIGHT / 2))
+    );
     const bounceAngle = normalizedIntersectY * (Math.PI / 4);
 
     dx = -speed * Math.cos(bounceAngle);

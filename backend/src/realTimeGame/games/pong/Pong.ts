@@ -106,7 +106,10 @@ class PongGameManager {
       if (game.state.winner) {
         io.to(gameId).emit('game_over');
 
-        const winnerId = game.state.winner === 'player1' ? game.player1.userId : game.player2.userId;
+        const winnerId =
+          game.state.winner === 'player1'
+            ? game.player1.userId
+            : game.player2.userId;
 
         io.to(gameId).emit('match_results', {
           player1Score: game.state.score.player1,
@@ -115,7 +118,7 @@ class PongGameManager {
           player2Name: game.player2.name,
           winnerId,
           player1Id: game.player1.userId,
-          player2Id: game.player2.userId
+          player2Id: game.player2.userId,
         });
 
         saveCompleteGames({

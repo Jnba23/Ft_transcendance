@@ -151,7 +151,7 @@ export const setupPongHandler = (io: Server) => {
           player2Name: game.player2.name,
           winnerId: winner,
           player1Id: game.player1.userId,
-          player2Id: game.player2.userId
+          player2Id: game.player2.userId,
         });
 
         saveCompleteGames({
