@@ -12,4 +12,4 @@ export interface FriendRequestWithUser extends Friendship {
   user_status: string;
 }
 
-export type FriendAction = 'accept' | 'decline' | 'cancel';
+export type FriendAction = 'accept' | 'decline' | 'cancel' | 'remove';
