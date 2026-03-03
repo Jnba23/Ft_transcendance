@@ -19,8 +19,8 @@ function Navigation() {
           >
             GAMES
           </h2>
-          <NavItem icon="sports_tennis" label="Pong" path="/start_game"/>
-          <NavItem icon="sign_language" label="RPS" path="/"/>
+          <NavItem icon="sports_tennis" label="Pong" path="/start_game" />
+          <NavItem icon="sign_language" label="RPS" path="/" />
         </div>
       </nav>
     </div>
