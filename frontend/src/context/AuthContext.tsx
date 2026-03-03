@@ -31,6 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(response.data.user);
     } catch (error) {
       setUser(null);
+      destroyManager();
     } finally {
       setIsLoading(false);
     }
