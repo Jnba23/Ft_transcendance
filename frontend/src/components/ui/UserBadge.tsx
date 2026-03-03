@@ -1,6 +1,10 @@
 import Avatar from '@ui/Avatar';
-import type { StatusStyle } from '@utils/types.ts';
 import { useUserDirectoryStore } from '@stores/userDirectory.store';
+
+type StatusStyle = {
+  online: string;
+  offline: string;
+};
 
 const statusStyle = {
   online: 'bg-win border border-[#16213E]/50',
