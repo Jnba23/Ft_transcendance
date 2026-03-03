@@ -4,6 +4,7 @@ import { userAPI, MyProfileRes } from "../../api/user.api";
 import { twoFaAPI } from "../../api/2fa.api";
 import { AxiosError } from "axios";
 import { Link } from "react-router-dom";
+import { fa } from "zod/v4/locales";
 
 
 function AlertBox({
@@ -61,8 +62,8 @@ function Settings() {
                 <ProfileSction user={user!} onSaved={checkAuth} />
 
                 {/* -- Section 2: Security (2FA) -- */}
-                <SecuritySection 
-                    is2faEnabled={user?.is_2fa_enabled ?? false}
+                <SecuritySection
+                    is2faEnabled={!!user?.is_2fa_enabled}
                     onChanged={checkAuth}
                 />
             </div>
@@ -330,13 +331,307 @@ function SecuritySection({
     onChanged: () => Promise<void>;
 }) {
 
-    const [showEnable, setShowEnable] = useState(false);
+    const [showSetup, setShowSetup] = useState(false);
     const [showDisable, setShowDisable] = useState(false);
     const [qrCode, setQrCode] = useState('');
     const [secret, setSecret] = useState('');
-    const [code, setCode] =
+    const [code, setCode] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [alert, setAlert] = useState<{
+        message: string;
+        type: 'success' | 'error';
+    } | null>(null);
+
+    const resetState = () => {
+        setShowSetup(false);
+        setShowDisable(false);
+        setQrCode('');
+        setSecret('');
+        setCode('');
+    };
+
+    const getErrorMessage = (error: unknown): string => {
+        if (error instanceof AxiosError && error.response?.data?.message)
+            return error.response.data.message
+        return 'Something went wrong. Please try again.';
+    }
+
+    // ── Enable flow: Step 1 – generate QR ──
+    const handleStartSetup = async () => {
+        try {
+            setLoading(true);
+            const res = await twoFaAPI.generate();
+            setQrCode(res.data.qrcode);
+            setSecret(res.data.secret);
+            setAlert(null);
+            setShowSetup(true);
+        } catch (error) {
+            setAlert({ message: getErrorMessage(error), type: 'error' })
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // ── Enable flow: Step 2 – verify code & turn on ──
+    const handleEnable2FA = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (code.length < 6) {
+            setAlert({ message: 'Please enter the 6-digit code.', type: 'error' });
+            return;
+        }
+
+        try {
+            setLoading(true);
+            await twoFaAPI.turnOn({ code });
+            await onChanged();
+            resetState();
+            setAlert({ message: '2FA has been enabled!', type: 'success' });
+        } catch (error) {
+            setAlert({ message: getErrorMessage(error), type: 'error' });
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // ── Disable flow ──
+    const handleDisable2FA = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (code.length < 6) {
+            setAlert({ message: 'Please enter the 6‑digit code.', type: 'error' });
+            return;
+        }
+
+        try {
+            setLoading(true);
+            await twoFaAPI.turnOff({ code });
+            await onChanged();
+            resetState();
+            setAlert({ message: '2FA has been disabled.', type: 'success' });
+        } catch (error) {
+            setAlert({ message: getErrorMessage(error), type: 'error' });
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
-        <div></div>
-    )
+        <section aria-labelledby="security-heading">
+            <div className="bg-[#16213E]/50 rounded-xl border border-white/10">
+                {/* Header */}
+                <div className="p-6 border-b border-white/10">
+                    <h2 id="security-heading" className="text-xl font-bold text-white">
+                        Security Settings
+                    </h2>
+                    <p className="text-sm text-white/60 mt-1">
+                        Manage two-factor authentication for extra security.
+                    </p>
+                </div>
+
+                <div className="p-6">
+                    {/* Alert */}
+                    {alert && (
+                        <div className="mb-6">
+                            <AlertBox
+                                message={alert.message}
+                                type={alert.type}
+                                onClose={() => setAlert(null)}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* -- 2FA status line -- */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                    <label className="text-sm font-medium text-white/80 sm:w-1/3">
+                        Two-Factor Authentication
+                    </label>
+
+                    <div className="flex-1 flex items-center gap-4">
+                        {/* Status badge */}
+                        <span
+                            className={`text-xs font-semibold px-3 py-1 rounded-full ${is2faEnabled
+                                    ? 'bg-green-500/10 text-green-400'
+                                    : 'bg-white/10 text-white/50'
+                                }`}
+                        >
+                            {is2faEnabled ? 'Enabled' : 'Disabled'}
+                        </span>
+
+                        {/* Action button */}
+                        {!is2faEnabled && !showSetup && (
+                            <button
+                                type="button"
+                                onClick={handleStartSetup}
+                                disabled={loading}
+                                className="px-4 py-2 text-sm font-semibold text-white bg-[#0d59f2] rounded-lg hover:bg-[#0d59f2]/90 transition-colors disabled:opacity-50"
+                            >
+                                {loading ? 'Loading...' : 'Enable 2FA'}
+                            </button>
+                        )}
+
+                        {is2faEnabled && !showDisable && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setShowDisable(true);
+                                    setCode('');
+                                    setAlert(null);
+                                }}
+                                className="px-4 py-2 text-sm font-semibold text-red-400 bg-red-500/10 rounded-lg hover:bg-red-500/20 transition-colors"
+                            >
+                                Disable 2FA
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* -- Enable 2FA panel (QR + vetify) -- */}
+                {showSetup && !is2faEnabled && (
+                    <div className="mt-6 bg-[#1F2C4A] border border-white/10 rounded-xl p-6 shadow-xl">
+                        <form
+                            onSubmit={handleEnable2FA}
+                            className="flex flex-col items-center text-center gap-6"
+                        >
+                            {/* QR Code */}
+                            {qrCode && (
+                                <div>
+                                    <img
+                                        src={qrCode}
+                                        alt="Scan this QR code with your authenticator app"
+                                        className="size-40"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Instructions */}
+                            <div>
+                                <h4 className="text-white font-semibold mb-2">
+                                    Scan this QR code with your authenticator app
+                                </h4>
+                                <p className="text-xs text-white/50 max-w-xs mx-auto">
+                                    Use Google Authenticator, Authy, or any TOTP app to scan the
+                                    code above and link your account.
+                                </p>
+                            </div>
+
+                            {/* Manual secret (for accessibility) */}
+                            {secret && (
+                                <div className="w-full max-w-xs">
+                                    <p className="text-xs text-white/40 mb-1">
+                                        Or enter this secret manually:
+                                    </p>
+                                    <code className="block bg-black/30 text-white/80 text-xs font-mono p-2 rounded-lg break-all select-all">
+                                        {secret}
+                                    </code>
+                                </div>
+                            )}
+
+                            {/* Code input */}
+                            <div>
+                                <div>
+                                    <label
+                                        htmlFor="enable-2fa-code"
+                                        className="block text-xs font-medium text-white/60 mb-2 text-left"
+                                    >
+                                        Verification Code
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="enable-2fa-code"
+                                        inputMode="numeric"
+                                        maxLength={6}
+                                        value={code}
+                                        onChange={(e) => {
+                                            setCode(e.target.value.replace(/\D/g, '').slice(0, 6))
+                                        }}
+                                        placeholder="000000"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-3 text-center text-lg tracking-widest font-mono text-white placeholder:text-white/20 focus:ring-[#0d59f2] focus:border-[#0d59f2] focus:outline-none"
+                                    />
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={resetState}
+                                        className="flex-1 py-2.5 text-sm font-semibold text-white/70 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={loading || code.length < 6}
+                                        className="flex-1 py-2.5 text-sm font-semibold text-white bg-[#0d59f2] rounded-lg hover:bg-[#0d59f2]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#0d59f2]/20"
+                                    >
+                                        {loading ? 'Verifying...' : 'Verify & Enable'}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                )}
+
+                {/* -- Disable 2FA panel */}
+                {showDisable && is2faEnabled && (
+                    <div className="mt-6 bg-[#1F2C4A] border border-white/10 rounded-xl p-6 shadow-xl">
+                        <form
+                            onSubmit={handleDisable2FA}
+                            className="flex flex-col items-center text-center gap-6"
+                        >
+                            <div>
+                                <h4 className="text-white font-semibold mb-2">
+                                    Disable Two‑Factor Authentication
+                                </h4>
+                                <p className="text-xs text-white/50 max-w-sm mx-auto">
+                                    Enter the 6‑digit code from your authenticator app to
+                                    confirm disabling 2FA.
+                                </p>
+                            </div>
+
+                            <div className="w-full max-w-xs flex flex-col gap-4">
+                                <div>
+                                    <label
+                                        htmlFor="disable-2fa-code"
+                                        className="block text-xs font-medium text-white/60 mb-2 text-left"
+                                    >
+                                        Verification Code
+                                    </label>
+                                    <input
+                                        id="disable-2fa-code"
+                                        type="text"
+                                        inputMode="numeric"
+                                        maxLength={6}
+                                        value={code}
+                                        onChange={(e) =>
+                                            setCode(e.target.value.replace(/\D/g, '').slice(0, 6))
+                                        }
+                                        placeholder="000000"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-3 text-center text-lg tracking-widest font-mono text-white placeholder:text-white/20 focus:ring-[#0d59f2] focus:border-[#0d59f2] focus:outline-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <button
+                                        type="button"
+                                        onClick={resetState}
+                                        className="flex-1 py-2.5 text-sm font-semibold text-white/70 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={loading || code.length < 6}
+                                        className="flex-1 py-2.5 text-sm font-semibold text-white bg-red-500 rounded-lg hover:bg-red-500/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {loading ? 'Disabling...' : 'Disable 2FA'}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                )}
+            </div>
+        </section>
+    );
 }
