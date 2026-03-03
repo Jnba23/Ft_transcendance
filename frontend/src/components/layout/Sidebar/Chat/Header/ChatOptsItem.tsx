@@ -1,9 +1,10 @@
 type ChatOptsItemProps = {
   icon: string;
   label: string;
+  onClick?: () => void;
 };
 
-function ChatOptsItem({ icon, label }: ChatOptsItemProps) {
+function ChatOptsItem({ icon, label, onClick }: ChatOptsItemProps) {
   return (
     <button
       className={[
@@ -12,6 +13,7 @@ function ChatOptsItem({ icon, label }: ChatOptsItemProps) {
         'hover:bg-white/5',
         'text-white text-sm',
       ].join(' ')}
+      onClick={onClick}
     >
       <span className="material-symbols-outlined !text-base">{icon}</span>
       <span>{label}</span>

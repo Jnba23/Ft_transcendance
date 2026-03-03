@@ -1,5 +1,6 @@
 import Avatar from '@ui/Avatar';
 import type { StatusStyle } from '@utils/types.ts';
+import { useUserDirectoryStore } from '@stores/userDirectory.store';
 
 const statusStyle = {
   online: 'bg-win border border-[#16213E]/50',
@@ -9,21 +10,28 @@ const statusStyle = {
 export type SectionSizes = {
   DM: string;
   chat: string;
+  friendRequest: string;
 };
 
 const sectionSizes = {
   DM: 'text-xs',
   chat: 'text-base',
+  friendRequest: 'text-sm',
 } satisfies SectionSizes;
 
 type UserBadgeProps = {
+  id?: number;
   username: string;
   avatar: string;
-  status: keyof StatusStyle;
+  status?: keyof StatusStyle;
   section: keyof SectionSizes;
 };
 
-function UserBadge({ username, avatar, status, section }: UserBadgeProps) {
+function UserBadge({ id, username, avatar, status, section }: UserBadgeProps) {
+  const me = useUserDirectoryStore((state) => state.me);
+
+  status = id === me?.id ? 'online' : status;
+
   return (
     <div className="flex gap-3 items-center ">
       <div className="relative flex items-center">
@@ -31,7 +39,7 @@ function UserBadge({ username, avatar, status, section }: UserBadgeProps) {
         <span
           className={[
             'size-2.5 rounded-full',
-            `${statusStyle[status]}`,
+            `${status ? statusStyle[status] : 'hidden'}`,
             'absolute right-0 bottom-0',
           ].join(' ')}
         ></span>
@@ -44,7 +52,7 @@ function UserBadge({ username, avatar, status, section }: UserBadgeProps) {
           'tracking-wider',
         ].join(' ')}
       >
-        {username}
+        {username === me?.username ? `${username} (You)` : username}
       </span>
     </div>
   );

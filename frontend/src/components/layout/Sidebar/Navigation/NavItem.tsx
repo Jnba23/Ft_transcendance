@@ -1,12 +1,15 @@
+import { NavLink } from 'react-router-dom';
+
 type NavItemProps = {
   icon: string;
   label: string;
+  path?: string;
 };
 
-function NavItem({ icon, label }: NavItemProps) {
+function NavItem({ icon, label, path }: NavItemProps) {
   return (
-    <a
-      href="#"
+    <NavLink
+      to={path ?? '/'}
       className={[
         'flex gap-3 items-center',
         'text-white',
@@ -16,7 +19,7 @@ function NavItem({ icon, label }: NavItemProps) {
     >
       <span className="material-symbols-outlined">{icon}</span>
       <p className="text-sm font-medium">{label}</p>
-    </a>
+    </NavLink>
   );
 }
 

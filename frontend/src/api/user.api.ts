@@ -7,7 +7,8 @@ export interface UserSummaryRes {
   username: string;
   avatar_url: string;
   level: number;
-  status: 'online' | 'offline' | 'in_game';
+  status: 'online' | 'offline';
+  hasFriendRequest: number;
 }
 
 export interface MyProfileRes {
@@ -17,12 +18,12 @@ export interface MyProfileRes {
   avatar_url: string;
   level: number;
   is_2fa_enabled: boolean;
-  status: 'online' | 'offline' | 'in_game';
+  status: 'online' | 'offline';
   created_at: string;
   pong_wins: number;
   pong_losses: number;
-  chess_wins: number;
-  chess_losses: number;
+  RPS_wins: number;
+  RPS_losses: number;
   win_streak: number;
 }
 
@@ -36,12 +37,12 @@ export interface UserProfileRes {
   username: string;
   avatar_url: string;
   level: number;
-  status: 'online' | 'offline' | 'in_game';
+  status: 'online' | 'offline';
   created_at: string;
   pong_wins: number;
   pong_losses: number;
-  chess_wins: number;
-  chess_losses: number;
+  RPS_wins: number;
+  RPS_losses: number;
   win_streak: number;
 }
 

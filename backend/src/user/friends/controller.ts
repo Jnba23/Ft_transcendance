@@ -4,14 +4,20 @@ import { AppError } from '../../utils/AppError.js';
 import { friendService } from './service.js';
 import { User } from '../../auth/types.js';
 import { FriendAction } from './types.js';
+import {
+  emitUpdateFriendRequest,
+  emitNewFriendRequest,
+} from './realtime.service.js';
 
 export const createFriendRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const SenderId = (res.locals.user as User).id;
-    const recipientId = parseInt(req.params.id);
+    const recipientId = req.body.other_id;
+
+    if (!recipientId) return next(new AppError('Recipient ID required', 400));
 
     if (SenderId === recipientId) {
-      return next(new AppError('Cannot send friend request to yourself', 400));
+      return next(new AppError('Cannot send friend request to yourself', 403));
     }
 
     const existing = friendService.checkExisting(SenderId, recipientId);
@@ -23,6 +29,18 @@ export const createFriendRequest = catchAsync(
     }
 
     const requestId = friendService.createRequest(SenderId, recipientId);
+
+    const requestWithCreator = friendService.getFriendRequestWithUser(
+      requestId,
+      SenderId
+    );
+    const requestWithOther = friendService.getFriendRequestWithUser(
+      requestId,
+      recipientId
+    );
+
+    // broadcast to creator and other
+    emitNewFriendRequest({ requestWithCreator, requestWithOther });
 
     res.status(201).json({
       status: 'success',
@@ -89,61 +107,16 @@ export const handleFriendAction = catchAsync(
       return next(new AppError('Only recipient can accept or decline', 403));
     }
 
-    if (action == 'accept') {
+    if (action === 'accept') {
       friendService.acceptRequest(request_id);
       res.json({ status: 'success', message: 'Friend request accepted' });
     } else {
-      // decline or cancel = delete the request
+      // decline, cancel or remove = delete the request
       friendService.deleteRequest(request_id);
       res.json({ status: 'success', message: `Friend request ${action}ed` });
     }
-  }
-);
 
-export const checkFriendship = catchAsync(
-  async (req: Request, res: Response, _next: NextFunction) => {
-    const userId = (res.locals.user as User).id;
-    const otherUserId = parseInt(req.params.id);
-
-    const existing = friendService.checkExisting(userId, otherUserId);
-
-    if (!existing) {
-      return res.json({
-        status: 'success',
-        data: { relationship: 'none' },
-      });
-    }
-
-    const isSender = existing.user_id_1 === userId;
-
-    res.json({
-      status: 'success',
-      data: {
-        request_id: existing.id,
-        relationship: existing.status,
-        direction: isSender ? 'sent' : 'received',
-      },
-    });
-  }
-);
-
-export const removeFriendship = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = (res.locals.user as User).id;
-    const otherUserId = parseInt(req.params.id);
-
-    const request = friendService.checkExisting(userId, otherUserId);
-
-    if (!request) {
-      return next(new AppError('Friendship not found', 404));
-    }
-
-    friendService.deleteRequest(request.id);
-
-    res.status(204).json({
-      status: 'success',
-      message: 'Friendship removed',
-    });
+    emitUpdateFriendRequest({ request, userId, isSender, action });
   }
 );
 

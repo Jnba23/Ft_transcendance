@@ -1,4 +1,4 @@
-import Card from '../../components/layout/Cards/GlassCard';
+import Card from './Cards/GlassCard';
 
 const StartGame = ({ name }: { name: string }) => {
   return (

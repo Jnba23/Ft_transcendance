@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { authAPI } from '../../api/auth.api';
+import { authAPI } from '@api/auth.api';
 import { Link } from 'react-router-dom';
-import { EyeIcon, EyeOffIcon } from '../../components/icons/EyeIcons';
-import { signupSchema, type SignupFormData } from '../../schemas/auth.schema';
+import { EyeIcon, EyeOffIcon } from '@components/ui/icons/EyeIcons';
+import { signupSchema, type SignupFormData } from '@schemas/auth.schema';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import logo from '@assets/logo.png';

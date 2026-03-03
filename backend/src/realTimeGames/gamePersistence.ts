@@ -71,7 +71,6 @@ export function getUserGameHistory(
   limit: number = 10
 ): RpsTypes.GameHistoryItem[] {
   const db = getDb();
-
   const query = db.prepare<
     [number, number, number, number, number],
     RpsTypes.GameHistoryItem
@@ -105,7 +104,6 @@ export function getUserGameHistory(
 
 export function getUserStats(userId: number): RpsTypes.UserStats | undefined {
   const db = getDb();
-
   const stmt = db.prepare<number, RpsTypes.UserStats>(`
       SELECT 
         username,

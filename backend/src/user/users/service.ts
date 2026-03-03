@@ -1,5 +1,10 @@
 import { getDb } from '../../core/database.js';
-import { User, SafeUser, PublicUser } from '../../auth/types.js';
+import {
+  User,
+  SafeUser,
+  PublicUser,
+  PublicUserWithStats,
+} from '../../auth/types.js';
 
 const sanitizeUser = (user: User): SafeUser => {
   const {
@@ -18,20 +23,33 @@ export const userService = {
       | undefined;
   },
 
-  findByIdPublic(id: number): PublicUser | undefined {
+  findUserById(id: number): PublicUserWithStats | undefined {
     const db = getDb();
     return db
       .prepare(
         'SELECT id, username, avatar_url, level, status, created_at, pong_wins, pong_losses, RPS_wins, RPS_losses FROM users WHERE id = ?'
       )
-      .get(id) as PublicUser | undefined;
+      .get(id) as PublicUserWithStats | undefined;
   },
 
-  findAll(): PublicUser[] {
+  findAll(userId: number): PublicUser[] {
     const db = getDb();
     return db
-      .prepare('SELECT id, username, avatar_url, level, status FROM users')
-      .all() as PublicUser[];
+      .prepare(
+        `
+        SELECT id, username, avatar_url, level, status,
+        EXISTS (
+          SELECT 1
+          FROM friendship f
+          WHERE
+            (f.user_id_1 = ? AND f.user_id_2 = u.id)
+            OR
+            (f.user_id_2 = ? AND f.user_id_1 = u.id)
+        ) AS hasFriendRequest
+        FROM users u
+      `
+      )
+      .all(userId, userId) as PublicUser[];
   },
 
   findByUsername(username: string, excludeId?: number): User | undefined {
