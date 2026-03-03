@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from '@components/layout/Layout';
 import LoginPage from '@pages/auth/LoginPage';
 import SignupPage from '@pages/auth/SignupPage';
+import TwoFactorAuth from '@pages/auth/TwoFactorAuth';
 import Dashboard from '@pages/dashboard/Dashboard';
 import Profile from '@pages/profile/Profile';
 import Settings from '@pages/settings/Settings';
@@ -20,6 +21,7 @@ function App() {
           <Route element={<ProtectedRoute isPublicOnly />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/auth/2fa" element={<TwoFactorAuth />} />
           </Route>
 
           {/* Protected Routes */}
