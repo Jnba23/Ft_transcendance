@@ -27,6 +27,9 @@ export const setupRpsHandler = (io: Server) => {
       if (!RpsServ.getGame(gameId)) RpsServ.createGame(matchInfo);
       RpsServ.markPlayerConnected(gameId, userId, socket.id);
       RpsServ.cancelReconnectionTimer(gameId);
+      RpsNs.to(gameId).emit('opponent-reconnected', {
+        message: 'Opponent reconnected!',
+      });
       const game = RpsServ.getGame(gameId);
       socket.emit('joined-game', {
         gameId,
@@ -52,26 +55,33 @@ export const setupRpsHandler = (io: Server) => {
       if (RpsNs.adapter.rooms.get(gameId)?.size === 2) {
         const game = RpsServ.getGame(gameId);
         if (!game) return;
+        game.phase = 'choosing';
         RpsNs.to(gameId).emit('game-start', {
           message: `Round ${game.gameId} - Make your choice!`,
           roundsToWin: game.roundsToWin,
         });
         [game.player1.userId, game.player2.userId].forEach((userId) => {
+          const choices: RpsTypes.Choice[] = ['paper', 'rock', 'scissors'];
+          const randChoice = choices[Math.floor(Math.random() * 3)];
           RpsServ.startAutoChoiceTimer(gameId, userId, () => {
-            RpsNs.to(gameId).emit('auto-choice-made', {
-              message: `The player ${userId} took too long, random choice made`,
-              userId: userId,
+            // if (game.timers.autoChoice) clearTimeout(game.timers.autoChoice);
+            const targetSocket = userId === game.player1.userId ? game.player1.socketId : game.player2.socketId;
+            RpsNs.to(targetSocket).emit('auto-choice-made', {
+              message: `You took too long, random choice made`,
+              choice: randChoice,
+              userId: userId
             });
           });
         });
       }
     });
     socket.on('make-choice', (data: { choice: RpsTypes.Choice }) => {
+      console.log(data);
       const gameId = socket.data.gameId;
       const userId = socket.data.userId;
 
       if (!gameId || !userId) {
-        socket.emit('erro', {message: 'Not in a game'});
+        socket.emit('error', {message: 'Not in a game'});
         return;
       }
       if (!['rock', 'paper', 'scissors'].includes(data.choice)) {
@@ -85,16 +95,16 @@ export const setupRpsHandler = (io: Server) => {
       }
       const game = RpsServ.getGame(gameId);
       if (!game) return;
-      if (game.timers.autoChoice) {
-        clearTimeout(game.timers.autoChoice);
-        game.timers.autoChoice = undefined;
+      const player = socket.id === game.player1.socketId ? 'autoChoiceP1' : 'autoChoiceP2';
+      if (game.timers[player]) {
+        clearTimeout(game.timers[player]);
+        game.timers[player] = undefined;
       }
       socket.emit('choice-recorded', {
         choice: data.choice,
         message: 'Waiting for opponent...',
       });
       if (RpsServ.bothPlayersReady(gameId)) {
-        game.phase = 'revealing';
         game.timers.roundReveal = setTimeout(() => {
           RpsNs.to(gameId).emit('round-results', {
             p1Choice: game.player1.currentChoice,
@@ -103,6 +113,8 @@ export const setupRpsHandler = (io: Server) => {
             p2Score: game.player2.score,
             round: game.currentRound,
           });
+          game.player1.currentChoice = undefined;
+          game.player2.currentChoice = undefined;
           if (game.phase === 'game-over') {
             if (!game.winner) {
               RpsNs.to(gameId).emit('error', {
@@ -145,10 +157,15 @@ export const setupRpsHandler = (io: Server) => {
                 message: `Moving on to round number ${game.currentRound} - Make your choice !`,
               });
               [game.player1.userId, game.player2.userId].forEach((userId) => {
+                const choices: RpsTypes.Choice[] = ['paper', 'rock', 'scissors'];
+                const randChoice = choices[Math.floor(Math.random() * 3)];
                 RpsServ.startAutoChoiceTimer(gameId, userId, () => {
-                  RpsNs.to(gameId).emit('auto-choice-made', {
-                    message: `The player ${userId} took too long, random choice mad`,
-                    userId: userId,
+                  // if (game.timers.autoChoice) clearTimeout(game.timers.autoChoice);
+                  const targetSocket = userId === game.player1.userId ? game.player1.socketId : game.player2.socketId;
+                  RpsNs.to(targetSocket).emit('auto-choice-made', {
+                    message: `You took too long, random choice made`,
+                    choice: randChoice,
+                    userId: userId
                   });
                 });
               });
@@ -166,7 +183,7 @@ export const setupRpsHandler = (io: Server) => {
       const game = RpsServ.getGame(gameId);
       if (!game) return;
       RpsServ.markPlayerDisconnected(gameId, userId);
-      RpsNs.to(gameId).emit('Opponent-disconnected', {
+      RpsNs.to(gameId).emit('opponent-disconnected', {
         message: 'Opponent disconnected ! Waiting for reconnection ...',
       });
       RpsServ.startReconnectionTimer(gameId, userId, () => {

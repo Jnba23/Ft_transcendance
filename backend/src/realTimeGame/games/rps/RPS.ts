@@ -25,7 +25,8 @@ class RpsGameManager {
       phase: 'waiting',
       winner: null,
       timers: {
-        autoChoice: undefined,
+        autoChoiceP1: undefined,
+        autoChoiceP2: undefined,
         reconnection: undefined,
         roundReveal: undefined,
         cleanup: undefined,
@@ -37,7 +38,8 @@ class RpsGameManager {
   clearAllTimers(gameId: string) {
     const game = this.games.get(gameId);
     if (!game) return;
-    if (game.timers.autoChoice) clearTimeout(game.timers.autoChoice);
+    if (game.timers.autoChoiceP1) clearTimeout(game.timers.autoChoiceP1);
+    if (game.timers.autoChoiceP2) clearTimeout(game.timers.autoChoiceP2);
     if (game.timers.reconnection) clearTimeout(game.timers.reconnection);
     if (game.timers.roundReveal) clearTimeout(game.timers.roundReveal);
     if (game.timers.cleanup) clearTimeout(game.timers.cleanup);
@@ -51,17 +53,8 @@ class RpsGameManager {
   ): void {
     const game = this.games.get(gameId);
     if (!game) return;
-    if (game.timers.autoChoice) clearTimeout(game.timers.autoChoice);
-    game.timers.autoChoice = setTimeout(() => {
-      const player =
-        game.player1.userId === userId ? game.player1 : game.player2;
-      if (!player.currentChoice) {
-        const choices: RpsTypes.Choice[] = ['paper', 'rock', 'scissors'];
-        const randChoice = choices[Math.floor(Math.random() * 3)];
-        this.makeChoice(gameId, userId, randChoice);
-        letEmKnow();
-      }
-    }, 5000);
+    const key = game.player1.userId === userId ? 'autoChoiceP1' : 'autoChoiceP2';
+    game.timers[key] = setTimeout(letEmKnow, 5000);
   }
 
   startReconnectionTimer(
@@ -109,9 +102,15 @@ class RpsGameManager {
   makeChoice(gameId: string, userId: number, choice: RpsTypes.Choice): boolean {
     const game = this.games.get(gameId);
     if (!game) return false;
-    if (userId === game.player1.userId) game.player1.currentChoice = choice;
-    else if (userId === game.player2.userId)
+    // if (game.phase !== 'choosing') return false;
+    if (userId === game.player1.userId){
+      console.log('P1' + choice);
+      game.player1.currentChoice = choice;
+    }
+    else if (userId === game.player2.userId){
+      console.log('P2' + choice);
       game.player2.currentChoice = choice;
+    }
     if (game.player1.currentChoice && game.player2.currentChoice)
       this.resolveRound(game);
     return true;
@@ -132,8 +131,11 @@ class RpsGameManager {
     const roundWinner = this.determineWinner(choice1, choice2);
     if (roundWinner === 1) game.player1.score++;
     else if (roundWinner === 2) game.player2.score++;
-    else console.log("It's a tie");
-
+    else {
+      // eslint-disable-next-line no-console
+      console.log("It's a tie");
+    }
+    
     if (game.player1.score >= game.roundsToWin) {
       game.phase = 'game-over';
       game.winner = game.player1.userId;
@@ -141,10 +143,8 @@ class RpsGameManager {
       game.phase = 'game-over';
       game.winner = game.player2.userId;
     } else {
+      game.phase = 'revealing';
       game.currentRound++;
-      game.player1.currentChoice = undefined;
-      game.player2.currentChoice = undefined;
-      game.phase = 'waiting';
     }
   }
 
