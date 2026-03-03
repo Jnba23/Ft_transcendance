@@ -57,7 +57,7 @@ function Settings() {
                 </Link>
             </div>
 
-            <div>
+            <div className="flex flex-col gap-6">
                 {/* -- Section 1: Profile -- */}
                 <ProfileSction user={user!} onSaved={checkAuth} />
 
@@ -429,21 +429,19 @@ function SecuritySection({
                     </p>
                 </div>
 
-                <div className="p-6">
-                    {/* Alert */}
-                    {alert && (
-                        <div className="mb-6">
-                            <AlertBox
-                                message={alert.message}
-                                type={alert.type}
-                                onClose={() => setAlert(null)}
-                            />
-                        </div>
-                    )}
-                </div>
+                {/* Alert (moved tight under header) */}
+                {alert && (
+                    <div className="px-6 pt-4">
+                        <AlertBox
+                            message={alert.message}
+                            type={alert.type}
+                            onClose={() => setAlert(null)}
+                        />
+                    </div>
+                )}
 
                 {/* -- 2FA status line -- */}
-                <div className="p-6 pt-0 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-t border-white/10 mt-6 pt-6">
+                <div className="p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-t border-white/10 mt-0">
                     <label className="text-sm font-medium text-white/80 sm:w-1/3">
                         Two-Factor Authentication
                     </label>
