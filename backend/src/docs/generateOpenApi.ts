@@ -327,8 +327,6 @@ registry.registerPath({
   },
 });
 
-
-
 registry.registerPath({
   method: 'get',
   path: '/api/users/{id}',
