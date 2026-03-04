@@ -56,6 +56,7 @@ export const authAPI = {
     const response = await client.post<SignupRes>('/auth/signup', data);
     // Mark session for checkAuth
     localStorage.setItem('has_session', 'true');
+    localStorage.setItem('session_start', Date.now().toString());
     return response.data;
   },
 
@@ -68,6 +69,7 @@ export const authAPI = {
     // Mark session so checkAuth knows it can call /users/me
     if (response.data.status === 'success') {
       localStorage.setItem('has_session', 'true');
+      localStorage.setItem('session_start', Date.now().toString());
     }
     return response.data;
   },

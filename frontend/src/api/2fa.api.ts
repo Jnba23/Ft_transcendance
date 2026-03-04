@@ -39,6 +39,7 @@ export const twoFaAPI = {
     );
     // Mark session for checkAuth
     localStorage.setItem('has_session', 'true');
+    localStorage.setItem('session_start', Date.now().toString());
     return response.data;
   },
 
