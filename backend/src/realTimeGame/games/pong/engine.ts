@@ -46,16 +46,16 @@ const resetBall = (state: GameState, dir: number): GameState => ({
   },
 });
 
-const movePaddles = (state: GameState, keys: KeyboardState, dt: number) => {
+const movePaddles = (state: GameState, p1Keys: KeyboardState, p2Keys: KeyboardState, dt: number) => {
   const move = PADDLE_SPEED * dt;
   const clamp = (v: number) =>
     Math.max(0, Math.min(BOARD_HEIGHT - PADDLE_HEIGHT, v));
   return {
     p1y: clamp(
-      state.paddle1.y + (keys.KeyS ? move : 0) - (keys.KeyW ? move : 0)
+      state.paddle1.y + (p1Keys.down ? move : 0) - (p1Keys.up ? move : 0)
     ),
     p2y: clamp(
-      state.paddle2.y + (keys.ArrowDown ? move : 0) - (keys.ArrowUp ? move : 0)
+      state.paddle2.y + (p2Keys.down ? move : 0) - (p2Keys.up ? move : 0)
     ),
   };
 };
@@ -89,12 +89,13 @@ const checkScore = (
 
 export const updateGame = (
   state: GameState,
-  keys: KeyboardState,
+  p1Keys: KeyboardState,
+  p2Keys: KeyboardState,
   dt: number
 ): GameState => {
   if (!state.isPlaying || state.isPaused) return state;
 
-  const { p1y, p2y } = movePaddles(state, keys, dt);
+  const { p1y, p2y } = movePaddles(state, p1Keys, p2Keys, dt);
 
   // Update position
   let x = state.ball.position.x + state.ball.velocity.dx * dt;

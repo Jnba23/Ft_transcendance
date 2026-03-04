@@ -29,16 +29,12 @@ class PongGameManager {
       state: createInitialGameState(),
 
       player1Keys: {
-        ArrowUp: false,
-        ArrowDown: false,
-        KeyW: false,
-        KeyS: false,
+        up: false,
+        down: false,
       },
       player2Keys: {
-        ArrowUp: false,
-        ArrowDown: false,
-        KeyW: false,
-        KeyS: false,
+        up: false,
+        down: false,
       },
       winner: null,
     };
@@ -94,14 +90,7 @@ class PongGameManager {
     game.state.isPlaying = true;
 
     game.intervalId = setInterval(() => {
-      const mergedKeys = {
-        ArrowUp: game.player1Keys.ArrowUp || game.player2Keys.ArrowUp,
-        ArrowDown: game.player1Keys.ArrowDown || game.player2Keys.ArrowDown,
-        KeyW: game.player1Keys.KeyW || game.player2Keys.KeyW,
-        KeyS: game.player1Keys.KeyS || game.player2Keys.KeyS,
-      };
-
-      game.state = updateGame(game.state, mergedKeys, 0.016);
+      game.state = updateGame(game.state, game.player1Keys, game.player2Keys, 0.016);
       io.to(gameId).emit('game_update', game.state);
       if (game.state.winner) {
         io.to(gameId).emit('game_over');

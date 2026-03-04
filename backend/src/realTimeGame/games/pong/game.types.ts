@@ -31,8 +31,6 @@ export interface GameState {
 }
 
 export interface KeyboardState {
-  ArrowUp: boolean;
-  ArrowDown: boolean;
-  KeyW: boolean;
-  KeyS: boolean;
+  up: boolean;
+  down: boolean;
 }

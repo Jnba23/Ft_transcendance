@@ -8,6 +8,7 @@ export const setupPongHandler = (io: Server) => {
   const PongNs = io.of('/pong').use(socketAuthMiddleware);
 
   PongNs.on('connection', (socket) => {
+    console.log('pong socket connected: ', socket.id);
     socket.on('join-game', ({ gameId }) => {
       const session = SessionManager.get(gameId);
       const userId = socket.data.userId;
@@ -38,16 +39,29 @@ export const setupPongHandler = (io: Server) => {
       if (!game) return;
 
       if (
-        (game.player1.userId === userId &&
-          game.player1.isConnected &&
-          game.player1.socketId !== socket.id) ||
-        (game.player2.userId === userId &&
-          game.player2.isConnected &&
-          game.player2.socketId !== socket.id)
+        game.player1.userId === userId &&
+        game.player1.isConnected &&
+        game.player1.socketId !== socket.id
       ) {
-        socket.emit('error', { message: 'Already connected from another tab' });
-        socket.disconnect();
-        return;
+        const oldSocket = PongNs.sockets.get(game.player1.socketId);
+        if (oldSocket) {
+          oldSocket.emit('error', {
+            message: 'Already connected from another tab',
+          });
+          oldSocket.disconnect();
+        }
+      } else if (
+        game.player2.userId === userId &&
+        game.player2.isConnected &&
+        game.player2.socketId !== socket.id
+      ) {
+        const oldSocket = PongNs.sockets.get(game.player2.socketId);
+        if (oldSocket) {
+          oldSocket.emit('error', {
+            message: 'Already connected from another tab',
+          });
+          oldSocket.disconnect();
+        }
       }
 
       socket.join(gameId);
@@ -101,6 +115,8 @@ export const setupPongHandler = (io: Server) => {
     });
 
     socket.on('disconnect', () => {
+      console.log('pong socket connected: ', socket.id);
+
       const gameId = socket.data.gameId;
       const userId = socket.data.userId;
 

@@ -26,20 +26,20 @@ function App() {
           </Route>
 
           {/* Protected Routes */}
-          {/* <Route element={<ProtectedRoute />}> */}
-          {/* Wrap protected pages in the Sidebar/Navbar Layout */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/pong/:gameId" element={<PongGame />} />
-            <Route path="/start_game" element={<StartGame name="Pong" />} />
-            <Route path="/match_making" element={<MatchMaking />} />
-            <Route path="/end_match" element={<EndMatch />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route element={<ProtectedRoute />}>
+            {/* Wrap protected pages in the Sidebar/Navbar Layout */}
+            <Route element={<Layout />}>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile/:id" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/pong/:gameId" element={<PongGame />} />
+              <Route path="/start_game" element={<StartGame name="Pong" />} />
+              <Route path="/match_making" element={<MatchMaking />} />
+              <Route path="/end_match" element={<EndMatch />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Route>
           </Route>
-          {/* </Route> */}
         </Routes>
       </BrowserRouter>
     </AuthProvider>

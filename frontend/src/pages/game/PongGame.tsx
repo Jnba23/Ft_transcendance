@@ -1,17 +1,16 @@
 import { useRef, useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
+import { createPongSocket } from '@services/game/socket';
 import { useKeyboard } from '../../hooks/useKeyboard';
 import { render } from '../../game/renderer';
 import { BOARD_WIDTH, BOARD_HEIGHT } from '../../game/constants';
 import type { GameState } from '../../types/game.types';
 import { useNavigate, useParams } from 'react-router-dom';
-
-const pongSocket: Socket = io('http://localhost:3000/pong', {
-  withCredentials: true,
-});
+import { useErrorStore } from '@stores/error.store';
 
 const PongGame = () => {
   // Refs
+  const socketRef = useRef<Socket | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
@@ -30,6 +29,16 @@ const PongGame = () => {
 
   const { gameId } = useParams();
   const navigate = useNavigate();
+  const showError = useErrorStore((state) => state.showError);
+
+  useEffect(() => {
+    const socket = createPongSocket();
+    socketRef.current = socket;
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     let finalStats: GameState | null = null;
@@ -46,59 +55,74 @@ const PongGame = () => {
     };
 
     const handleGameAborted = () => {
-      navigate('/dashboard');
+      showError('Opponent disconnected. Game aborted.');
+      // navigate('/dashboard');
     };
 
-    pongSocket.on('match_results', handleMatchResults);
-    pongSocket.on('player_left', handleGameEnd);
-    pongSocket.on('game_over', handleGameEnd);
-    pongSocket.on('game_aborted', handleGameAborted);
+    socketRef.current?.on('match_results', handleMatchResults);
+    socketRef.current?.on('player_left', handleGameEnd);
+    socketRef.current?.on('game_over', handleGameEnd);
+    socketRef.current?.on('game_aborted', handleGameAborted);
 
     return () => {
-      pongSocket.off('match_results', handleMatchResults);
-      pongSocket.off('player_left', handleGameEnd);
-      pongSocket.off('game_over', handleGameEnd);
-      pongSocket.off('game_aborted', handleGameAborted);
+      socketRef.current?.off('match_results', handleMatchResults);
+      socketRef.current?.off('player_left', handleGameEnd);
+      socketRef.current?.off('game_over', handleGameEnd);
+      socketRef.current?.off('game_aborted', handleGameAborted);
     };
   }, [navigate]);
 
   useEffect(() => {
     if (!gameId) return;
-    pongSocket.emit('join-game', { gameId });
-    pongSocket.on('game_init', (data) => {
+    const socket = socketRef.current;
+    if (!socket) return;
+
+    const onConnect = () => socket.emit('join-game', { gameId });
+
+    if (socket.connected) onConnect();
+    else socket.on('connect', onConnect);
+
+    socket.on('game_init', (data) => {
       setState(data.state);
       setPlayer1Name(data.player1N);
       setPlayer2Name(data.player2N);
       setIsMatched(true);
+      if (ctxRef.current) render(ctxRef.current, data.state);
     });
 
-    pongSocket.on('error', (err) => {
-      if (
-        err.message === 'Game session not found' ||
-        err.message === 'Unauthorized' ||
-        err.message === 'Not part of this game'
-      ) {
-        navigate('/dashboard');
-      } else if (err.message === 'Already connected from another tab')
-        navigate('/profile');
+    socket.on('error', (err) => {
+      console.log(err.message);
+      showError(err.message);
+      // if (
+      //   err.message === 'Game session not found' ||
+      //   err.message === 'Unauthorized' ||
+      //   err.message === 'Not part of this game' ||
+      //   err.message === 'Already connected from another tab'
+      // ) navigate('/dashboard');
     });
 
     return () => {
-      pongSocket.off('game_init');
-      pongSocket.off('error');
+      socket.off('connect', onConnect);
+      socket.off('game_init');
+      socket.off('error');
     };
-  }, [gameId, navigate]);
+  }, [gameId, navigate, showError]);
 
   useEffect(() => {
-    pongSocket.on('game_update', (newState: GameState) => {
+    const socket = socketRef.current;
+    if (!socket) return;
+
+    const handleUpdate = (newState: GameState) => {
       setState(newState);
       if (ctxRef.current) render(ctxRef.current, newState);
-    });
+    };
+
+    socket.on('game_update', handleUpdate);
 
     return () => {
-      pongSocket.off('game_update');
+      socketRef.current?.off('game_update');
     };
-  }, [seconds]);
+  }, []);
 
   // wait Timer
   useEffect(() => {
@@ -121,7 +145,7 @@ const PongGame = () => {
 
   useEffect(() => {
     if (!gameId) return;
-    pongSocket.emit('input', keys);
+    socketRef.current?.emit('input', keys);
   }, [keys, gameId]);
 
   useEffect(() => {
@@ -130,7 +154,7 @@ const PongGame = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
         e.preventDefault();
-        pongSocket.emit('start_game');
+        socketRef.current?.emit('start_game');
       }
     };
 

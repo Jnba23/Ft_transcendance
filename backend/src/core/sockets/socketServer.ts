@@ -9,7 +9,7 @@ import { setupFriendsHandler } from '../../user/friends/socketHandler.js';
 import { setupRootHandler } from './socketHandler.js';
 import { setupUsersHandler } from '../../user/users/socketHandler.js';
 
-export let io: Server;
+let io: Server;
 
 export const initSocketIo = (server: HttpServer) => {
   io = new Server(server, {

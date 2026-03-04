@@ -1,13 +1,8 @@
 import scannerGif from '@assets/scanner.gif';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
+import { createMatchmakingSocket } from '@services/game/socket';
 import '@styles/matchMaking/matchMaking.css';
-
-const mmSocket = io('http://localhost:3000/matchmaking', {
-  withCredentials: true,
-});
-
 const MatchMaking = () => {
   const navigate = useNavigate();
 
@@ -17,26 +12,39 @@ const MatchMaking = () => {
   const gameType: string = 'pong';
 
   useEffect(() => {
-    mmSocket.emit('join-queue', gameType);
-    mmSocket.on('reconnect-game', (gameId: string) => {
+    const socket = createMatchmakingSocket();
+    if (!socket) return;
+
+    const onConnect = () => socket.emit('join-queue', gameType);
+
+    if (socket.connected) onConnect();
+    else socket.on('connect', onConnect);
+
+    socket.on('match-found', ({ gameId }: { gameId: string }) =>
+      navigate(`/${gameType}/${gameId}`)
+    );
+
+    socket.on('reconnect-game', (gameId: string) => {
       if (gameId) navigate(`/${gameType}/${gameId}`);
     });
-    const handleMatchFound = ({ gameId }: { gameId: string }) =>
-      setTimeout(() => navigate(`/${gameType}/${gameId}`), 1500);
-    mmSocket.on('match-found', handleMatchFound);
 
     return () => {
-      mmSocket.off('match-found', handleMatchFound);
-      mmSocket.off('reconnect-game');
+      socket.emit('leave-queue');
+      socket.off('connect');
+      socket.off('match-found');
+      socket.off('reconnect-game');
     };
   }, [navigate]);
 
   // wait Timer
 
   useEffect(() => {
-    const intervalId = setInterval(() => setSeconds(seconds + 1), 1000);
+    const intervalId = setInterval(() => {
+      setSeconds((prev) => prev + 1);
+    }, 1000);
+
     return () => clearInterval(intervalId);
-  }, [seconds]);
+  }, []);
 
   const formatTimer: () => string = () => {
     const min = Math.floor((seconds + 1) / 60) % 60;
@@ -47,7 +55,8 @@ const MatchMaking = () => {
   // end wait Timer
 
   const handleCancel = () => {
-    mmSocket.emit('leave-queue');
+    const socket = createMatchmakingSocket();
+    socket.emit('leave-queue');
     navigate('/start_game');
   };
 
