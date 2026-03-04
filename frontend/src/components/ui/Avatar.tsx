@@ -26,13 +26,14 @@ const sectionSizes = {
 type AvatarProps = {
   path: string;
   section: keyof SectionSizes;
+  size?: string;
 };
 
-function Avatar({ path, section = 'userMenu' }: AvatarProps) {
+function Avatar({ path, section = 'userMenu', size }: AvatarProps) {
   return (
     <div
       className={[
-        sectionSizes[section],
+        `${size || sectionSizes[section]}`,
         'rounded-full',
         'overflow-hidden',
         'aspect-square',
