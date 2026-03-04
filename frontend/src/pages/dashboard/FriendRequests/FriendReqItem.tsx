@@ -30,11 +30,17 @@ function FriendReqItem({ request, reqType }: FriendReqItemProps) {
   };
 
   return (
-    <div className="flex items-center justify-between">
+    <div className={[
+      "flex items-center gap-4 md:justify-between",
+      "flex-col md:flex-row p-4 md:p-0 bg-[#16213E] rounded-lg",
+      "md:bg-transparent border border-white/10 shadow-lg",
+      "md:border-0 shadow-none"
+    ].join(' ')}>
       <UserBadge
         username={request.username}
         avatar={friend}
         section="friendRequest"
+        toCols={true}
       />
       {reqType === 'received' ? (
         <RequestActions

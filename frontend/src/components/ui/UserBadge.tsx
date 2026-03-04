@@ -29,17 +29,22 @@ type UserBadgeProps = {
   avatar: string;
   status?: keyof StatusStyle;
   section: keyof SectionSizes;
+  toCols?: boolean
 };
 
-function UserBadge({ id, username, avatar, status, section }: UserBadgeProps) {
+function UserBadge({ id, username, avatar, status, section, toCols=false }: UserBadgeProps) {
   const me = useUserDirectoryStore((state) => state.me);
 
   status = id === me?.id ? 'online' : status;
 
   return (
-    <div className="flex gap-3 items-center ">
+    <div className={[
+      `${toCols ? 'gap-2 md:gap-3' : 'gap-3'}`,
+      'flex items-center',
+      `${toCols ? 'flex-col md:flex-row' : ''}`
+    ].join(' ')}>
       <div className="relative flex items-center">
-        <Avatar path={avatar} section={section} />
+        <Avatar path={avatar} section={section} size={toCols ? 'size-15 md:size-10' : ''}/>
         <span
           className={[
             'size-2.5 rounded-full',
@@ -52,8 +57,8 @@ function UserBadge({ id, username, avatar, status, section }: UserBadgeProps) {
         className={[
           'text-white',
           `${sectionSizes[section]}`,
-          'font-medium',
           'tracking-wider',
+          `${toCols ? 'font-bold text-lg md:font-medium' : 'font-medium'}`,
         ].join(' ')}
       >
         {username === me?.username ? `${username} (You)` : username}
