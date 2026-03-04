@@ -6,7 +6,7 @@ interface CardInfo {
 
 const Card = ({ gameName, winLoss, highestScore }: CardInfo) => {
   return (
-    <div className="flex flex-col gap-4 bg-white/5 backdrop-blur-[10px] border border-white/10 rounded-xl p-6 text-white w-[25rem] h-60">
+    <div className="flex flex-col gap-4 bg-white/5 backdrop-blur-[10px] border border-white/10 rounded-xl p-6 text-white w-100 h-60">
       <h3 className="mb-5 text-lg font-semibold">Your {gameName} Stats</h3>
 
       <div className="flex justify-between items-center mb-4">

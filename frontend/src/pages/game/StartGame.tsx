@@ -1,8 +1,11 @@
-import Card from './Cards/GlassCard';
+import { useNavigate } from 'react-router-dom';
+import Card from '../../components/ui/Cards/GlassCard';
 
 const StartGame = ({ name }: { name: string }) => {
+  const navigate = useNavigate();
+
   return (
-    <div className="relative flex flex-col justify-center items-center min-h-screen w-full bg-[#101622] p-4 gap-6 text-center isolate">
+    <div className="text-white relative flex flex-col justify-center items-center min-h-screen w-full bg-background-dark p-4 gap-6 text-center isolate">
       <span
         className="material-symbols-outlined absolute text-white/5 -z-10"
         style={{ fontSize: '40rem' }}
@@ -21,7 +24,10 @@ const StartGame = ({ name }: { name: string }) => {
           <span>Play with a Friend</span>
         </button>
 
-        <button className="mb-20 flex items-center gap-2 rounded-lg bg-white/10 backdrop-blur-[10px] border border-gray-500 text-white text-base font-semibold py-3 px-8 cursor-pointer shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] transition-all duration-200 hover:-translate-y-0.5 hover:border-white/50 hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.5),0_0_15px_rgba(255,255,255,0.1)]">
+        <button
+          onClick={() => navigate('/match_making')}
+          className="mb-20 flex items-center gap-2 rounded-lg bg-white/10 backdrop-blur-[10px] border border-gray-500 text-white text-base font-semibold py-3 px-8 cursor-pointer shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] transition-all duration-200 hover:-translate-y-0.5 hover:border-white/50 hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.5),0_0_15px_rgba(255,255,255,0.1)]"
+        >
           <span className="material-symbols-outlined">shuffle</span>
           <span>Random Opponent</span>
         </button>

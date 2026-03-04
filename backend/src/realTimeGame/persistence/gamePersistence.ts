@@ -1,5 +1,5 @@
-import { getDb } from '../core/database.js';
-import * as RpsTypes from '../realTimeGames/types.js';
+import { getDb } from '../../core/database.js';
+import * as RpsTypes from './types.js';
 
 export function saveCompleteGames(data: {
   gameId: string;
@@ -14,10 +14,9 @@ export function saveCompleteGames(data: {
 }): void {
   try {
     const db = getDb();
-
     const transaction = db.transaction(() => {
       const insertGame = db.prepare(`
-				INSERT INTO games(player1Id, player2Id, winnerId, player1_score,
+				INSERT INTO games(player1_id, player2_id, winner_id, player1_score,
 				player2_score, game_type)
 				VALUES
 				(?, ?, ?, ?, ?, ?)`);
@@ -61,7 +60,6 @@ export function saveCompleteGames(data: {
     });
     transaction();
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.log('Failed to save game:', error);
   }
 }

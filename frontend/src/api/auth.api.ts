@@ -54,6 +54,8 @@ export interface RefreshTokenRes {
 export const authAPI = {
   signup: async (data: SignupReq) => {
     const response = await client.post<SignupRes>('/auth/signup', data);
+    // Mark session for checkAuth
+    localStorage.setItem('has_session', 'true');
     return response.data;
   },
 
@@ -63,6 +65,10 @@ export const authAPI = {
       '/auth/login',
       data
     );
+    // Mark session so checkAuth knows it can call /users/me
+    if (response.data.status === 'success') {
+      localStorage.setItem('has_session', 'true');
+    }
     return response.data;
   },
 

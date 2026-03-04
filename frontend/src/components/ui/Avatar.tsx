@@ -37,13 +37,25 @@ function Avatar({ path, section = 'userMenu', size }: AvatarProps) {
         'rounded-full',
         'overflow-hidden',
         'aspect-square',
-      ].join(' ')}
+        !path ? 'bg-white/10 flex items-center justify-center' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
-      <img
-        src={path}
-        alt="User avatar"
-        className="w-full h-full object-cover"
-      />
+      {path ? (
+        <img
+          src={path}
+          alt="User avatar"
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <span
+          className="material-symbols-outlined text-white/50"
+          style={{ fontSize: '1.2rem' }}
+        >
+          person
+        </span>
+      )}
     </div>
   );
 }

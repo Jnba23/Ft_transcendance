@@ -7,7 +7,12 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 5713,
-    host: true
+    host: true,
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+      port: 5713,
+    },
   },
   build: {
     outDir: 'dist',

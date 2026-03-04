@@ -17,6 +17,7 @@ interface FriendRequestsState {
     id: number,
     reqType: 'sent' | 'received'
   ) => FriendRequestWithUser | undefined;
+  reset: () => void;
 }
 
 export const useFriendRequestsStore = create<FriendRequestsState>(
@@ -25,14 +26,26 @@ export const useFriendRequestsStore = create<FriendRequestsState>(
     received: [],
 
     initialize: async () => {
-      const [receivedRes, sentRes] = await Promise.all([
-        friendsApi.getFriendRequests('received'),
-        friendsApi.getFriendRequests('sent'),
-      ]);
-      const received = receivedRes.data.requests;
-      const sent = sentRes.data.requests;
+      if (!localStorage.getItem('has_session')) {
+        set({ received: [], sent: [] });
+        return;
+      }
+      try {
+        const [receivedRes, sentRes] = await Promise.all([
+          friendsApi.getFriendRequests('received'),
+          friendsApi.getFriendRequests('sent'),
+        ]);
+        const received = receivedRes.data.requests;
+        const sent = sentRes.data.requests;
 
-      set({ received, sent });
+        set({ received, sent });
+      } catch {
+        // silently fail - user may not be authenticated
+      }
+    },
+
+    reset: () => {
+      set({ received: [], sent: [] });
     },
 
     sendRequest: async (other_id: number) => {
