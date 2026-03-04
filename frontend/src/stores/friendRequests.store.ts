@@ -48,7 +48,7 @@ export const useFriendRequestsStore = create<FriendRequestsState>(
 
     addSent: (request) => {
       set((state) => ({
-        sent: [request, ...state.received],
+        sent: [request, ...state.sent],
       }));
     },
 
