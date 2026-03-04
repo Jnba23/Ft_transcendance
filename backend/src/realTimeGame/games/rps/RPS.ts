@@ -1,5 +1,5 @@
-import * as RpsTypes from '../types.js';
-import * as MmTypes from '../matchmaking/types.js';
+import * as RpsTypes from './types.js';
+import * as MmTypes from '../../matchmaking/types.js';
 
 class RpsGameManager {
   private games: Map<string, RpsTypes.RpsGameState> = new Map();
@@ -132,10 +132,7 @@ class RpsGameManager {
     const roundWinner = this.determineWinner(choice1, choice2);
     if (roundWinner === 1) game.player1.score++;
     else if (roundWinner === 2) game.player2.score++;
-    else {
-      // eslint-disable-next-line no-console
-      console.log("It's a tie");
-    }
+    else console.log("It's a tie");
 
     if (game.player1.score >= game.roundsToWin) {
       game.phase = 'game-over';

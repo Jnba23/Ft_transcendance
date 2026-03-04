@@ -1,15 +1,15 @@
 import { Server } from 'socket.io';
-import { SessionManager } from '../../core/sockets/gameSessionManager.js';
-import { RpsServ } from './RpsGameManager.js';
-import { saveCompleteGames } from '../gamePersistence.js';
-import * as RpsTypes from '../types.js';
+import { SessionManager } from '../../core/gameSessionManager.js';
+import { RpsServ } from './RPS.js';
+// import { saveCompleteGames } from '../../persistence/gamePersistence.js';
+import * as RpsTypes from './types.js';
 
 export const setupRpsHandler = (io: Server) => {
   const RpsNs = io.of('/rps');
   RpsNs.on('connection', (socket) => {
     socket.on('join-game', (data: { gameId: string; userId: number }) => {
       const { gameId, userId } = data;
-      const matchInfo = SessionManager.getSession(gameId);
+      const matchInfo = SessionManager.get(gameId);
       if (!matchInfo) {
         socket.emit('error', { message: "Game session doesn't exist" });
         return;
@@ -110,17 +110,17 @@ export const setupRpsHandler = (io: Server) => {
               });
               return;
             }
-            saveCompleteGames({
-              gameId: game.gameId,
-              gameType: 'rps',
-              player1Id: game.player1.userId,
-              player2Id: game.player2.userId,
-              player1Name: game.player1.name,
-              player2Name: game.player2.name,
-              winnerId: game.winner,
-              player1Score: game.player1.score,
-              player2Score: game.player2.score,
-            });
+            // saveCompleteGames({
+            //   gameId: game.gameId,
+            //   gameType: 'rps',
+            //   player1Id: game.player1.userId,
+            //   player2Id: game.player2.userId,
+            //   player1Name: game.player1.name,
+            //   player2Name: game.player2.name,
+            //   winnerId: game.winner,
+            //   player1Score: game.player1.score,
+            //   player2Score: game.player2.score,
+            // });
             RpsNs.to(gameId).emit('game-over', {
               winnerId: game.winner,
               winnerName:
@@ -133,7 +133,7 @@ export const setupRpsHandler = (io: Server) => {
               },
             });
             game.timers.cleanup = setTimeout(() => {
-              SessionManager.deleteSession(gameId);
+              SessionManager.remove(gameId);
               RpsServ.clearAllTimers(gameId);
               RpsServ.deleteGame(gameId);
             }, 3000);
@@ -157,7 +157,7 @@ export const setupRpsHandler = (io: Server) => {
         }, 1000);
       }
     });
-    socket.on('disconnect', (_reason) => {
+    socket.on('disconnect', (reason) => {
       const gameId = socket.data.gameId;
       const userId = socket.data.userId;
 
@@ -179,19 +179,19 @@ export const setupRpsHandler = (io: Server) => {
           reason: 'Forfeit',
           message: 'Opponent failed to reconnect',
         });
-        saveCompleteGames({
-          gameId: gameId,
-          gameType: 'rps',
-          player1Id: game.player1.userId,
-          player2Id: game.player2.userId,
-          player1Name: game.player1.name,
-          player2Name: game.player2.name,
-          player1Score: game.player1.score,
-          player2Score: game.player2.score,
-          winnerId: game.winner!,
-        });
+        // saveCompleteGames({
+        //   gameId: gameId,
+        //   gameType: 'rps',
+        //   player1Id: game.player1.userId,
+        //   player2Id: game.player2.userId,
+        //   player1Name: game.player1.name,
+        //   player2Name: game.player2.name,
+        //   player1Score: game.player1.score,
+        //   player2Score: game.player2.score,
+        //   winnerId: game.winner!,
+        // });
         setTimeout(() => {
-          SessionManager.deleteSession(gameId);
+          SessionManager.remove(gameId);
           RpsServ.clearAllTimers(gameId);
           RpsServ.deleteGame(gameId);
         }, 3000);

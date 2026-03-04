@@ -5,7 +5,6 @@ class MatchmakingService {
   private queue: Map<string, QueueEntry> = new Map();
   public addToQueue(entry: QueueEntry): null | MatchResult {
     this.queue.set(entry.userId.toString(), entry);
-    // eslint-disable-next-line no-console
     console.log(`Player ${entry.username} was added to the ${entry.gameType}`);
     const opponent = this.findMatch(entry);
     if (opponent) {
@@ -17,7 +16,6 @@ class MatchmakingService {
         player2: opponent,
         gameType: entry.gameType,
       };
-      // eslint-disable-next-line no-console
       console.log(
         `Match found ${match.gameId}: ${entry.username} vs ${opponent.username}`
       );
@@ -25,8 +23,8 @@ class MatchmakingService {
     }
     return null;
   }
-  public removeFromQueue(userId: string): void {
-    this.queue.delete(userId);
+  public removeFromQueue(userId: string | number): void {
+    this.queue.delete(userId.toString());
   }
   private findMatch(player: QueueEntry): QueueEntry | null {
     for (const [userId, entry] of this.queue) {
