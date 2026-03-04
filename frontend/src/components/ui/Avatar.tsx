@@ -37,7 +37,9 @@ function Avatar({ path, section = 'userMenu' }: AvatarProps) {
         'overflow-hidden',
         'aspect-square',
         !path ? 'bg-white/10 flex items-center justify-center' : '',
-      ].filter(Boolean).join(' ')}
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       {path ? (
         <img
@@ -46,7 +48,10 @@ function Avatar({ path, section = 'userMenu' }: AvatarProps) {
           className="w-full h-full object-cover"
         />
       ) : (
-        <span className="material-symbols-outlined text-white/50" style={{ fontSize: '1.2rem' }}>
+        <span
+          className="material-symbols-outlined text-white/50"
+          style={{ fontSize: '1.2rem' }}
+        >
           person
         </span>
       )}

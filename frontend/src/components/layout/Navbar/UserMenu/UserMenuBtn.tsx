@@ -20,7 +20,12 @@ function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
 
     const fetchAvatar = async () => {
       // Only fetch if authenticated and user has a real avatar_url stored in the DB
-      if (isAuthenticated && me?.id && me?.avatar_url && me.avatar_url.trim() !== '') {
+      if (
+        isAuthenticated &&
+        me?.id &&
+        me?.avatar_url &&
+        me.avatar_url.trim() !== ''
+      ) {
         try {
           const url = await userAPI.getAvatar(me.id);
           setAvatarUrl(url);
