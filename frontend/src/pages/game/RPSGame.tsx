@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useSocket } from '@hooks/useSocket'
 import { useRPSGame } from '@hooks/useRPSGame'
 import { Choice } from '@my-types/rps'
-import ChoiceIcon from '@components/icons/ChoiceIcons'
+import ChoiceIcon from '@components/ui/icons/ChoiceIcons'
 
 const RPSGame = () => {
 	const { gameId } = useParams<{ gameId: string}>();

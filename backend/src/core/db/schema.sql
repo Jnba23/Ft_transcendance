@@ -95,10 +95,10 @@ CREATE TABLE IF NOT EXISTS messages (
 -- ============================================
 
 -- Users indexes
--- CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
--- CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
--- CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
--- CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
 
 -- Friends indexes
 CREATE INDEX IF NOT EXISTS idx_friendship_user_id_1 ON friendship(user_id_1);
