@@ -10,4 +10,5 @@ export const scalarDocs = apiReference({
   },
   // User Configuration
   hideClientButton: true,
+  theme: 'deepSpace',
 });

@@ -13,6 +13,7 @@ interface UserDirectoryState {
   setHasFriendRequest: (id: number, hasFriendReq: number) => void;
   hasFriendRequest: (id: number) => boolean;
   updateUserStatus: (id: number, status: 'online' | 'offline') => void;
+  reset: () => void;
 }
 
 export const useUserDirectoryStore = create<UserDirectoryState>((set, get) => ({
@@ -21,10 +22,22 @@ export const useUserDirectoryStore = create<UserDirectoryState>((set, get) => ({
   isLoading: true,
 
   initialize: async (me) => {
-    const response = await userAPI.getAll();
-    const users: UserSummaryRes[] = response.data.users;
+    if (!localStorage.getItem('has_session')) {
+      set({ me: null, users: [], isLoading: false });
+      return;
+    }
+    try {
+      const response = await userAPI.getAll();
+      const users: UserSummaryRes[] = response.data.users;
 
-    set({ me, users, isLoading: false });
+      set({ me, users, isLoading: false });
+    } catch {
+      set({ me, isLoading: false });
+    }
+  },
+
+  reset: () => {
+    set({ me: null, users: [], isLoading: false });
   },
 
   addUser: (user) => {

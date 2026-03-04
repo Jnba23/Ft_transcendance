@@ -19,8 +19,9 @@ import {
   verify2FaSchema,
   turnOff2FaSchema,
 } from '../auth/2fa/schema.js';
-import { updateUserSchema, updateStatusSchema } from '../user/users/schema.js';
+import { updateUserSchema } from '../user/users/schema.js';
 import { friendActionSchema } from '../user/friends/schema.js';
+import { createMessageSchema } from '../chat/schema.js';
 
 // Extend Zod with OpenAPI
 extendZodWithOpenApi(z);
@@ -327,47 +328,6 @@ registry.registerPath({
 });
 
 registry.registerPath({
-  method: 'delete',
-  path: '/api/users/me/avatar',
-  tags: ['Users'],
-  summary: 'Reset user avatar',
-  security: [{ [securityScheme.name]: [] }],
-  responses: {
-    200: {
-      description: 'Avatar reset',
-    },
-    401: {
-      description: 'Unauthorized',
-    },
-  },
-});
-
-registry.registerPath({
-  method: 'patch',
-  path: '/api/users/status',
-  tags: ['Users'],
-  summary: 'Update user status',
-  security: [{ [securityScheme.name]: [] }],
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: updateStatusSchema.shape.body,
-        },
-      },
-    },
-  },
-  responses: {
-    200: {
-      description: 'Status updated',
-    },
-    401: {
-      description: 'Unauthorized',
-    },
-  },
-});
-
-registry.registerPath({
   method: 'get',
   path: '/api/users/{id}',
   tags: ['Users'],
@@ -471,19 +431,25 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/friends/requests/{id}',
+  path: '/api/friends/requests',
   tags: ['Friends'],
   summary: 'Send friend request',
   security: [{ [securityScheme.name]: [] }],
-  parameters: [
-    {
-      name: 'id',
-      in: 'path',
-      schema: { type: 'string' },
-      required: true,
-      description: 'User ID to send request to',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              receiver_id: { type: 'number' },
+            },
+            required: ['receiver_id'],
+          },
+        },
+      },
     },
-  ],
+  },
   responses: {
     201: {
       description: 'Friend request sent',
@@ -519,11 +485,79 @@ registry.registerPath({
   },
 });
 
+// --- Chat ---
+
 registry.registerPath({
-  method: 'get',
-  path: '/api/friends/requests/check/{id}',
-  tags: ['Friends'],
-  summary: 'Check friendship status',
+  method: 'post',
+  path: '/api/chat/conversations',
+  tags: ['Chat'],
+  summary: 'Create a new conversation',
+  security: [{ [securityScheme.name]: [] }],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              other_id: { type: 'number' },
+            },
+            required: ['other_id'],
+          },
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: 'Conversation created',
+    },
+    400: {
+      description: 'Other user ID required',
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/chat/messages',
+  tags: ['Chat'],
+  summary: 'Send a message',
+  security: [{ [securityScheme.name]: [] }],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              conversation_id: { type: 'number' },
+              content: { type: 'string', minLength: 1, maxLength: 200 },
+            },
+            required: ['conversation_id', 'content'],
+          },
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: 'Message sent',
+    },
+    400: {
+      description: 'Missing fields',
+    },
+    404: {
+      description: 'Conversation not found',
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/chat/conversations/{id}/read',
+  tags: ['Chat'],
+  summary: 'Mark conversation as read',
   security: [{ [securityScheme.name]: [] }],
   parameters: [
     {
@@ -531,12 +565,28 @@ registry.registerPath({
       in: 'path',
       schema: { type: 'string' },
       required: true,
-      description: 'User ID to check',
+      description: 'Conversation ID',
     },
   ],
   responses: {
     200: {
-      description: 'Friendship status',
+      description: 'Conversation marked as read',
+    },
+    404: {
+      description: 'Conversation not found',
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/chat/conversations',
+  tags: ['Chat'],
+  summary: 'Get all conversations',
+  security: [{ [securityScheme.name]: [] }],
+  responses: {
+    200: {
+      description: 'List of conversations',
     },
     401: {
       description: 'Unauthorized',
@@ -545,10 +595,10 @@ registry.registerPath({
 });
 
 registry.registerPath({
-  method: 'delete',
-  path: '/api/friends/requests/{id}',
-  tags: ['Friends'],
-  summary: 'Remove friend request',
+  method: 'get',
+  path: '/api/chat/conversations/{id}/messages',
+  tags: ['Chat'],
+  summary: 'Get messages for a conversation',
   security: [{ [securityScheme.name]: [] }],
   parameters: [
     {
@@ -556,15 +606,15 @@ registry.registerPath({
       in: 'path',
       schema: { type: 'string' },
       required: true,
-      description: 'Use ID to remove friend Request',
+      description: 'Conversation ID',
     },
   ],
   responses: {
     200: {
-      description: 'Friendship removed',
+      description: 'List of messages',
     },
-    401: {
-      description: 'Unauthorized',
+    404: {
+      description: 'Conversation not found',
     },
   },
 });

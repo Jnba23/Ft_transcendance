@@ -16,6 +16,7 @@ interface DirectMessagesState {
   incrementUnread: (convo_id: number) => void;
   setHasFriendRequest: (userId: number, hasFriendReq: number) => void;
   updateUserStatus: (id: number, status: 'online' | 'offline') => void;
+  reset: () => void;
 }
 
 export const useDirectMessagesStore = create<DirectMessagesState>(
@@ -24,10 +25,22 @@ export const useDirectMessagesStore = create<DirectMessagesState>(
     isLoading: true,
 
     initialze: async () => {
-      const response = await chatApi.getConversations();
-      const { conversations } = response.data;
+      if (!localStorage.getItem('has_session')) {
+        set({ conversations: [], isLoading: false });
+        return;
+      }
+      try {
+        const response = await chatApi.getConversations();
+        const { conversations } = response.data;
 
-      set({ conversations, isLoading: false });
+        set({ conversations, isLoading: false });
+      } catch {
+        set({ isLoading: false });
+      }
+    },
+
+    reset: () => {
+      set({ conversations: [], isLoading: false });
     },
 
     addConversation: (convo) => {

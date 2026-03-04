@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Avatar from '@ui/Avatar';
 import { useUserDirectoryStore } from '@stores/userDirectory.store';
 import { userAPI } from '@api/user.api';
+import { useAuth } from '@context/AuthContext';
 
 type UserMenuBtnProps = {
   isOpen: boolean;
@@ -10,6 +11,7 @@ type UserMenuBtnProps = {
 };
 
 function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
+  const { isAuthenticated } = useAuth();
   const me = useUserDirectoryStore((state) => state.me);
   const [avatarUrl, setAvatarUrl] = useState<string>(me?.avatar_url || '');
 
@@ -17,14 +19,18 @@ function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
     let objectUrl = '';
 
     const fetchAvatar = async () => {
-      // Only fetch if the user has a real avatar_url stored in the DB
-      if (me?.id && me?.avatar_url && me.avatar_url.trim() !== '') {
+      // Only fetch if authenticated and user has a real avatar_url stored in the DB
+      if (
+        isAuthenticated &&
+        me?.id &&
+        me?.avatar_url &&
+        me.avatar_url.trim() !== ''
+      ) {
         try {
           const url = await userAPI.getAvatar(me.id);
           setAvatarUrl(url);
           objectUrl = url;
-        } catch (error) {
-          console.error('Failed to load user avatar:', error);
+        } catch {
           setAvatarUrl('');
         }
       } else {
@@ -39,7 +45,7 @@ function UserMenuBtn({ isOpen, onClick: toggle, buttonRef }: UserMenuBtnProps) {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [me?.id, me?.avatar_url]);
+  }, [me?.id, me?.avatar_url, isAuthenticated]);
 
   return (
     <button

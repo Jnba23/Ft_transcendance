@@ -21,6 +21,7 @@ interface FriendsStoreState {
   awaitingConfirmId: number | null;
   awaitingConfirmName: string | null;
   setAwaitingConfirm: (id: number, name: string) => void;
+  reset: () => void;
 }
 
 export const useFriendsStore = create<FriendsStoreState>((set, get) => ({
@@ -48,11 +49,19 @@ export const useFriendsStore = create<FriendsStoreState>((set, get) => ({
   total: 0,
 
   initialize: async () => {
-    const response = await friendsApi.getFriends();
-    const friends = response.data.friends;
-    const total = response.results;
+    if (!localStorage.getItem('has_session')) {
+      set({ friends: [], total: 0, isLoading: false });
+      return;
+    }
+    try {
+      const response = await friendsApi.getFriends();
+      const friends = response.data.friends;
+      const total = response.results;
 
-    set({ friends, total, isLoading: false });
+      set({ friends, total, isLoading: false });
+    } catch {
+      set({ isLoading: false });
+    }
   },
 
   addFriend: (friend) => {
@@ -88,5 +97,9 @@ export const useFriendsStore = create<FriendsStoreState>((set, get) => ({
       awaitingConfirmId: id,
       awaitingConfirmName: username,
     });
+  },
+
+  reset: () => {
+    set({ friends: [], total: 0, isLoading: false });
   },
 }));
