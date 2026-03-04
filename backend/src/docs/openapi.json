@@ -19,7 +19,9 @@
   "paths": {
     "/api/auth/signup": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Register a new user",
         "requestBody": {
           "content": {
@@ -30,7 +32,8 @@
                   "username": {
                     "type": "string",
                     "minLength": 4,
-                    "maxLength": 30
+                    "maxLength": 20,
+                    "pattern": "^[a-zA-Z0-9_-]+$"
                   },
                   "email": {
                     "type": "string",
@@ -45,7 +48,12 @@
                     "type": "string"
                   }
                 },
-                "required": ["username", "email", "password", "confirmPassword"]
+                "required": [
+                  "username",
+                  "email",
+                  "password",
+                  "confirmPassword"
+                ]
               }
             }
           }
@@ -62,7 +70,9 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Login user",
         "requestBody": {
           "content": {
@@ -79,7 +89,10 @@
                     "minLength": 1
                   }
                 },
-                "required": ["identifier", "password"]
+                "required": [
+                  "identifier",
+                  "password"
+                ]
               }
             }
           }
@@ -96,7 +109,9 @@
     },
     "/api/auth/refresh": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Refresh access token",
         "requestBody": {
           "content": {
@@ -120,7 +135,9 @@
     },
     "/api/auth/logout": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Logout user",
         "requestBody": {
           "content": {
@@ -141,7 +158,9 @@
     },
     "/api/auth/2fa/authenticate": {
       "post": {
-        "tags": ["2FA"],
+        "tags": [
+          "2FA"
+        ],
         "summary": "Authenticate with 2FA code",
         "requestBody": {
           "content": {
@@ -159,7 +178,10 @@
                     "minLength": 1
                   }
                 },
-                "required": ["code", "tempToken"]
+                "required": [
+                  "code",
+                  "tempToken"
+                ]
               }
             }
           }
@@ -176,7 +198,9 @@
     },
     "/api/auth/2fa/generate": {
       "post": {
-        "tags": ["2FA"],
+        "tags": [
+          "2FA"
+        ],
         "summary": "Generate 2FA QR Code",
         "security": [
           {
@@ -195,7 +219,9 @@
     },
     "/api/auth/2fa/turn-on": {
       "post": {
-        "tags": ["2FA"],
+        "tags": [
+          "2FA"
+        ],
         "summary": "Enable 2FA",
         "security": [
           {
@@ -214,7 +240,9 @@
                     "maxLength": 6
                   }
                 },
-                "required": ["code"]
+                "required": [
+                  "code"
+                ]
               }
             }
           }
@@ -231,7 +259,9 @@
     },
     "/api/auth/2fa/turn-off": {
       "post": {
-        "tags": ["2FA"],
+        "tags": [
+          "2FA"
+        ],
         "summary": "Disable 2FA",
         "security": [
           {
@@ -244,12 +274,15 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "password": {
+                  "code": {
                     "type": "string",
-                    "minLength": 1
+                    "minLength": 6,
+                    "maxLength": 6
                   }
                 },
-                "required": ["password"]
+                "required": [
+                  "code"
+                ]
               }
             }
           }
@@ -266,7 +299,9 @@
     },
     "/api/oauth/google": {
       "get": {
-        "tags": ["OAuth"],
+        "tags": [
+          "OAuth"
+        ],
         "summary": "Initiate Google OAuth",
         "responses": {
           "302": {
@@ -277,7 +312,9 @@
     },
     "/api/oauth/google/callback": {
       "get": {
-        "tags": ["OAuth"],
+        "tags": [
+          "OAuth"
+        ],
         "summary": "Google OAuth Callback",
         "responses": {
           "302": {
@@ -288,7 +325,9 @@
     },
     "/api/users": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Get all users",
         "security": [
           {
@@ -317,7 +356,9 @@
     },
     "/api/users/me": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Get current user profile",
         "security": [
           {
@@ -334,7 +375,9 @@
         }
       },
       "patch": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Update current user profile",
         "security": [
           {
@@ -380,63 +423,11 @@
         }
       }
     },
-    "/api/users/me/avatar": {
-      "delete": {
-        "tags": ["Users"],
-        "summary": "Reset user avatar",
-        "security": [
-          {
-            "cookieAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Avatar reset"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
-    "/api/users/status": {
-      "patch": {
-        "tags": ["Users"],
-        "summary": "Update user status",
-        "security": [
-          {
-            "cookieAuth": []
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "string",
-                    "enum": ["online", "offline", "in_game"]
-                  }
-                },
-                "required": ["status"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Status updated"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
     "/api/users/{id}": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Get user by ID",
         "security": [
           {
@@ -465,7 +456,9 @@
     },
     "/api/users/avatar/{id}": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Get user avatar",
         "security": [
           {
@@ -502,7 +495,9 @@
     },
     "/api/friends": {
       "get": {
-        "tags": ["Friends"],
+        "tags": [
+          "Friends"
+        ],
         "summary": "Get friends list",
         "security": [
           {
@@ -521,7 +516,9 @@
     },
     "/api/friends/requests": {
       "get": {
-        "tags": ["Friends"],
+        "tags": [
+          "Friends"
+        ],
         "summary": "Get friend requests",
         "security": [
           {
@@ -534,7 +531,10 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["sent", "received"],
+              "enum": [
+                "sent",
+                "received"
+              ],
               "default": "received"
             },
             "description": "Filter by sent or received requests"
@@ -548,59 +548,37 @@
             "description": "Unauthorized"
           }
         }
-      }
-    },
-    "/api/friends/requests/{id}": {
+      },
       "post": {
-        "tags": ["Friends"],
+        "tags": [
+          "Friends"
+        ],
         "summary": "Send friend request",
         "security": [
           {
             "cookieAuth": []
           }
         ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "User ID to send request to"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "receiver_id": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "receiver_id"
+                ]
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "201": {
             "description": "Friend request sent"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      },
-      "delete": {
-        "tags": ["Friends"],
-        "summary": "Remove friend request",
-        "security": [
-          {
-            "cookieAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Use ID to remove friend Request"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Friendship removed"
           },
           "401": {
             "description": "Unauthorized"
@@ -610,7 +588,9 @@
     },
     "/api/friends/requests/action": {
       "post": {
-        "tags": ["Friends"],
+        "tags": [
+          "Friends"
+        ],
         "summary": "Handle friend request action",
         "security": [
           {
@@ -628,10 +608,18 @@
                   },
                   "action": {
                     "type": "string",
-                    "enum": ["accept", "decline", "cancel"]
+                    "enum": [
+                      "accept",
+                      "decline",
+                      "cancel",
+                      "remove"
+                    ]
                   }
                 },
-                "required": ["request_id", "action"]
+                "required": [
+                  "request_id",
+                  "action"
+                ]
               }
             }
           }
@@ -646,10 +634,116 @@
         }
       }
     },
-    "/api/friends/requests/check/{id}": {
+    "/api/chat/conversations": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Create a new conversation",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "other_id": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "other_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Conversation created"
+          },
+          "400": {
+            "description": "Other user ID required"
+          }
+        }
+      },
       "get": {
-        "tags": ["Friends"],
-        "summary": "Check friendship status",
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Get all conversations",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of conversations"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/chat/messages": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Send a message",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "conversation_id": {
+                    "type": "number"
+                  },
+                  "content": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                "required": [
+                  "conversation_id",
+                  "content"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Message sent"
+          },
+          "400": {
+            "description": "Missing fields"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        }
+      }
+    },
+    "/api/chat/conversations/{id}/read": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Mark conversation as read",
         "security": [
           {
             "cookieAuth": []
@@ -663,15 +757,47 @@
               "type": "string"
             },
             "required": true,
-            "description": "User ID to check"
+            "description": "Conversation ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "Friendship status"
+            "description": "Conversation marked as read"
           },
-          "401": {
-            "description": "Unauthorized"
+          "404": {
+            "description": "Conversation not found"
+          }
+        }
+      }
+    },
+    "/api/chat/conversations/{id}/messages": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Get messages for a conversation",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Conversation ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of messages"
+          },
+          "404": {
+            "description": "Conversation not found"
           }
         }
       }
