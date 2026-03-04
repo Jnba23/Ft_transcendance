@@ -46,7 +46,12 @@ const resetBall = (state: GameState, dir: number): GameState => ({
   },
 });
 
-const movePaddles = (state: GameState, p1Keys: KeyboardState, p2Keys: KeyboardState, dt: number) => {
+const movePaddles = (
+  state: GameState,
+  p1Keys: KeyboardState,
+  p2Keys: KeyboardState,
+  dt: number
+) => {
   const move = PADDLE_SPEED * dt;
   const clamp = (v: number) =>
     Math.max(0, Math.min(BOARD_HEIGHT - PADDLE_HEIGHT, v));

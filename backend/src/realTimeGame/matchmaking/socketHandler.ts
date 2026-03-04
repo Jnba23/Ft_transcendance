@@ -71,7 +71,7 @@ export const setupMmHandlers = (io: Server) => {
     });
 
     socket.on('disconnect', () => {
-    console.log('matchmaking socket connected: ', socket.id);
+      console.log('matchmaking socket connected: ', socket.id);
       if (socket.data.userId) mmServ.removeFromQueue(socket.data.userId);
     });
   });

@@ -90,7 +90,12 @@ class PongGameManager {
     game.state.isPlaying = true;
 
     game.intervalId = setInterval(() => {
-      game.state = updateGame(game.state, game.player1Keys, game.player2Keys, 0.016);
+      game.state = updateGame(
+        game.state,
+        game.player1Keys,
+        game.player2Keys,
+        0.016
+      );
       io.to(gameId).emit('game_update', game.state);
       if (game.state.winner) {
         io.to(gameId).emit('game_over');
