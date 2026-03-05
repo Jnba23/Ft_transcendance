@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { friendsApi } from '@api/friends.api';
 import { FriendRequestWithUser } from 'types/friendRequest';
+import { useErrorStore } from './error.store';
 
 interface FriendRequestsState {
   sent: FriendRequestWithUser[];
@@ -26,6 +27,8 @@ export const useFriendRequestsStore = create<FriendRequestsState>(
     received: [],
 
     initialize: async () => {
+      const errorStore = useErrorStore.getState();
+
       if (!localStorage.getItem('has_session')) {
         set({ received: [], sent: [] });
         return;
@@ -40,7 +43,7 @@ export const useFriendRequestsStore = create<FriendRequestsState>(
 
         set({ received, sent });
       } catch {
-        // silently fail - user may not be authenticated
+        errorStore.showError('Failed to fetch friend requests');
       }
     },
 
@@ -49,8 +52,13 @@ export const useFriendRequestsStore = create<FriendRequestsState>(
     },
 
     sendRequest: async (other_id: number) => {
-      await friendsApi.createFriendRequest({ other_id });
-      // time-left && display 'couldn't send friend request'
+      const errorStore = useErrorStore.getState();
+
+      try {
+        await friendsApi.createFriendRequest({ other_id });
+      } catch {
+        errorStore.showError('Failed to send friend request');
+      }
     },
 
     addReceived: (request) => {

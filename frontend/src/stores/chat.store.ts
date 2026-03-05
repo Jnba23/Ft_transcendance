@@ -3,6 +3,7 @@ import { Message } from 'types/message';
 import { Conversation } from 'types/conversation';
 import { chatApi } from '@api/chat.api';
 import { UserSummaryRes } from '@api/user.api';
+import { useErrorStore } from './error.store';
 
 interface ChatState {
   isOpen: boolean;
@@ -45,6 +46,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   update: async (convo, user, markConvoRead) => {
+    const errorStore = useErrorStore.getState();
+
     set({
       isLoading: true,
       conversation_id: convo?.id,
@@ -57,14 +60,23 @@ export const useChatStore = create<ChatState>((set, get) => ({
       return;
     }
 
-    const response = await chatApi.getMessages(convo.id);
-    const messages = response.data.messages;
+    try {
+      const response = await chatApi.getMessages(convo.id);
+      const messages = response.data.messages;
+      set({ messages, isLoading: false });
+    } catch {
+      errorStore.showError('Failed to fetch messages');
+    } finally {
+      set({ isLoading: false });
+    }
 
-    set({ messages, isLoading: false });
-
-    if (convo.unread_count) {
-      await chatApi.markConversationRead(convo.id);
-      markConvoRead?.(convo);
+    try {
+      if (convo.unread_count) {
+        await chatApi.markConversationRead(convo.id);
+        markConvoRead?.(convo);
+      }
+    } catch {
+      errorStore.showError('Failed to mark conversation as read');
     }
   },
 
@@ -77,13 +89,18 @@ export const useChatStore = create<ChatState>((set, get) => ({
   sendMessage: async (content) => {
     let conversation_id = get().conversation_id;
     const user_id = get().user?.id;
+    const errorStore = useErrorStore.getState();
 
-    if (!conversation_id) {
-      const response = await chatApi.createConversation({ other_id: user_id! });
-      conversation_id = response.data.conversation_id;
+    try {
+      if (!conversation_id) {
+        const response = await chatApi.createConversation({ other_id: user_id! });
+        conversation_id = response.data.conversation_id;
+      }
+
+      await chatApi.createMessage({ conversation_id, content });
+    } catch {
+      errorStore.showError('failed to send message');
     }
-
-    await chatApi.createMessage({ conversation_id, content });
   },
 
   setHasFriendRequest: (userId, hasFriendReq) => {
