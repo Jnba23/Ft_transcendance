@@ -31,9 +31,7 @@ client.interceptors.response.use((response) => {
   return Promise.reject(
     new AxiosError(
       `Request failed with status code ${status}`,
-      status >= 500
-        ? AxiosError.ERR_BAD_RESPONSE
-        : AxiosError.ERR_BAD_REQUEST,
+      status >= 500 ? AxiosError.ERR_BAD_RESPONSE : AxiosError.ERR_BAD_REQUEST,
       response.config,
       response.request,
       fakeResponse
