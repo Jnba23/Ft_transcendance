@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { userAPI, MyProfileRes } from '../api/user.api';
 import { authAPI } from '../api/auth.api';
-import { client, isRefreshTokenExpired } from '../api/client';
 import { destroyManager } from '@services/manager';
 import { useUserDirectoryStore } from '@stores/userDirectory.store';
 import { useDirectMessagesStore } from '@stores/directMessages.store';
@@ -41,7 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set session flag immediately so StrictMode double-invoke still works
     if (isOAuthReturn) {
       localStorage.setItem('has_session', 'true');
-      localStorage.setItem('session_start', Date.now().toString());
       params.delete('oauth');
       const cleanUrl =
         window.location.pathname +
@@ -64,7 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       setUser(null);
       localStorage.removeItem('has_session');
-      localStorage.removeItem('session_start');
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +70,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     // Remove session flag immediately to prevent any further API calls
     localStorage.removeItem('has_session');
-    localStorage.removeItem('session_start');
     try {
       await authAPI.logout();
     } finally {
@@ -88,35 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Proactive silent refresh: refresh the access token before it expires
-  // so requests never hit a 401 (avoids browser console noise).
-  // Depends on isAuthenticated (boolean) instead of the user object so the
-  // interval doesn't restart on profile updates.
   const isAuthenticated = !!user;
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const REFRESH_INTERVAL_MS = 50 * 1000; // 50 seconds (token lives 1 min)
-
-    const silentRefresh = async () => {
-      // If the refresh token itself is expired, skip the call and log out
-      // so no 401 error appears in the browser console.
-      if (isRefreshTokenExpired()) {
-        window.dispatchEvent(new Event('auth:logout'));
-        return;
-      }
-
-      try {
-        await client.post('/auth/refresh');
-      } catch {
-        // If refresh fails the interceptor / logout handler will deal with it
-      }
-    };
-
-    const id = setInterval(silentRefresh, REFRESH_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, [isAuthenticated]);
 
   useEffect(() => {
     checkAuth();
@@ -125,7 +93,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const handleLogoutTrace = () => {
       setUser(null);
       localStorage.removeItem('has_session');
-      localStorage.removeItem('session_start');
       destroyManager();
       useUserDirectoryStore.getState().reset();
       useDirectMessagesStore.getState().reset();
@@ -168,7 +135,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // During HMR the provider may temporarily unmount — return a safe default
+    // instead of throwing so the console stays clean.
+    return {
+      user: null,
+      isLoading: true,
+      isAuthenticated: false,
+      checkAuth: async () => {},
+      logout: async () => {},
+    } as AuthContextType;
   }
   return context;
 }
