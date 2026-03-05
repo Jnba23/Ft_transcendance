@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set session flag immediately so StrictMode double-invoke still works
     if (isOAuthReturn) {
       localStorage.setItem('has_session', 'true');
+      localStorage.setItem('auth_sync', Date.now().toString());
       params.delete('oauth');
       const cleanUrl =
         window.location.pathname +
