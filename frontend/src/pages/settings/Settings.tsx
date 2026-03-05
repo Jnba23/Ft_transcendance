@@ -120,8 +120,7 @@ function ProfileSction({
           const url = await userAPI.getAvatar(user.id);
           setFetchedAvatarUrl(url);
           objectUrl = url;
-        } catch (error) {
-          console.error('Failed to load avatar:', error);
+        } catch {
           setFetchedAvatarUrl(undefined);
         }
       }
