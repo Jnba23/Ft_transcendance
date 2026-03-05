@@ -1,8 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // Create axios instance with default config
 export const client = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  adapter: 'fetch',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -10,22 +11,37 @@ export const client = axios.create({
 
 client.defaults.withCredentials = true;
 
-// Must match the backend refreshTokenCookieOptions.maxAge
-// (currently 2 min for testing — change back to 3 * 24 * 60 * 60 * 1000 for prod)
-export const REFRESH_TOKEN_MAX_AGE_MS = 2 * 60 * 1000;
-
-/** Check whether the refresh token is likely expired based on session_start. */
-export function isRefreshTokenExpired(): boolean {
-  const start = localStorage.getItem('session_start');
-  if (!start) return true;
-  return Date.now() - Number(start) >= REFRESH_TOKEN_MAX_AGE_MS;
-}
-
 // Shared refresh state to deduplicate concurrent refresh attempts
 let isRefreshing = false;
 let refreshPromise: Promise<void> | null = null;
 
-// Handle errors
+// ── Interceptor 1: Unwrap Service Worker proxy ──
+// The SW wraps non-2xx API responses in a 200 to prevent browser console errors.
+// This interceptor detects the X-Original-Status header and recreates the error
+// in JavaScript so downstream interceptors/catch blocks still work normally.
+client.interceptors.response.use((response) => {
+  const realStatus = response.headers['x-original-status'];
+  if (!realStatus) return response;
+
+  const status = parseInt(realStatus, 10);
+
+  // Build a response object that looks like what axios would normally produce
+  const fakeResponse = { ...response, status };
+
+  return Promise.reject(
+    new AxiosError(
+      `Request failed with status code ${status}`,
+      status >= 500
+        ? AxiosError.ERR_BAD_RESPONSE
+        : AxiosError.ERR_BAD_REQUEST,
+      response.config,
+      response.request,
+      fakeResponse
+    )
+  );
+});
+
+// ── Interceptor 2: Handle 401 → refresh access token ──
 client.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -41,13 +57,6 @@ client.interceptors.response.use(
       localStorage.getItem('has_session')
     ) {
       originalRequest._retry = true;
-
-      // If the refresh token is known to be expired, skip the network call
-      // entirely so no 401 appears in the console.
-      if (isRefreshTokenExpired()) {
-        window.dispatchEvent(new Event('auth:logout'));
-        return Promise.reject(error);
-      }
 
       try {
         // Deduplicate: if a refresh is already in flight, wait for it
