@@ -200,6 +200,9 @@ function ProfileSction({
       setAvatarFile(null);
       setAvatarPreview(null);
 
+      // Notify other tabs to re-fetch the updated user
+      localStorage.setItem('auth_sync', Date.now().toString());
+
       setAlert({ message: 'Profile updated successfully!', type: 'success' });
     } catch (error) {
       setAlert({ message: getErrorMessage(error), type: 'error' });
@@ -393,6 +396,7 @@ function SecuritySection({
       await twoFaAPI.turnOn({ code });
       await onChanged();
       resetState();
+      localStorage.setItem('auth_sync', Date.now().toString());
       setAlert({ message: '2FA has been enabled!', type: 'success' });
     } catch (error) {
       setAlert({ message: getErrorMessage(error), type: 'error' });
@@ -415,6 +419,7 @@ function SecuritySection({
       await twoFaAPI.turnOff({ code });
       await onChanged();
       resetState();
+      localStorage.setItem('auth_sync', Date.now().toString());
       setAlert({ message: '2FA has been disabled.', type: 'success' });
     } catch (error) {
       setAlert({ message: getErrorMessage(error), type: 'error' });
