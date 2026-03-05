@@ -10,7 +10,7 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || 'your-secret-key',
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3001',
   jwtAccessExpiresIn: (process.env.JWT_ACCESS_EXPIRES_IN ||
-    '15m') as SignOptions['expiresIn'],
+    '1m') as SignOptions['expiresIn'],
   jwtRefreshExpiresIn: (process.env.JWT_REFRESH_EXPIRES_IN ||
     '3d') as SignOptions['expiresIn'],
   googleClientId: process.env.GOOGLE_CLIENT_ID,
