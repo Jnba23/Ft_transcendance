@@ -1,6 +1,27 @@
 import { getDb } from '../../core/database.js';
 import * as RpsTypes from './types.js';
 
+const ELO_K = 32;
+
+function calculateElo(
+  winnerRating: number,
+  loserRating: number
+): { newWinnerRating: number; newLoserRating: number } {
+  const expectedWinner =
+    1 / (1 + Math.pow(10, (loserRating - winnerRating) / 400));
+  const expectedLoser = 1 - expectedWinner;
+
+  const newWinnerRating = Math.max(0, Math.round(
+    winnerRating + ELO_K * (1 - expectedWinner))
+  );
+  const newLoserRating = Math.max(
+    0,
+    Math.round(loserRating + ELO_K * (0 - expectedLoser))
+  );
+
+  return { newWinnerRating, newLoserRating };
+}
+
 export function saveCompleteGames(data: {
   gameId: string;
   gameType: 'pong' | 'rps';
@@ -30,33 +51,60 @@ export function saveCompleteGames(data: {
       );
       const loserId =
         data.winnerId === data.player1Id ? data.player2Id : data.player1Id;
+
+      const winnerRow = db
+        .prepare('SELECT level as rating FROM users WHERE id = ?')
+        .get(data.winnerId) as { rating: number };
+      const loserRow = db
+        .prepare('SELECT level as rating FROM users WHERE id = ?')
+        .get(loserId) as { rating: number };
+
+      const { newWinnerRating, newLoserRating } = calculateElo(
+        winnerRow.rating,
+        loserRow.rating
+      );
+
       if (data.gameType === 'rps') {
-        const updateWinner = db.prepare(`
+        db.prepare(
+          `
 					UPDATE users
 					SET 
-						RPS_wins = RPS_wins + 1
-					WHERE id = ?`);
-        updateWinner.run(data.winnerId);
-        const updateLoser = db.prepare(`
+						RPS_wins = RPS_wins + 1,
+						level = ?
+					WHERE id = ?`
+        ).run(newWinnerRating, data.winnerId);
+        db.prepare(
+          `
 					UPDATE users
 					SET
-						RPS_losses = RPS_losses + 1
-					WHERE id = ?`);
-        updateLoser.run(loserId);
+						RPS_losses = RPS_losses + 1,
+						level = ?
+					WHERE id = ?`
+        ).run(newLoserRating, loserId);
       } else {
-        const updateWinner = db.prepare(`
+        db.prepare(
+          `
 					UPDATE users
 					SET 
-						pong_wins = pong_wins + 1
-					WHERE id = ?`);
-        updateWinner.run(data.winnerId);
-        const updateLoser = db.prepare(`
+						pong_wins = pong_wins + 1,
+						level = ?
+					WHERE id = ?`
+        ).run(newWinnerRating, data.winnerId);
+        db.prepare(
+          `
 					UPDATE users
 					SET
-						pong_losses = pong_losses + 1
-					WHERE id = ?`);
-        updateLoser.run(loserId);
+						pong_losses = pong_losses + 1,
+						level = ?
+					WHERE id = ?`
+        ).run(newLoserRating, loserId);
       }
+      console.log(
+        `the winner : ${data.winnerId === data.player1Id ? data.player1Name : data.player2Name} | rating: ${newWinnerRating}`
+      );
+      console.log(
+        `the loser : ${loserId === data.player1Id ? data.player1Name : data.player2Name} | rating: ${newLoserRating}`
+      );
     });
     transaction();
   } catch (error) {
