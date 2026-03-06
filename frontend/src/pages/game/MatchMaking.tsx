@@ -18,7 +18,7 @@ const MatchMaking = () => {
     const onConnectError = (err: Error) => {
       console.log('Matchmaking socket error:', err);
       navigate('/dashboard');
-    }
+    };
 
     if (socket.connected) onConnect();
     else socket.on('connect', onConnect);

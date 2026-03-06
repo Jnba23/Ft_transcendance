@@ -48,7 +48,7 @@ export const setupMmHandlers = (io: Server) => {
 
       if (match) {
         SessionManager.add(match);
-        console.log("matched");
+        console.log('matched');
         const p1Socket = matchMakingNs.sockets.get(match.player1.socketId);
         const p2Socket = matchMakingNs.sockets.get(match.player2.socketId);
 

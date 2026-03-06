@@ -8,26 +8,28 @@ import * as RpsTypes from './types.js';
 export const setupRpsHandler = (io: Server) => {
   const RpsNs = io.of('/rps').use(socketAuthMiddleware);
   RpsNs.on('connection', (socket) => {
-    socket.on('join-game', (data: { gameId: string}) => {
+    socket.on('join-game', (data: { gameId: string }) => {
       const { gameId } = data;
       const userId = socket.data.userId;
       console.log('🎮 Player joining:', userId, 'GameID:', gameId);
       const matchInfo = SessionManager.get(gameId);
       if (!matchInfo) {
-        socket.emit('error', { message: "Game session not found" });
+        socket.emit('error', { message: 'Game session not found' });
         return;
       }
-      if (!userId){
-        console.log('❌ No userId in socket.data'); 
-        socket.emit('error', { message: 'Unauthorized'});
+      if (!userId) {
+        console.log('❌ No userId in socket.data');
+        socket.emit('error', { message: 'Unauthorized' });
         return;
       }
-      console.log('✅ Auth passed for userId:', userId);  
+      console.log('✅ Auth passed for userId:', userId);
       if (
         matchInfo.player1.userId !== userId &&
         matchInfo.player2.userId != userId
       ) {
-        socket.emit('error', { message: 'Not part of this game, Unauthorized' });
+        socket.emit('error', {
+          message: 'Not part of this game, Unauthorized',
+        });
         return;
       }
       if (!RpsServ.getGame(gameId)) RpsServ.createGame(matchInfo);
@@ -38,25 +40,25 @@ export const setupRpsHandler = (io: Server) => {
         game.player1.isConnected &&
         game.player1.socketId !== socket.id
       ) {
-          const prevSoc = RpsNs.sockets.get(game.player1.socketId);
-          if (prevSoc){
-            prevSoc.emit('error', {
-              message: 'You did connect from a new tab'
-            });
-            prevSoc.disconnect();
-          }
+        const prevSoc = RpsNs.sockets.get(game.player1.socketId);
+        if (prevSoc) {
+          prevSoc.emit('error', {
+            message: 'You did connect from a new tab',
+          });
+          prevSoc.disconnect();
+        }
       } else if (
         game.player2.userId === userId &&
         game.player2.isConnected &&
         game.player2.socketId !== socket.id
       ) {
-          const prevSoc = RpsNs.sockets.get(game.player2.socketId);
-          if (prevSoc){
-            prevSoc.emit('error', {
-              message: 'You did connect from a new tab'
-            });
-            prevSoc.disconnect();
-          }
+        const prevSoc = RpsNs.sockets.get(game.player2.socketId);
+        if (prevSoc) {
+          prevSoc.emit('error', {
+            message: 'You did connect from a new tab',
+          });
+          prevSoc.disconnect();
+        }
       }
       socket.join(gameId);
       socket.data.gameId = gameId;
@@ -99,11 +101,14 @@ export const setupRpsHandler = (io: Server) => {
           const randChoice = choices[Math.floor(Math.random() * 3)];
           RpsServ.startAutoChoiceTimer(gameId, userId, () => {
             // if (game.timers.autoChoice) clearTimeout(game.timers.autoChoice);
-            const targetSocket = userId === game.player1.userId ? game.player1.socketId : game.player2.socketId;
+            const targetSocket =
+              userId === game.player1.userId
+                ? game.player1.socketId
+                : game.player2.socketId;
             RpsNs.to(targetSocket).emit('auto-choice-made', {
               message: `You took too long, random choice made`,
               choice: randChoice,
-              userId: userId
+              userId: userId,
             });
           });
         });
@@ -115,11 +120,11 @@ export const setupRpsHandler = (io: Server) => {
       const userId = socket.data.userId;
 
       if (!gameId || !userId) {
-        socket.emit('error', {message: 'Not in a game'});
+        socket.emit('error', { message: 'Not in a game' });
         return;
       }
       if (!['rock', 'paper', 'scissors'].includes(data.choice)) {
-        socket.emit('error', {message: 'Invalid choice!'});
+        socket.emit('error', { message: 'Invalid choice!' });
         return;
       }
       const success = RpsServ.makeChoice(gameId, userId, data.choice);
@@ -129,7 +134,8 @@ export const setupRpsHandler = (io: Server) => {
       }
       const game = RpsServ.getGame(gameId);
       if (!game) return;
-      const player = socket.id === game.player1.socketId ? 'autoChoiceP1' : 'autoChoiceP2';
+      const player =
+        socket.id === game.player1.socketId ? 'autoChoiceP1' : 'autoChoiceP2';
       if (game.timers[player]) {
         clearTimeout(game.timers[player]);
         game.timers[player] = undefined;
@@ -191,15 +197,22 @@ export const setupRpsHandler = (io: Server) => {
                 message: `Moving on to round number ${game.currentRound} - Make your choice !`,
               });
               [game.player1.userId, game.player2.userId].forEach((userId) => {
-                const choices: RpsTypes.Choice[] = ['paper', 'rock', 'scissors'];
+                const choices: RpsTypes.Choice[] = [
+                  'paper',
+                  'rock',
+                  'scissors',
+                ];
                 const randChoice = choices[Math.floor(Math.random() * 3)];
                 RpsServ.startAutoChoiceTimer(gameId, userId, () => {
                   // if (game.timers.autoChoice) clearTimeout(game.timers.autoChoice);
-                  const targetSocket = userId === game.player1.userId ? game.player1.socketId : game.player2.socketId;
+                  const targetSocket =
+                    userId === game.player1.userId
+                      ? game.player1.socketId
+                      : game.player2.socketId;
                   RpsNs.to(targetSocket).emit('auto-choice-made', {
                     message: `You took too long, random choice made`,
                     choice: randChoice,
-                    userId: userId
+                    userId: userId,
                   });
                 });
               });

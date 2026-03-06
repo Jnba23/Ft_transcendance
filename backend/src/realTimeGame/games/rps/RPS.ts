@@ -53,7 +53,8 @@ class RpsGameManager {
   ): void {
     const game = this.games.get(gameId);
     if (!game) return;
-    const key = game.player1.userId === userId ? 'autoChoiceP1' : 'autoChoiceP2';
+    const key =
+      game.player1.userId === userId ? 'autoChoiceP1' : 'autoChoiceP2';
     game.timers[key] = setTimeout(letEmKnow, 5000);
   }
 
@@ -102,20 +103,21 @@ class RpsGameManager {
   makeChoice(gameId: string, userId: number, choice: RpsTypes.Choice): boolean {
     const game = this.games.get(gameId);
     if (!game) return false;
-    if (game.phase !== 'choosing'){
-      console.log(`⚠️ Ignoring choice - game phase is '${game.phase}', not 'choosing'`);
+    if (game.phase !== 'choosing') {
+      console.log(
+        `⚠️ Ignoring choice - game phase is '${game.phase}', not 'choosing'`
+      );
       return false;
-    };
-    if (userId === game.player1.userId){
-      if (game.player1.currentChoice){
+    }
+    if (userId === game.player1.userId) {
+      if (game.player1.currentChoice) {
         console.log('P1 made a choice');
         return false;
       }
       game.player1.currentChoice = choice;
       console.log('P1' + choice);
-    }
-    else if (userId === game.player2.userId){
-      if (game.player2.currentChoice){
+    } else if (userId === game.player2.userId) {
+      if (game.player2.currentChoice) {
         console.log('P2 made a choice');
         return false;
       }
@@ -146,7 +148,7 @@ class RpsGameManager {
       // eslint-disable-next-line no-console
       console.log("It's a tie");
     }
-    
+
     if (game.player1.score >= game.roundsToWin) {
       game.phase = 'game-over';
       game.winner = game.player1.userId;
