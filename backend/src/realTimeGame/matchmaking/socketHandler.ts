@@ -9,8 +9,9 @@ export const setupMmHandlers = (io: Server) => {
   const matchMakingNs = io.of('/matchmaking').use(socketAuthMiddleware);
 
   matchMakingNs.on('connection', (socket) => {
-    console.log('matchmaking socket connected: ', socket.id);
+    console.log('connected to matchmaking');
     socket.on('join-queue', (data) => {
+      console.log('Joined queue');
       const userId = socket.data.userId;
 
       const gameId = SessionManager.getGameId(userId);
@@ -47,6 +48,7 @@ export const setupMmHandlers = (io: Server) => {
 
       if (match) {
         SessionManager.add(match);
+        console.log('matched');
         const p1Socket = matchMakingNs.sockets.get(match.player1.socketId);
         const p2Socket = matchMakingNs.sockets.get(match.player2.socketId);
 
@@ -71,7 +73,6 @@ export const setupMmHandlers = (io: Server) => {
     });
 
     socket.on('disconnect', () => {
-      console.log('matchmaking socket connected: ', socket.id);
       if (socket.data.userId) mmServ.removeFromQueue(socket.data.userId);
     });
   });

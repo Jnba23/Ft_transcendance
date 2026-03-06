@@ -10,6 +10,7 @@ function NavItem({ icon, label, path }: NavItemProps) {
   return (
     <NavLink
       to={path ?? '/'}
+      state={{game: label}}
       className={[
         'flex gap-3 items-center',
         'text-white',

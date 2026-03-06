@@ -92,12 +92,12 @@ const PongGame = () => {
 
     socket.on('error', (err) => {
       showError(err.message);
-      // if (
-      //   err.message === 'Game session not found' ||
-      //   err.message === 'Unauthorized' ||
-      //   err.message === 'Not part of this game' ||
-      //   err.message === 'Already connected from another tab'
-      // ) navigate('/dashboard');
+      if (
+        err.message === 'Game session not found' ||
+        err.message === 'Unauthorized' ||
+        err.message === 'Not part of this game' ||
+        err.message === 'Already connected from another tab'
+      ) navigate('/dashboard');
     });
 
     return () => {
