@@ -102,14 +102,25 @@ class RpsGameManager {
   makeChoice(gameId: string, userId: number, choice: RpsTypes.Choice): boolean {
     const game = this.games.get(gameId);
     if (!game) return false;
-    // if (game.phase !== 'choosing') return false;
+    if (game.phase !== 'choosing'){
+      console.log(`⚠️ Ignoring choice - game phase is '${game.phase}', not 'choosing'`);
+      return false;
+    };
     if (userId === game.player1.userId){
-      console.log('P1' + choice);
+      if (game.player1.currentChoice){
+        console.log('P1 made a choice');
+        return false;
+      }
       game.player1.currentChoice = choice;
+      console.log('P1' + choice);
     }
     else if (userId === game.player2.userId){
-      console.log('P2' + choice);
+      if (game.player2.currentChoice){
+        console.log('P2 made a choice');
+        return false;
+      }
       game.player2.currentChoice = choice;
+      console.log('P2' + choice);
     }
     if (game.player1.currentChoice && game.player2.currentChoice)
       this.resolveRound(game);

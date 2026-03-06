@@ -1,37 +1,71 @@
 import { Server } from 'socket.io';
 import { SessionManager } from '../../core/gameSessionManager.js';
 import { RpsServ } from './RPS.js';
+import { socketAuthMiddleware } from '../../../middleware/socketAuthMiddleware.js';
 // import { saveCompleteGames } from '../../persistence/gamePersistence.js';
 import * as RpsTypes from './types.js';
 
 export const setupRpsHandler = (io: Server) => {
-  const RpsNs = io.of('/rps');
+  const RpsNs = io.of('/rps').use(socketAuthMiddleware);
   RpsNs.on('connection', (socket) => {
-    socket.on('join-game', (data: { gameId: string; userId: number }) => {
-      const { gameId, userId } = data;
+    socket.on('join-game', (data: { gameId: string}) => {
+      const { gameId } = data;
+      const userId = socket.data.userId;
+      console.log('🎮 Player joining:', userId, 'GameID:', gameId);
       const matchInfo = SessionManager.get(gameId);
       if (!matchInfo) {
-        socket.emit('error', { message: "Game session doesn't exist" });
+        socket.emit('error', { message: "Game session not found" });
         return;
       }
+      if (!userId){
+        console.log('❌ No userId in socket.data'); 
+        socket.emit('error', { message: 'Unauthorized'});
+        return;
+      }
+      console.log('✅ Auth passed for userId:', userId);  
       if (
         matchInfo.player1.userId !== userId &&
         matchInfo.player2.userId != userId
       ) {
-        socket.emit('error', { message: 'Unauthorized' });
+        socket.emit('error', { message: 'Not part of this game, Unauthorized' });
         return;
+      }
+      if (!RpsServ.getGame(gameId)) RpsServ.createGame(matchInfo);
+      const game = RpsServ.getGame(gameId);
+      if (!game) return;
+      if (
+        game.player1.userId === userId &&
+        game.player1.isConnected &&
+        game.player1.socketId !== socket.id
+      ) {
+          const prevSoc = RpsNs.sockets.get(game.player1.socketId);
+          if (prevSoc){
+            prevSoc.emit('error', {
+              message: 'You did connect from a new tab'
+            });
+            prevSoc.disconnect();
+          }
+      } else if (
+        game.player2.userId === userId &&
+        game.player2.isConnected &&
+        game.player2.socketId !== socket.id
+      ) {
+          const prevSoc = RpsNs.sockets.get(game.player2.socketId);
+          if (prevSoc){
+            prevSoc.emit('error', {
+              message: 'You did connect from a new tab'
+            });
+            prevSoc.disconnect();
+          }
       }
       socket.join(gameId);
       socket.data.gameId = gameId;
-      socket.data.userId = userId;
-      if (!RpsServ.getGame(gameId)) RpsServ.createGame(matchInfo);
       RpsServ.markPlayerConnected(gameId, userId, socket.id);
       RpsServ.cancelReconnectionTimer(gameId);
       RpsNs.to(gameId).emit('opponent-reconnected', {
         message: 'Opponent reconnected!',
       });
-      const game = RpsServ.getGame(gameId);
-      socket.emit('joined-game', {
+      socket.emit('game_init', {
         gameId,
         gameState: {
           currentRound: game?.currentRound,
@@ -111,7 +145,7 @@ export const setupRpsHandler = (io: Server) => {
             p2Choice: game.player2.currentChoice,
             p1Score: game.player1.score,
             p2Score: game.player2.score,
-            round: game.currentRound,
+            round: game.currentRound - 1,
           });
           game.player1.currentChoice = undefined;
           game.player2.currentChoice = undefined;

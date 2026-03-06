@@ -16,5 +16,9 @@ export default function ChoiceIcon ({choice, size=64, className=''}: ChoiceIconP
 	}
 
 	const Icon = icons[choice];
+	if (!Icon){
+		console.error('❌ ChoiceIcon: Invalid choice or missing icon:', choice);
+		return <div>?</div>
+	}
 	return <Icon width={size} height={size} className={className}/>
 }

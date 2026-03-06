@@ -1,9 +1,12 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import Card from '../../components/ui/Cards/GlassCard';
 
-const StartGame = ({ name }: { name: string }) => {
+const StartGame = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
 
+  const game = params['*'] || location.state?.game;
   return (
     <div className="text-white relative flex flex-col justify-center items-center min-h-screen w-full bg-background-dark p-4 gap-6 text-center isolate">
       <span
@@ -12,10 +15,10 @@ const StartGame = ({ name }: { name: string }) => {
       >
         sports_tennis
       </span>
-      <h1 className="font-bold text-6xl leading-none">Play {name}</h1>
+      <h1 className="font-bold text-6xl leading-none">Play {game}</h1>
       <p className="w-1/2 text-lg leading-7 text-white/60">
         Challenge your friends or find a random opponent to start a new game of
-        classic Pong.
+        classic {game}.
       </p>
 
       <div className="flex mt-5 gap-4">
@@ -25,7 +28,7 @@ const StartGame = ({ name }: { name: string }) => {
         </button>
 
         <button
-          onClick={() => navigate('/match_making')}
+          onClick={() => navigate('/match_making', {state: {gameType: game.toLowerCase()}})}
           className="mb-20 flex items-center gap-2 rounded-lg bg-white/10 backdrop-blur-[10px] border border-gray-500 text-white text-base font-semibold py-3 px-8 cursor-pointer shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] transition-all duration-200 hover:-translate-y-0.5 hover:border-white/50 hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.5),0_0_15px_rgba(255,255,255,0.1)]"
         >
           <span className="material-symbols-outlined">shuffle</span>
@@ -33,7 +36,7 @@ const StartGame = ({ name }: { name: string }) => {
         </button>
       </div>
 
-      <Card gameName={name} winLoss="61W / 24L" highestScore="11 - 0" />
+      <Card gameName={game} winLoss="61W / 24L" highestScore="11 - 0" />
     </div>
   );
 };

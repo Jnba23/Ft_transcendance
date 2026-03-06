@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Socket } from 'socket.io-client'
 import { Choice, GameState, RoundResult, GameOverData} from '../types/rps'
 
-export const useRPSGame = (socket: Socket | null, gameId: string, userId: number) => {
+export const useRPSGame = (socket: Socket | null, gameId: string) => {
 	const [gameState, setGameState] = useState<GameState | null>(null);
 	const [myChoice, setMyChoice] = useState<Choice | null>(null);
 	const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
@@ -11,15 +11,49 @@ export const useRPSGame = (socket: Socket | null, gameId: string, userId: number
 	const [opDisconnected, setOpDisconnected] = useState(false);
 	const [countdown, setCountdown] = useState<number | null>(null);
 
+	const makeChoice = useCallback((choice: Choice) => {
+		socket?.emit('make-choice', { choice });
+		setMyChoice(choice);
+		setCountdown(null);
+	}, [socket]);
+
+	// Effect to handle join-game 
 	useEffect(() => {
+		if (!gameId) return ;
 		if (!socket) return ;
 
-		socket.emit('join-game', {gameId, userId});
-		socket.on('joined-game', (data: {gameId: string, gameState: GameState}) => {
-			// console.log(data);
+		const onConnect =  () =>{
+
+			console.log('🔵 Emitting join-game with gameId:', gameId);
+			socket.emit('join-game', {gameId});
+		}
+			
+		if (socket.connected)
+			onConnect();
+		else
+			socket.on('connect', onConnect);
+
+		socket.on('game_init', (data: {gameId: string, gameState: GameState}) => {
+			console.log('🟢 Received game_init:', data);
+
 			setGameState(data.gameState);
-			localStorage.setItem('currentGameId', data.gameId);
+		});
+
+		socket.on('error', (data:  {message: string}) => {
+			console.error('Game error', data.message);
+			alert(data.message);
 		})
+
+		return () => {
+			socket.off('connect', onConnect);
+			socket.off('game_init');
+			socket.off('error');
+		}
+	}, [gameId, socket]);
+
+	// Effect to handle game events
+	useEffect(() => {
+		if (!socket) return ;
 
 		socket.on('game-start', (data: {message: string, roundsToWin: number}) => {
 			console.log(data);
@@ -30,17 +64,17 @@ export const useRPSGame = (socket: Socket | null, gameId: string, userId: number
 			setRoundResult(null);
 			setCountdown(5);
 		})
-
+	
 		socket.on('auto-choice-made', (data: {message: string, choice: Choice})=> {
 			console.log(data);
 			setWaitingForOpp(true);
 			makeChoice(data.choice);
 		});
-
+	
 		socket.on('choice-recorded', () => {
 			setWaitingForOpp(true);
 		})
-
+	
 		socket.on('round-results', (data: RoundResult) => {
 			setRoundResult(data);
 			setGameState((prev) => {
@@ -55,7 +89,7 @@ export const useRPSGame = (socket: Socket | null, gameId: string, userId: number
 			setWaitingForOpp(false);
 			setMyChoice(null);
 		})
-
+	
 		socket.on('new-round', (data: {round: number, message: string}) => {
 			setGameState((prev) => {
 				return prev ? {...prev, currentRound: data.round, phase: 'choosing'}: null;
@@ -64,33 +98,24 @@ export const useRPSGame = (socket: Socket | null, gameId: string, userId: number
 			setMyChoice(null);
 			setCountdown(5);
 		})
-
+	
 		socket.on('game-over', (data: GameOverData) => {
-			// console.log('-----------Game Over-----------');
-			// console.log(data);
 			setGameOver(data);
 			setGameState((prev) => {
 				return prev ? {...prev, phase: 'game-over'} : null;
 			})
-			localStorage.removeItem('currentGameId');
 		});
-
-
+	
+	
 		socket.on('opponent-disconnected', () => {
 			setOpDisconnected(true);
 		})
-
+	
 		socket.on('opponent-reconnected', () => {
 			setOpDisconnected(false);
 		})
-
-		socket.on('error', (data: {message: string}) => {
-			console.error('Game error', data.message);
-			alert(data.message);
-		})
-
+	
 		return () => {
-			socket.off('joined-game');
 			socket.off('game-start');
 			socket.off('choice-recorded');
 			socket.off('round-results');
@@ -99,9 +124,8 @@ export const useRPSGame = (socket: Socket | null, gameId: string, userId: number
 			socket.off('auto-choice-made');
 			socket.off('opponent-disconnected');
 			socket.off('opponent-reconnected');
-			socket.off('error');
 		}
-	}, [socket, gameId, userId]);
+	}, [socket, makeChoice]);
 
 	useEffect(() => {
 		if (countdown === null || countdown <= 0) return;
@@ -111,13 +135,6 @@ export const useRPSGame = (socket: Socket | null, gameId: string, userId: number
 		}, 1000);
 		return () => clearTimeout(timer);
 	}, [countdown]);
-
-	const makeChoice = (choice: Choice) => {
-		console.log('choice made fnct');
-		socket?.emit('make-choice', { choice });
-		setMyChoice(choice);
-		setCountdown(null);
-	};
 
 	return {
 		gameState,

@@ -1,21 +1,24 @@
 import scannerGif from '@assets/scanner.gif';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { createMatchmakingSocket } from '@services/game/socket';
 import '@styles/matchMaking/matchMaking.css';
+
 const MatchMaking = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
   // states
   const [seconds, setSeconds] = useState(0);
 
-  const gameType: string = 'pong';
-
+  const { gameType } = location.state ?? {};
+  if (!gameType) navigate('/dashboard');
   useEffect(() => {
     const socket = createMatchmakingSocket();
-    if (!socket) return;
-
-    const onConnect = () => socket.emit('join-queue', gameType);
+    const onConnect = () => socket.emit('join-queue', { gameType });
+    const onConnectError = (err: Error) => {
+      console.log('Matchmaking socket error:', err);
+      navigate('/dashboard');
+    }
 
     if (socket.connected) onConnect();
     else socket.on('connect', onConnect);
@@ -30,11 +33,12 @@ const MatchMaking = () => {
 
     return () => {
       socket.emit('leave-queue');
-      socket.off('connect');
+      socket.off('connect', onConnect);
+      socket.off('connect_error', onConnectError);
       socket.off('match-found');
       socket.off('reconnect-game');
     };
-  }, [navigate]);
+  }, [navigate, gameType]);
 
   // wait Timer
 
