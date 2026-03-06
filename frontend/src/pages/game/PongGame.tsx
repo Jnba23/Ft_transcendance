@@ -91,7 +91,6 @@ const PongGame = () => {
     });
 
     socket.on('error', (err) => {
-      console.log(err.message);
       showError(err.message);
       // if (
       //   err.message === 'Game session not found' ||

@@ -66,13 +66,9 @@ export interface GetMeRes {
 // --- API ---
 
 export const userAPI = {
-  getMe: async (config?: Record<string, unknown>) => {
-    try {
-      const response = await client.get<GetMeRes>('/users/me', config);
-      return response.data;
-    } catch (error) {
-      return Promise.reject(error);
-    }
+  getMe: async () => {
+    const response = await client.get<GetMeRes>('/users/me');
+    return response.data;
   },
 
   updateMe: async (data: { username?: string; avatar?: File }) => {
