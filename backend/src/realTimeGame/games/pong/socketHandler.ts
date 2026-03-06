@@ -8,7 +8,9 @@ export const setupPongHandler = (io: Server) => {
   const PongNs = io.of('/pong').use(socketAuthMiddleware);
 
   PongNs.on('connection', (socket) => {
-    console.log('pong socket connected: ', socket.id);
+    console.log(
+      `pong socket connected: ${socket.id} | user ID: ${socket.data.userId}`
+    );
     socket.on('join-game', ({ gameId }) => {
       const session = SessionManager.get(gameId);
       const userId = socket.data.userId;
@@ -115,7 +117,9 @@ export const setupPongHandler = (io: Server) => {
     });
 
     socket.on('disconnect', () => {
-      console.log('pong socket connected: ', socket.id);
+      console.log(
+        `pong socket disconnected: ${socket.id} | user ID: ${socket.data.userId}`
+      );
 
       const gameId = socket.data.gameId;
       const userId = socket.data.userId;

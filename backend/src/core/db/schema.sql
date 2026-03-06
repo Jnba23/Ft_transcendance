@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     google_id TEXT UNIQUE,
 
     avatar_url TEXT DEFAULT '/uploads/default-avatar.jpeg',
-    level INTEGER DEFAULT 1,          -- New: Player level (e.g. Lv. 24)
+    level INTEGER DEFAULT 1000,
     is_2fa_enabled BOOLEAN DEFAULT 0,
     two_fa_secret TEXT,
     status TEXT DEFAULT 'offline' CHECK(status IN ('online', 'offline')),
