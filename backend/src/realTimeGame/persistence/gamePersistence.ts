@@ -11,8 +11,9 @@ function calculateElo(
     1 / (1 + Math.pow(10, (loserRating - winnerRating) / 400));
   const expectedLoser = 1 - expectedWinner;
 
-  const newWinnerRating = Math.max(0, Math.round(
-    winnerRating + ELO_K * (1 - expectedWinner))
+  const newWinnerRating = Math.max(
+    0,
+    Math.round(winnerRating + ELO_K * (1 - expectedWinner))
   );
   const newLoserRating = Math.max(
     0,

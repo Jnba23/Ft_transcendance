@@ -10,7 +10,7 @@ export const useSocket = (namespace: string) => {
   useEffect(() => {
     const newSocket = io(`${SOCKET_URL}${namespace}`, {
       withCredentials: true,
-      autoConnect: true
+      autoConnect: true,
     });
 
     newSocket.on('connect', () => {
@@ -24,9 +24,9 @@ export const useSocket = (namespace: string) => {
     });
 
     setSocket(newSocket);
-    return (() => {
+    return () => {
       newSocket.close();
-    });
+    };
   }, [namespace]);
   return { socket, isConnected };
 };

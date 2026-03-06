@@ -44,7 +44,9 @@ const PongGame = () => {
     const handleGameEnd = () => {
       setTimeout(() => {
         socketRef.current?.disconnect();
-        navigate('/end_match', { state: { matchData: finalStats, gameType: 'pong' } });
+        navigate('/end_match', {
+          state: { matchData: finalStats, gameType: 'pong' },
+        });
       }, 2000);
     };
 
@@ -92,7 +94,8 @@ const PongGame = () => {
         err.message === 'Unauthorized' ||
         err.message === 'Not part of this game' ||
         err.message === 'Already connected from another tab'
-      ) navigate('/dashboard');
+      )
+        navigate('/dashboard');
     });
 
     return () => {
