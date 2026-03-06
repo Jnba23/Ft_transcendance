@@ -22,10 +22,6 @@ const StartGame = () => {
       </p>
 
       <div className="flex mt-5 gap-4">
-        <button className="mb-20 flex items-center gap-2 rounded-lg border-none bg-blue-600 text-white text-base font-semibold py-3 px-8 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(0,100,255,0.7),0_0_40px_rgba(0,100,255,0.4)]">
-          <span className="material-symbols-outlined">group_add</span>
-          <span>Play with a Friend</span>
-        </button>
 
         <button
           onClick={() => navigate('/match_making', {state: {gameType: game.toLowerCase()}})}

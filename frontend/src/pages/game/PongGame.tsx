@@ -19,7 +19,7 @@ const PongGame = () => {
   const [isMatched, setIsMatched] = useState(false);
   const [player1Name, setPlayer1Name] = useState('');
   const [player2Name, setPlayer2Name] = useState('');
-  const [seconds, setSeconds] = useState(0);
+  const [seconds, setSeconds] = useState(10);
 
   // External hooks
   const keys = useKeyboard();
@@ -34,10 +34,6 @@ const PongGame = () => {
   useEffect(() => {
     const socket = createPongSocket();
     socketRef.current = socket;
-
-    return () => {
-      socket.disconnect();
-    };
   }, []);
 
   useEffect(() => {
@@ -50,13 +46,15 @@ const PongGame = () => {
 
     const handleGameEnd = () => {
       setTimeout(() => {
+        socketRef.current?.disconnect();
         navigate('/end_match', { state: { matchData: finalStats } });
       }, 2000);
     };
 
     const handleGameAborted = () => {
+      socketRef.current?.disconnect();
       showError('Opponent disconnected. Game aborted.');
-      // navigate('/dashboard');
+      navigate('/start_game');
     };
 
     socketRef.current?.on('match_results', handleMatchResults);
@@ -126,11 +124,17 @@ const PongGame = () => {
   // wait Timer
   useEffect(() => {
     if (!state?.isPaused || !state?.isPlaying) {
-      setSeconds(0);
+      setSeconds(10);
       return;
     }
     const intervalId = setInterval(() => {
-      setSeconds((s) => s + 1);
+      setSeconds((s) => {
+        if (s <= 1) {
+          clearInterval(intervalId);
+          return 0;
+        }
+        return s - 1;
+      });
     }, 1000);
     return () => clearInterval(intervalId);
   }, [state?.isPaused, state?.isPlaying]);
