@@ -97,7 +97,8 @@ const PongGame = () => {
         err.message === 'Unauthorized' ||
         err.message === 'Not part of this game' ||
         err.message === 'Already connected from another tab'
-      ) navigate('/dashboard');
+      )
+        navigate('/dashboard');
     });
 
     return () => {

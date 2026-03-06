@@ -28,7 +28,11 @@ const StartGame = () => {
         </button>
 
         <button
-          onClick={() => navigate('/match_making', {state: {gameType: game.toLowerCase()}})}
+          onClick={() =>
+            navigate('/match_making', {
+              state: { gameType: game.toLowerCase() },
+            })
+          }
           className="mb-20 flex items-center gap-2 rounded-lg bg-white/10 backdrop-blur-[10px] border border-gray-500 text-white text-base font-semibold py-3 px-8 cursor-pointer shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] transition-all duration-200 hover:-translate-y-0.5 hover:border-white/50 hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.5),0_0_15px_rgba(255,255,255,0.1)]"
         >
           <span className="material-symbols-outlined">shuffle</span>
