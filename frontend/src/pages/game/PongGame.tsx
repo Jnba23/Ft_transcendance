@@ -44,7 +44,7 @@ const PongGame = () => {
     const handleGameEnd = () => {
       setTimeout(() => {
         socketRef.current?.disconnect();
-        navigate('/end_match', { state: { matchData: finalStats } });
+        navigate('/end_match', { state: { matchData: finalStats, gameType: 'pong' } });
       }, 2000);
     };
 
