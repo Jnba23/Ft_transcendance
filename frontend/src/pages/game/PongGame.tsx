@@ -39,10 +39,7 @@ const PongGame = () => {
   useEffect(() => {
     let finalStats: GameState | null = null;
 
-    const handleMatchResults = (data: GameState) => {
-      finalStats = data;
-      // console.log(finalStats);
-    };
+    const handleMatchResults = (data: GameState) => (finalStats = data);
 
     const handleGameEnd = () => {
       setTimeout(() => {
