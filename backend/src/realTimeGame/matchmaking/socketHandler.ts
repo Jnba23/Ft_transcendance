@@ -73,6 +73,7 @@ export const setupMmHandlers = (io: Server) => {
     });
 
     socket.on('disconnect', () => {
+      console.log('matchmaking socket desconnected: ', socket.id);
       if (socket.data.userId) mmServ.removeFromQueue(socket.data.userId);
     });
   });

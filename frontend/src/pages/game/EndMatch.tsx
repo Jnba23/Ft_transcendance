@@ -20,6 +20,7 @@ const EndMatch = () => {
   const { user } = useAuth();
 
   const matchData = location.state?.matchData as MatchData | undefined;
+  const gameType = location.state?.gameType;
 
   const isPlayer1 = matchData?.player1Id === user?.id;
   const myScore = isPlayer1 ? matchData?.player1Score : matchData?.player2Score;
@@ -91,7 +92,7 @@ const EndMatch = () => {
         </button>
 
         <button
-          onClick={() => navigate('/match_making')}
+          onClick={() => navigate('/match_making', { state: { gameType } })}
           className="flex-1 flex justify-center items-center gap-3 rounded-xl bg-[#1D253F]/80 backdrop-blur-md border border-white/10 text-white/90 text-sm md:text-base font-semibold py-4 px-6 cursor-pointer shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-[#252E4B]/90 hover:border-white/20 hover:text-white"
         >
           <span className="material-symbols-outlined text-xl">shuffle</span>

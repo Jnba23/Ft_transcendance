@@ -7,8 +7,10 @@ export const setupChatHandler = (io: Server) => {
   chatNs.use(socketAuthMiddleware);
 
   chatNs.on('connection', (socket) => {
+    // console.log('Chat is connected: ', socket.id);
     socket.join(`user_${socket.data.userId}`);
-
-    socket.on('disconnect', () => {});
+    socket.on('disconnect', () => {
+      // console.log('Chat is disconnected: ', socket.id);
+    });
   });
 };
