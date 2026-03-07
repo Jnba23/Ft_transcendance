@@ -53,7 +53,8 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
 
     socket.on('game-start', () => {
       setGameState((prev) => {
-        return prev ? { ...prev, phase: 'choosing' } : null;
+        if (!prev) return null;
+        return { ...prev, phase: 'choosing' };
       });
       setMyChoice(null);
       setRoundResult(null);
@@ -75,15 +76,14 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     socket.on('round-results', (data: RoundResult) => {
       setRoundResult(data);
       setGameState((prev) => {
-        return prev
-          ? {
-              ...prev,
-              currentRound: data.round,
-              player1: { ...prev.player1, score: data.p1Score },
-              player2: { ...prev.player2, score: data.p2Score },
-              phase: 'revealing',
-            }
-          : null;
+        if (!prev) return null;
+        return {
+          ...prev,
+          currentRound: data.round,
+          player1: { ...prev.player1, score: data.p1Score },
+          player2: { ...prev.player2, score: data.p2Score },
+          phase: 'revealing',
+        };
       });
       setWaitingForOpp(false);
       setMyChoice(null);
@@ -91,9 +91,8 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
 
     socket.on('new-round', (data: { round: number; message: string }) => {
       setGameState((prev) => {
-        return prev
-          ? { ...prev, currentRound: data.round, phase: 'choosing' }
-          : null;
+        if (!prev) return null;
+        return { ...prev, currentRound: data.round, phase: 'choosing' };
       });
       setRoundResult(null);
       setMyChoice(null);
@@ -103,7 +102,8 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     socket.on('game-over', (data: GameOverData) => {
       setGameOver(data);
       setGameState((prev) => {
-        return prev ? { ...prev, phase: 'game-over' } : null;
+        if (!prev) return null;
+        return { ...prev, phase: 'game-over' };
       });
     });
 
