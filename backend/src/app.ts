@@ -5,6 +5,7 @@ import userRoutes from './user/users/routes.js';
 import friendRoutes from './user/friends/routes.js';
 import twoFatRoutes from './auth/2fa/routes.js';
 import chatRoutes from './chat/routes.js';
+import gameRoutes from './realTimeGame/persistence/routes.js'
 import { AppError } from './utils/AppError.js';
 import { deserializeUser } from './middleware/deserializeUser.js';
 import { config } from './config/index.js';
@@ -69,6 +70,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/friends', friendRoutes);
 app.use('/api/auth/2fa', twoFatRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/games', gameRoutes);
 
 // Documentation
 app.use('/docs', scalarDocs);
