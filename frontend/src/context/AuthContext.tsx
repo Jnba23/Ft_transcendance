@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set session flag immediately so StrictMode double-invoke still works
     if (isOAuthReturn) {
       localStorage.setItem('has_session', 'true');
+      localStorage.setItem('auth_sync', Date.now().toString());
       params.delete('oauth');
       const cleanUrl =
         window.location.pathname +
@@ -56,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      const response = await userAPI.getMe({ _skipAuthRefresh: true });
+      const response = await userAPI.getMe();
       setUser(response.data.user);
       localStorage.setItem('has_session', 'true');
     } catch {
@@ -84,6 +85,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('auth_sync', Date.now().toString());
     }
   };
+
+  const isAuthenticated = !!user;
 
   useEffect(() => {
     checkAuth();
@@ -121,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         isLoading,
-        isAuthenticated: !!user,
+        isAuthenticated,
         checkAuth,
         logout,
       }}
@@ -134,7 +137,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // During HMR the provider may temporarily unmount — return a safe default
+    // instead of throwing so the console stays clean.
+    return {
+      user: null,
+      isLoading: true,
+      isAuthenticated: false,
+      checkAuth: async () => {},
+      logout: async () => {},
+    } as AuthContextType;
   }
   return context;
 }

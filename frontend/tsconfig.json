@@ -24,6 +24,7 @@
       "@assets/*": [
         "assets/*"
       ],
+      "@my-types/*": ["types/*"],
       "@ui/*": [
         "components/ui/*"
       ],

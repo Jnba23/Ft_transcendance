@@ -19,12 +19,12 @@ const Card = ({ gameName, winLoss, highestScore }: CardInfo) => {
         <span className="font-bold text-base">{highestScore}</span>
       </div>
 
-      <a
-        href="/profile"
+      {/* <Link
+        to="/profile/1"
         className="inline-block mt-2 text-blue-500 no-underline text-sm hover:underline"
       >
         View full stats on profile →
-      </a>
+      </Link> */}
     </div>
   );
 };

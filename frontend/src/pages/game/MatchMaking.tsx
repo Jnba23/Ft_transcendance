@@ -1,17 +1,19 @@
 import scannerGif from '@assets/scanner.gif';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { createMatchmakingSocket } from '@services/game/socket';
 import '@styles/matchMaking/matchMaking.css';
 import { useLayoutStore } from '@stores/layout.store';
+
 const MatchMaking = () => {
   const navigate = useNavigate();
   const {hideNavbar, omitSidebar} = useLayoutStore((state) => state);
+  const location = useLocation();
   // states
-  const [seconds, setSeconds] = useState(0);
+  const [seconds, setSeconds] = useState(10);
 
-  const gameType: string = 'pong';
-
+  const { gameType } = location.state ?? {};
+  if (!gameType) navigate('/dashboard');
   useEffect(() => {
     const socket = createMatchmakingSocket();
     if (!socket) return;
@@ -19,32 +21,35 @@ const MatchMaking = () => {
     hideNavbar();
     omitSidebar();
 
-    const onConnect = () => socket.emit('join-queue', gameType);
+    const onConnect = () => socket.emit('join-queue', { gameType });
 
     if (socket.connected) onConnect();
     else socket.on('connect', onConnect);
 
-    socket.on('match-found', ({ gameId }: { gameId: string }) =>
-      navigate(`/${gameType}/${gameId}`)
-    );
+    socket.on('match-found', ({ gameId }: { gameId: string }) => {
+      socket.disconnect();
+      navigate(`/${gameType}/${gameId}`);
+    });
 
     socket.on('reconnect-game', (gameId: string) => {
-      if (gameId) navigate(`/${gameType}/${gameId}`);
+      if (gameId) {
+        socket.disconnect();
+        navigate(`/${gameType}/${gameId}`);
+      }
     });
 
     return () => {
-      socket.emit('leave-queue');
-      socket.off('connect');
+      socket.off('connect', onConnect);
       socket.off('match-found');
       socket.off('reconnect-game');
     };
-  }, [navigate]);
+  }, [navigate, gameType]);
 
   // wait Timer
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setSeconds((prev) => prev + 1);
+      setSeconds((prev) => prev - 1);
     }, 1000);
 
     return () => clearInterval(intervalId);
@@ -61,6 +66,7 @@ const MatchMaking = () => {
   const handleCancel = () => {
     const socket = createMatchmakingSocket();
     socket.emit('leave-queue');
+    socket.disconnect();
     navigate('/start_game');
   };
 

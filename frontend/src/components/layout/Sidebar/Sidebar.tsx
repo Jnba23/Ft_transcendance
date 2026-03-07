@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 import getTransitionClasses from '@utils/transitionStyles';
 import useClickOutside from '@hooks/useClickOutside';
 import { useLayoutStore } from '@stores/layout.store';
+import { Link } from 'react-router-dom';
 
 function Sidebar() {
   const ref = useRef<HTMLElement>(null);
@@ -41,6 +42,15 @@ function Sidebar() {
               <UserDirectory switchSection={switchSection} />
             </div>
           </div>
+        </div>
+        <div className="absolute bottom-0 left-0 w-full p-4 flex justify-center gap-4 text-xs font-medium text-white/50 border-t border-white/10 bg-[#16213E]/30">
+          <Link to="/privacy" className="hover:text-white transition-colors">
+            Privacy Policy
+          </Link>
+          <span>&bull;</span>
+          <Link to="/terms" className="hover:text-white transition-colors">
+            Terms of Service
+          </Link>
         </div>
       </aside>
       <Chat />

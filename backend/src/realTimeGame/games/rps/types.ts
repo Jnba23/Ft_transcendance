@@ -1,5 +1,5 @@
 export type Choice = 'rock' | 'paper' | 'scissors';
-export type GamePhase = 'waiting' | 'revealing' | 'game-over';
+export type GamePhase = 'waiting' | 'choosing' | 'revealing' | 'game-over';
 
 export interface PlayerState {
   userId: number;
@@ -18,7 +18,8 @@ export interface RpsGameState {
   phase: GamePhase;
   winner: number | null; // userId
   timers: {
-    autoChoice?: NodeJS.Timeout;
+    autoChoiceP1?: NodeJS.Timeout;
+    autoChoiceP2?: NodeJS.Timeout;
     reconnection?: NodeJS.Timeout;
     roundReveal?: NodeJS.Timeout;
     cleanup?: NodeJS.Timeout;

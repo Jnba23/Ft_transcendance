@@ -254,6 +254,17 @@ function SignupPage(): React.JSX.Element {
             </Link>
           </p>
         </div>
+
+        {/* Legal Links */}
+        <div className="mt-8 text-center flex justify-center gap-4 text-xs text-white/40">
+          <Link to="/privacy" className="hover:text-white transition-colors">
+            Privacy Policy
+          </Link>
+          <span>&bull;</span>
+          <Link to="/terms" className="hover:text-white transition-colors">
+            Terms of Service
+          </Link>
+        </div>
       </div>
     </div>
   );

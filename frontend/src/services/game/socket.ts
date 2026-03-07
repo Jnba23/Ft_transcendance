@@ -7,3 +7,7 @@ export function createMatchmakingSocket() {
 export function createPongSocket() {
   return getManager().socket('/pong');
 }
+
+export function createRpsSocket() {
+  return getManager().socket('/rps');
+}
