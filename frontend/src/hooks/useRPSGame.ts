@@ -26,7 +26,6 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     if (!socket) return;
 
     const onConnect = () => {
-      console.log('🔵 Emitting join-game with gameId:', gameId);
       socket.emit('join-game', { gameId });
     };
 
@@ -34,13 +33,10 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     else socket.on('connect', onConnect);
 
     socket.on('game_init', (data: { gameId: string; gameState: GameState }) => {
-      console.log('🟢 Received game_init:', data);
-
       setGameState(data.gameState);
     });
 
     socket.on('error', (data: { message: string }) => {
-      console.error('Game error', data.message);
       alert(data.message);
     });
 
@@ -55,23 +51,19 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on(
-      'game-start',
-      (data: { message: string; roundsToWin: number }) => {
-        console.log(data);
-        setGameState((prev) => {
-          return prev ? { ...prev, phase: 'choosing' } : null;
-        });
-        setMyChoice(null);
-        setRoundResult(null);
-        setCountdown(5);
-      }
-    );
+    socket.on('game-start', () => {
+      setGameState((prev) => {
+        if (!prev) return null;
+        return { ...prev, phase: 'choosing' };
+      });
+      setMyChoice(null);
+      setRoundResult(null);
+      setCountdown(5);
+    });
 
     socket.on(
       'auto-choice-made',
       (data: { message: string; choice: Choice }) => {
-        console.log(data);
         setWaitingForOpp(true);
         makeChoice(data.choice);
       }
@@ -84,15 +76,14 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     socket.on('round-results', (data: RoundResult) => {
       setRoundResult(data);
       setGameState((prev) => {
-        return prev
-          ? {
-              ...prev,
-              currentRound: data.round,
-              player1: { ...prev.player1, score: data.p1Score },
-              player2: { ...prev.player2, score: data.p2Score },
-              phase: 'revealing',
-            }
-          : null;
+        if (!prev) return null;
+        return {
+          ...prev,
+          currentRound: data.round,
+          player1: { ...prev.player1, score: data.p1Score },
+          player2: { ...prev.player2, score: data.p2Score },
+          phase: 'revealing',
+        };
       });
       setWaitingForOpp(false);
       setMyChoice(null);
@@ -100,9 +91,8 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
 
     socket.on('new-round', (data: { round: number; message: string }) => {
       setGameState((prev) => {
-        return prev
-          ? { ...prev, currentRound: data.round, phase: 'choosing' }
-          : null;
+        if (!prev) return null;
+        return { ...prev, currentRound: data.round, phase: 'choosing' };
       });
       setRoundResult(null);
       setMyChoice(null);
@@ -112,7 +102,8 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     socket.on('game-over', (data: GameOverData) => {
       setGameOver(data);
       setGameState((prev) => {
-        return prev ? { ...prev, phase: 'game-over' } : null;
+        if (!prev) return null;
+        return { ...prev, phase: 'game-over' };
       });
     });
 

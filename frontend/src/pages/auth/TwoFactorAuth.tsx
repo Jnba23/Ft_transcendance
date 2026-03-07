@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useSearchParams,
+  Link,
+} from 'react-router-dom';
 import { twoFaAPI } from '../../api/2fa.api';
 import { useAuth } from '../../context/AuthContext';
 import { AxiosError } from 'axios';
@@ -11,8 +16,6 @@ function TwoFactorAuth(): React.JSX.Element {
   const [searchParams] = useSearchParams();
   const { checkAuth } = useAuth();
 
-  // The tempToken could come from the React Router state (normal login)
-  // or from the query string ?token=... (OAuth login)
   const [tempToken, setTempToken] = useState<string | null>(null);
   const [code, setCode] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -27,7 +30,6 @@ function TwoFactorAuth(): React.JSX.Element {
     } else if (tokenFromQuery) {
       setTempToken(tokenFromQuery);
     } else {
-      // If they somehow land here with no token at all, boot them back to login
       navigate('/login', { replace: true });
     }
   }, [location.state, searchParams, navigate]);
@@ -47,10 +49,8 @@ function TwoFactorAuth(): React.JSX.Element {
       setLoading(true);
       await twoFaAPI.authenticate({ code, tempToken });
 
-      // On success triggers the auth context update
       await checkAuth();
 
-      // Set the sync flag standard used across the app
       localStorage.setItem('auth_sync', Date.now().toString());
 
       navigate('/dashboard', { replace: true });
@@ -65,7 +65,6 @@ function TwoFactorAuth(): React.JSX.Element {
     }
   };
 
-  // If the token hasn't been extracted yet, show nothing
   if (!tempToken) {
     return <div className="min-h-screen bg-[#101622]"></div>;
   }
@@ -133,6 +132,17 @@ function TwoFactorAuth(): React.JSX.Element {
           >
             Cancel and return to login
           </button>
+        </div>
+
+        {/* Legal Links */}
+        <div className="mt-8 text-center flex justify-center gap-4 text-xs text-white/40">
+          <Link to="/privacy" className="hover:text-white transition-colors">
+            Privacy Policy
+          </Link>
+          <span>&bull;</span>
+          <Link to="/terms" className="hover:text-white transition-colors">
+            Terms of Service
+          </Link>
         </div>
       </div>
     </div>

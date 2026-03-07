@@ -67,7 +67,7 @@ const PongGame = () => {
       socketRef.current?.off('game_over', handleGameEnd);
       socketRef.current?.off('game_aborted', handleGameAborted);
     };
-  }, [navigate]);
+  }, [navigate, showError]);
 
   useEffect(() => {
     if (!gameId) return;
