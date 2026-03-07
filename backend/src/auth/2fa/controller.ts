@@ -15,14 +15,14 @@ const accessTokenCookieOptions = {
   secure: config.nodeEnv === 'production',
   sameSite: 'strict' as const,
   path: '/',
-  maxAge: 15 * 60 * 1000, // 15 minutes
+  maxAge: 1 * 60 * 1000, // 1 minutes
 };
 
 const refreshTokenCookieOptions = {
   httpOnly: true,
   secure: config.nodeEnv === 'production',
   sameSite: 'strict' as const,
-  path: '/',
+  path: '/api/auth/refresh',
   maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
 };
 

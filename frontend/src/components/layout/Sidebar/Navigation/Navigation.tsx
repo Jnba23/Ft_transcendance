@@ -9,7 +9,7 @@ function Navigation() {
         <span className="text-white text-lg font-semibold">Pongoose</span>
       </div>
       <nav className="flex flex-col gap-8">
-        <NavItem icon="dashboard" label="Dashboard" />
+        <NavItem icon="dashboard" label="Dashboard" path="/dashboard" />
         <div className="pt-2">
           <h2
             className={[
@@ -19,8 +19,8 @@ function Navigation() {
           >
             GAMES
           </h2>
-          <NavItem icon="sports_tennis" label="Pong" />
-          <NavItem icon="sign_language" label="RPS" />
+          <NavItem icon="sports_tennis" label="Pong" path="/start_game/Pong" />
+          <NavItem icon="sign_language" label="Rps" path="/start_game/Rps" />
         </div>
       </nav>
     </div>

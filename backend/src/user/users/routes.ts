@@ -5,7 +5,6 @@ import {
   getUserbyIdHandler,
   updateUserHandler,
   updateUserStatusHandler,
-  resetAvatarHandler,
   getAvatarHandler,
 } from './controller.js';
 import { requireUser } from '../../middleware/requireUser.js';
@@ -43,18 +42,9 @@ router.patch(
   updateUserHandler
 );
 
-router.delete('/me/avatar', requireUser, resetAvatarHandler);
-
 router.get('/', requireUser, getAllUsersHandler);
 
 router.get('/:id', requireUser, getUserbyIdHandler);
-
-router.patch(
-  '/status',
-  requireUser,
-  validateResource(updateStatusSchema),
-  updateUserStatusHandler
-);
 
 router.get('/avatar/:id', requireUser, getAvatarHandler);
 

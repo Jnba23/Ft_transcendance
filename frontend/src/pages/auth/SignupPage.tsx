@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { authAPI } from '../../api/auth.api';
+import { authAPI } from '@api/auth.api';
 import { Link } from 'react-router-dom';
-import { EyeIcon, EyeOffIcon } from '../../components/icons/EyeIcons';
-import { signupSchema, type SignupFormData } from '../../schemas/auth.schema';
+import { EyeIcon, EyeOffIcon } from '@components/ui/icons/EyeIcons';
+import { signupSchema, type SignupFormData } from '@schemas/auth.schema';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import logo from '@assets/logo.png';
+import { useAuth } from '../../context/AuthContext';
 
 function SignupPage(): React.JSX.Element {
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -26,6 +28,10 @@ function SignupPage(): React.JSX.Element {
   const onSignUpSubmit = async (data: SignupFormData) => {
     try {
       await authAPI.signup(data);
+
+      await checkAuth();
+
+      localStorage.setItem('auth_sync', Date.now().toString());
 
       // Success! Redirect the user (Auto-login)
       navigate('/dashboard');
@@ -69,7 +75,7 @@ function SignupPage(): React.JSX.Element {
             Create Your Account
           </h1>
           <p className="text-white/60 mt-2">
-            Join the ultimate Pong and Chess community.
+            Join the ultimate Pong and RPS community.
           </p>
         </div>
 
@@ -247,6 +253,17 @@ function SignupPage(): React.JSX.Element {
               Log In
             </Link>
           </p>
+        </div>
+
+        {/* Legal Links */}
+        <div className="mt-8 text-center flex justify-center gap-4 text-xs text-white/40">
+          <Link to="/privacy" className="hover:text-white transition-colors">
+            Privacy Policy
+          </Link>
+          <span>&bull;</span>
+          <Link to="/terms" className="hover:text-white transition-colors">
+            Terms of Service
+          </Link>
         </div>
       </div>
     </div>

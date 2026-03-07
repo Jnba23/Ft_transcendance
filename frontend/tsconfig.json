@@ -4,20 +4,58 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "jsx": "react-jsx",
-    "ignoreDeprecations": "6.0",
     "baseUrl": "src",
     "paths": {
-      "@components/*": ["components/*"],
-      "@pages/*": ["pages/*"],
-      "@hooks/*": ["hooks/*"],
-      "@utils/*": ["utils/*"],
-      "@assets/*": ["assets/*"],
-      "@ui/*": ["components/ui/*"],
+      "@components/*": [
+        "components/*"
+      ],
+      "@pages/*": [
+        "pages/*"
+      ],
+      "@styles/*": [
+        "styles/*"
+      ],
+      "@hooks/*": [
+        "hooks/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ],
+      "@assets/*": [
+        "assets/*"
+      ],
+      "@my-types/*": ["types/*"],
+      "@ui/*": [
+        "components/ui/*"
+      ],
+      "@stores/*": [
+        "stores/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@context/*": [
+        "context/*"
+      ],
+      "@api/*": [
+        "api/*"
+      ],
+      "@realtime/*": [
+        "realtime/*"
+      ],
+      "@schemas/*": [
+        "schemas/*"
+      ],
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

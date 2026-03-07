@@ -1,17 +1,28 @@
-import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-export const ProtectedRoute = () => {
+interface ProtectedRouteProps {
+  isPublicOnly?: boolean;
+}
+
+export const ProtectedRoute = ({
+  isPublicOnly = false,
+}: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    // You can replace this with a proper loading spinner
     return (
       <div className="flex h-screen items-center justify-center text-white">
         Loading...
       </div>
     );
+  }
+
+  if (isPublicOnly) {
+    if (isAuthenticated) {
+      return <Navigate to="/dashboard" replace />;
+    }
+    return <Outlet />;
   }
 
   if (!isAuthenticated) {

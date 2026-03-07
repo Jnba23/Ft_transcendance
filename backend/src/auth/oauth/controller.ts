@@ -12,7 +12,7 @@ const cookieOptions = {
 
 const accessTokenCookieOptions = {
   ...cookieOptions,
-  maxAge: 15 * 60 * 1000, // 15 minutes
+  maxAge: 1 * 60 * 1000, // 1 minutes
 };
 
 const refreshTokenCookieOptions = {
@@ -53,6 +53,7 @@ export const googleAuthCallback = (req: Request, res: Response) => {
   res.cookie('accessToken', accessToken, accessTokenCookieOptions);
   res.cookie('refreshToken', refreshToken, refreshTokenCookieOptions);
 
-  // Redirect to frontend (adjust URL as needed)
-  res.redirect(config.corsOrigin || 'http://localhost:5173/');
+  // Redirect to frontend with OAuth flag so it knows to call checkAuth
+  const origin = config.corsOrigin || 'http://localhost:5173';
+  res.redirect(`${origin}/?oauth=success`);
 };

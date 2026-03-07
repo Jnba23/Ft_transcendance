@@ -5,6 +5,7 @@ import userRoutes from './user/users/routes.js';
 import friendRoutes from './user/friends/routes.js';
 import twoFatRoutes from './auth/2fa/routes.js';
 import publicApiRoutes from './publicApi/routes.js';
+import chatRoutes from './chat/routes.js';
 import { AppError } from './utils/AppError.js';
 import { deserializeUser } from './middleware/deserializeUser.js';
 import { config } from './config/index.js';
@@ -24,7 +25,7 @@ app.use(
 		credentials: true,
 	})
 );
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -41,15 +42,15 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 		);
 	}
 
-	// eslint-disable-next-line no-console
-	console.log('[Request]', {
-		method: req.method,
-		url: req.originalUrl,
-		params: req.params,
-		query: req.query,
-		body: safeBody,
-	});
-	next();
+  // eslint-disable-next-line no-console
+  // console.log('[Request]', {
+  //   method: req.method,
+  //   url: req.originalUrl,
+  //   params: req.params,
+  //   query: req.query,
+  //   body: safeBody,
+  // });
+  next();
 });
 
 // Initialize Passport
@@ -69,6 +70,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/friends', friendRoutes);
 app.use('/api/auth/2fa', twoFatRoutes);
 app.use('/api/public', publicApiRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Documentation
 app.use('/docs', scalarDocs);

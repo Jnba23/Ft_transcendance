@@ -7,6 +7,9 @@ type SectionSizes = {
   DM: string;
   chat: string;
   msg: string;
+  friendRequest: string;
+  profile: string;
+  friends: string;
 };
 
 const sectionSizes = {
@@ -15,6 +18,9 @@ const sectionSizes = {
   DM: 'size-8',
   chat: 'size-10',
   msg: 'size-8',
+  friendRequest: 'size-10',
+  profile: 'size-32',
+  friends: 'size-8',
 } satisfies SectionSizes;
 
 type AvatarProps = {
@@ -30,13 +36,25 @@ function Avatar({ path, section = 'userMenu' }: AvatarProps) {
         'rounded-full',
         'overflow-hidden',
         'aspect-square',
-      ].join(' ')}
+        !path ? 'bg-white/10 flex items-center justify-center' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
-      <img
-        src={path}
-        alt="User avatar"
-        className="w-full h-full object-cover"
-      />
+      {path ? (
+        <img
+          src={path}
+          alt="User avatar"
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <span
+          className="material-symbols-outlined text-white/50"
+          style={{ fontSize: '1.2rem' }}
+        >
+          person
+        </span>
+      )}
     </div>
   );
 }

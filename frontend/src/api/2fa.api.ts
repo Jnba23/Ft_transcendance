@@ -12,7 +12,7 @@ export interface Enable2FAReq {
 }
 
 export interface Disable2FAReq {
-  password: string;
+  code: string;
 }
 
 export interface Generate2FARes {
@@ -37,6 +37,9 @@ export const twoFaAPI = {
       '/auth/2fa/authenticate',
       data
     );
+    // Mark session for checkAuth
+    localStorage.setItem('has_session', 'true');
+    localStorage.setItem('auth_sync', Date.now().toString());
     return response.data;
   },
 
