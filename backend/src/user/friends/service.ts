@@ -20,7 +20,7 @@ export const friendService = {
     return db
       .prepare(
         `
-            SELECT f.*, u.username, u.avatar_url, u.status as user_status
+            SELECT f.*, u.id as user_id, u.username, u.avatar_url, u.status as user_status
             FROM friendship f
             JOIN users u ON u.id = f.user_id_2
             WHERE f.user_id_1 = ? AND f.status = 'pending'
@@ -34,7 +34,7 @@ export const friendService = {
     return db
       .prepare(
         `
-            SELECT f.*, u.username, u.avatar_url, u.status as user_status
+            SELECT f.*, u.id as user_id, u.username, u.avatar_url, u.status as user_status
             FROM friendship f
             JOIN users u ON u.id = f.user_id_1
             WHERE f.user_id_2 = ? AND f.status = 'pending'
@@ -82,6 +82,7 @@ export const friendService = {
         `
       SELECT
         f.*,
+        u.id AS user_id,
         u.username,
         u.avatar_url,
         u.status AS user_status
@@ -109,7 +110,7 @@ export const friendService = {
     return db
       .prepare(
         `
-        SELECT f.*, u.username, u.avatar_url, u.status as user_status
+        SELECT f.*, u.id as user_id, u.username, u.avatar_url, u.status as user_status
         FROM friendship f
         JOIN users u ON u.id = ?
         WHERE f.id = ? AND ? IN (f.user_id_1, f.user_id_2)
