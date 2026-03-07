@@ -9,7 +9,6 @@ export const setupMmHandlers = (io: Server) => {
   const matchMakingNs = io.of('/matchmaking').use(socketAuthMiddleware);
 
   matchMakingNs.on('connection', (socket) => {
-    console.log('matchmaking socket connected: ', socket.data.userId);
     socket.on('join-queue', (data) => {
       const userId = socket.data.userId;
 
@@ -79,7 +78,6 @@ export const setupMmHandlers = (io: Server) => {
     });
 
     socket.on('disconnect', () => {
-      console.log('matchmaking socket disconnected: ', socket.data.userId);
       if (socket.data.userId) mmServ.removeFromQueue(socket.data.userId);
     });
   });
