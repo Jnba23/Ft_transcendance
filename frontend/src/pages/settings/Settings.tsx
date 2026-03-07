@@ -4,7 +4,6 @@ import { userAPI, MyProfileRes } from '../../api/user.api';
 import { twoFaAPI } from '../../api/2fa.api';
 import { AxiosError } from 'axios';
 import { Link } from 'react-router-dom';
-import { fa } from 'zod/v4/locales';
 
 function AlertBox({
   message,

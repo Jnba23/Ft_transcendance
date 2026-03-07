@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import type { KeyboardState } from '../types/game.types';
 
 const initial = {
   up: false,

@@ -26,7 +26,6 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     if (!socket) return;
 
     const onConnect = () => {
-      console.log('🔵 Emitting join-game with gameId:', gameId);
       socket.emit('join-game', { gameId });
     };
 
@@ -34,13 +33,10 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     else socket.on('connect', onConnect);
 
     socket.on('game_init', (data: { gameId: string; gameState: GameState }) => {
-      console.log('🟢 Received game_init:', data);
-
       setGameState(data.gameState);
     });
 
     socket.on('error', (data: { message: string }) => {
-      console.error('Game error', data.message);
       alert(data.message);
     });
 
@@ -58,7 +54,6 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     socket.on(
       'game-start',
       (data: { message: string; roundsToWin: number }) => {
-        console.log(data);
         setGameState((prev) => {
           return prev ? { ...prev, phase: 'choosing' } : null;
         });
@@ -71,7 +66,6 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     socket.on(
       'auto-choice-made',
       (data: { message: string; choice: Choice }) => {
-        console.log(data);
         setWaitingForOpp(true);
         makeChoice(data.choice);
       }

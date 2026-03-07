@@ -10,7 +10,6 @@ import { getManager } from '../../services/manager';
 
 const RPSGame = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [socketReady, setSocketReady] = useState(false);
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -21,16 +20,8 @@ const RPSGame = () => {
     const newSocket = createRpsSocket();
     setSocket(newSocket);
 
-    const handleConnect = () => {
-      setSocketReady(true);
-    };
-
-    if (newSocket.connected) handleConnect();
-    else newSocket.on('connect', handleConnect);
     return () => {
-      newSocket.off('connect', handleConnect);
       newSocket.disconnect();
-      setSocketReady(false);
     };
   }, []);
 
