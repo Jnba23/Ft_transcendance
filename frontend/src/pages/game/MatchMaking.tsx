@@ -2,13 +2,15 @@ import scannerGif from '@assets/scanner.gif';
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createMatchmakingSocket } from '@services/game/socket';
+import { useErrorStore } from '@stores/error.store';
 import '@styles/matchMaking/matchMaking.css';
 
 const MatchMaking = () => {
   const navigate = useNavigate();
   const location = useLocation();
   // states
-  const [seconds, setSeconds] = useState(10);
+  const [seconds, setSeconds] = useState(0);
+  const showError = useErrorStore((state) => state.showError);
 
   const { gameType } = location.state ?? {};
   if (!gameType) navigate('/dashboard');
@@ -26,17 +28,27 @@ const MatchMaking = () => {
       navigate(`/${gameType}/${gameId}`);
     });
 
-    socket.on('reconnect-game', (gameId: string) => {
-      if (gameId) {
-        socket.disconnect();
-        navigate(`/${gameType}/${gameId}`);
+    socket.on(
+      'reconnect-game',
+      (data: { gameId: string; gameType: string }) => {
+        if (data.gameId) {
+          socket.disconnect();
+          navigate(`/${data.gameType}/${data.gameId}`);
+        }
       }
+    );
+
+    socket.on('error', (data: { message: string }) => {
+      socket.disconnect();
+      showError(data.message);
+      navigate('/start_game');
     });
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('match-found');
       socket.off('reconnect-game');
+      socket.off('error');
     };
   }, [navigate, gameType]);
 
@@ -44,17 +56,16 @@ const MatchMaking = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setSeconds((prev) => prev - 1);
+      setSeconds((prev) => (prev >= 3599 ? 0 : prev + 1));
     }, 1000);
 
     return () => clearInterval(intervalId);
   }, []);
 
   const formatTimer: () => string = () => {
-    const min = Math.floor((seconds + 1) / 60) % 60;
-    const sec = (seconds + 1) % 60;
-    const nothing: string = '';
-    return `${min <= 9 ? 0 : nothing}${min} : ${sec <= 9 ? 0 : nothing}${sec}`;
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min.toString().padStart(2, '0')} : ${sec.toString().padStart(2, '0')}`;
   };
   // end wait Timer
 
