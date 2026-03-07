@@ -8,9 +8,6 @@ import * as RpsTypes from './types.js';
 export const setupRpsHandler = (io: Server) => {
   const RpsNs = io.of('/rps').use(socketAuthMiddleware);
   RpsNs.on('connection', (socket) => {
-    console.log(
-      `rps socket connected: ${socket.id} | user ID: ${socket.data.userId}`
-    );
     socket.on('join-game', (data: { gameId: string }) => {
       const { gameId } = data;
       const userId = socket.data.userId;
@@ -151,7 +148,6 @@ export const setupRpsHandler = (io: Server) => {
       }
     });
     socket.on('make-choice', (data: { choice: RpsTypes.Choice }) => {
-      console.log(data);
       const gameId = socket.data.gameId;
       const userId = socket.data.userId;
 
@@ -261,9 +257,6 @@ export const setupRpsHandler = (io: Server) => {
       }
     });
     socket.on('disconnect', (_reason) => {
-      console.log(
-      `rps socket disconnected: ${socket.id} | user ID: ${socket.data.userId}`
-    );
       const gameId = socket.data.gameId;
       const userId = socket.data.userId;
 

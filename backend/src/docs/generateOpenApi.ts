@@ -21,6 +21,7 @@ import {
 } from '../auth/2fa/schema.js';
 import { updateUserSchema } from '../user/users/schema.js';
 import { friendActionSchema } from '../user/friends/schema.js';
+import { userSchema } from '../publicApi/schemas.js';
 
 // Extend Zod with OpenAPI
 extendZodWithOpenApi(z);
@@ -615,6 +616,116 @@ registry.registerPath({
     404: {
       description: 'Conversation not found',
     },
+  },
+});
+
+// --- Public API Users ---
+const publicApiKeyScheme = registry.registerComponent(
+  'securitySchemes',
+  'api_key',
+  {
+    type: 'apiKey',
+    in: 'header',
+    name: 'x-api-key',
+  }
+);
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/public/users',
+  tags: ['Public API'],
+  summary: 'Get all users',
+  security: [{ [publicApiKeyScheme.name]: [] }],
+  responses: {
+    200: { description: 'List of users' },
+    429: { description: 'Too many requests' },
+    401: { description: 'Unauthorized' },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/api/public/users/{id}',
+  tags: ['Public API'],
+  summary: 'Get specific user',
+  security: [{ [publicApiKeyScheme.name]: [] }],
+  parameters: [
+    { name: 'id', in: 'path', schema: { type: 'string' }, required: true },
+  ],
+  responses: {
+    200: { description: 'User details' },
+    404: { description: 'User not found' },
+    429: { description: 'Too many requests' },
+    401: { description: 'Unauthorized' },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/public/users',
+  tags: ['Public API'],
+  summary: 'Create a new user record',
+  security: [{ [publicApiKeyScheme.name]: [] }],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: userSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: { description: 'User created' },
+    400: { description: 'Validation error' },
+    409: { description: 'Username or email exists' },
+    429: { description: 'Too many requests' },
+    401: { description: 'Unauthorized' },
+  },
+});
+
+registry.registerPath({
+  method: 'put',
+  path: '/api/public/users/{id}',
+  tags: ['Public API'],
+  summary: 'Update an existing user',
+  security: [{ [publicApiKeyScheme.name]: [] }],
+  parameters: [
+    { name: 'id', in: 'path', schema: { type: 'string' }, required: true },
+  ],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: userSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: { description: 'User updated' },
+    400: { description: 'Validation error' },
+    404: { description: 'User not found' },
+    409: { description: 'Username or email exists' },
+    429: { description: 'Too many requests' },
+    401: { description: 'Unauthorized' },
+  },
+});
+
+registry.registerPath({
+  method: 'delete',
+  path: '/api/public/users/{id}',
+  tags: ['Public API'],
+  summary: 'Delete a user record',
+  security: [{ [publicApiKeyScheme.name]: [] }],
+  parameters: [
+    { name: 'id', in: 'path', schema: { type: 'string' }, required: true },
+  ],
+  responses: {
+    204: { description: 'User deleted' },
+    404: { description: 'User not found' },
+    429: { description: 'Too many requests' },
+    401: { description: 'Unauthorized' },
   },
 });
 
