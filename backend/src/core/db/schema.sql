@@ -66,6 +66,14 @@ CREATE TABLE IF NOT EXISTS games (
     CHECK(player1_id != player2_id)
 );
 
+-- Chat Channels (Missing table that caused the 500 error)
+CREATE TABLE IF NOT EXISTS chat_channels (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    type TEXT DEFAULT 'public' CHECK(type IN ('public', 'private', 'direct')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Chat Channel Members // not
 CREATE TABLE IF NOT EXISTS chat_channel_members (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -11,6 +11,11 @@
         "type": "apiKey",
         "in": "cookie",
         "name": "accessToken"
+      },
+      "api_key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
       }
     },
     "schemas": {},
@@ -19,7 +24,9 @@
   "paths": {
     "/api/auth/signup": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Register a new user",
         "requestBody": {
           "content": {
@@ -45,7 +52,12 @@
                     "type": "string"
                   }
                 },
-                "required": ["username", "email", "password", "confirmPassword"]
+                "required": [
+                  "username",
+                  "email",
+                  "password",
+                  "confirmPassword"
+                ]
               }
             }
           }
@@ -62,7 +74,9 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Login user",
         "requestBody": {
           "content": {
@@ -79,7 +93,10 @@
                     "minLength": 1
                   }
                 },
-                "required": ["identifier", "password"]
+                "required": [
+                  "identifier",
+                  "password"
+                ]
               }
             }
           }
@@ -96,7 +113,9 @@
     },
     "/api/auth/refresh": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Refresh access token",
         "requestBody": {
           "content": {
@@ -120,7 +139,9 @@
     },
     "/api/auth/logout": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Logout user",
         "requestBody": {
           "content": {
@@ -141,7 +162,9 @@
     },
     "/api/auth/2fa/authenticate": {
       "post": {
-        "tags": ["2FA"],
+        "tags": [
+          "2FA"
+        ],
         "summary": "Authenticate with 2FA code",
         "requestBody": {
           "content": {
@@ -159,7 +182,10 @@
                     "minLength": 1
                   }
                 },
-                "required": ["code", "tempToken"]
+                "required": [
+                  "code",
+                  "tempToken"
+                ]
               }
             }
           }
@@ -176,7 +202,9 @@
     },
     "/api/auth/2fa/generate": {
       "post": {
-        "tags": ["2FA"],
+        "tags": [
+          "2FA"
+        ],
         "summary": "Generate 2FA QR Code",
         "security": [
           {
@@ -195,7 +223,9 @@
     },
     "/api/auth/2fa/turn-on": {
       "post": {
-        "tags": ["2FA"],
+        "tags": [
+          "2FA"
+        ],
         "summary": "Enable 2FA",
         "security": [
           {
@@ -214,7 +244,9 @@
                     "maxLength": 6
                   }
                 },
-                "required": ["code"]
+                "required": [
+                  "code"
+                ]
               }
             }
           }
@@ -231,7 +263,9 @@
     },
     "/api/auth/2fa/turn-off": {
       "post": {
-        "tags": ["2FA"],
+        "tags": [
+          "2FA"
+        ],
         "summary": "Disable 2FA",
         "security": [
           {
@@ -249,7 +283,9 @@
                     "minLength": 1
                   }
                 },
-                "required": ["password"]
+                "required": [
+                  "password"
+                ]
               }
             }
           }
@@ -266,7 +302,9 @@
     },
     "/api/oauth/google": {
       "get": {
-        "tags": ["OAuth"],
+        "tags": [
+          "OAuth"
+        ],
         "summary": "Initiate Google OAuth",
         "responses": {
           "302": {
@@ -277,7 +315,9 @@
     },
     "/api/oauth/google/callback": {
       "get": {
-        "tags": ["OAuth"],
+        "tags": [
+          "OAuth"
+        ],
         "summary": "Google OAuth Callback",
         "responses": {
           "302": {
@@ -288,7 +328,9 @@
     },
     "/api/users": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Get all users",
         "security": [
           {
@@ -317,7 +359,9 @@
     },
     "/api/users/me": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Get current user profile",
         "security": [
           {
@@ -334,7 +378,9 @@
         }
       },
       "patch": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Update current user profile",
         "security": [
           {
@@ -382,7 +428,9 @@
     },
     "/api/users/me/avatar": {
       "delete": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Reset user avatar",
         "security": [
           {
@@ -401,7 +449,9 @@
     },
     "/api/users/status": {
       "patch": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Update user status",
         "security": [
           {
@@ -416,10 +466,16 @@
                 "properties": {
                   "status": {
                     "type": "string",
-                    "enum": ["online", "offline", "in_game"]
+                    "enum": [
+                      "online",
+                      "offline",
+                      "in_game"
+                    ]
                   }
                 },
-                "required": ["status"]
+                "required": [
+                  "status"
+                ]
               }
             }
           }
@@ -436,7 +492,9 @@
     },
     "/api/users/{id}": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Get user by ID",
         "security": [
           {
@@ -465,7 +523,9 @@
     },
     "/api/users/avatar/{id}": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Get user avatar",
         "security": [
           {
@@ -502,7 +562,9 @@
     },
     "/api/friends": {
       "get": {
-        "tags": ["Friends"],
+        "tags": [
+          "Friends"
+        ],
         "summary": "Get friends list",
         "security": [
           {
@@ -521,7 +583,9 @@
     },
     "/api/friends/requests": {
       "get": {
-        "tags": ["Friends"],
+        "tags": [
+          "Friends"
+        ],
         "summary": "Get friend requests",
         "security": [
           {
@@ -534,7 +598,10 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["sent", "received"],
+              "enum": [
+                "sent",
+                "received"
+              ],
               "default": "received"
             },
             "description": "Filter by sent or received requests"
@@ -552,7 +619,9 @@
     },
     "/api/friends/requests/{id}": {
       "post": {
-        "tags": ["Friends"],
+        "tags": [
+          "Friends"
+        ],
         "summary": "Send friend request",
         "security": [
           {
@@ -580,7 +649,9 @@
         }
       },
       "delete": {
-        "tags": ["Friends"],
+        "tags": [
+          "Friends"
+        ],
         "summary": "Remove friend request",
         "security": [
           {
@@ -610,7 +681,9 @@
     },
     "/api/friends/requests/action": {
       "post": {
-        "tags": ["Friends"],
+        "tags": [
+          "Friends"
+        ],
         "summary": "Handle friend request action",
         "security": [
           {
@@ -628,10 +701,17 @@
                   },
                   "action": {
                     "type": "string",
-                    "enum": ["accept", "decline", "cancel"]
+                    "enum": [
+                      "accept",
+                      "decline",
+                      "cancel"
+                    ]
                   }
                 },
-                "required": ["request_id", "action"]
+                "required": [
+                  "request_id",
+                  "action"
+                ]
               }
             }
           }
@@ -648,7 +728,9 @@
     },
     "/api/friends/requests/check/{id}": {
       "get": {
-        "tags": ["Friends"],
+        "tags": [
+          "Friends"
+        ],
         "summary": "Check friendship status",
         "security": [
           {
@@ -672,6 +754,251 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/public/users": {
+      "get": {
+        "tags": [
+          "Public API"
+        ],
+        "summary": "Get all users",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "429": {
+            "description": "Too many requests"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Public API"
+        ],
+        "summary": "Create a new user record",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 10
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "avatar_url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "level": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "online",
+                      "offline",
+                      "in_game"
+                    ]
+                  }
+                },
+                "required": [
+                  "username",
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "409": {
+            "description": "Username or email exists"
+          },
+          "429": {
+            "description": "Too many requests"
+          }
+        }
+      }
+    },
+    "/api/public/users/{id}": {
+      "get": {
+        "tags": [
+          "Public API"
+        ],
+        "summary": "Get specific user",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "429": {
+            "description": "Too many requests"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Public API"
+        ],
+        "summary": "Update an existing user",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 10
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "avatar_url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "level": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "online",
+                      "offline",
+                      "in_game"
+                    ]
+                  }
+                },
+                "required": [
+                  "username",
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "409": {
+            "description": "Username or email exists"
+          },
+          "429": {
+            "description": "Too many requests"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Public API"
+        ],
+        "summary": "Delete a user record",
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "429": {
+            "description": "Too many requests"
           }
         }
       }

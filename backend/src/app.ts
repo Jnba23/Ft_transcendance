@@ -4,6 +4,7 @@ import oauthRoutes from './auth/oauth/routes.js';
 import userRoutes from './user/users/routes.js';
 import friendRoutes from './user/friends/routes.js';
 import twoFatRoutes from './auth/2fa/routes.js';
+import publicApiRoutes from './publicApi/routes.js';
 import { AppError } from './utils/AppError.js';
 import { deserializeUser } from './middleware/deserializeUser.js';
 import { config } from './config/index.js';
@@ -18,10 +19,10 @@ import { globalErrorHandler } from './middleware/errorMiddleware.js';
 const app: Application = express();
 
 app.use(
-  cors({
-    origin: config.corsOrigin,
-    credentials: true,
-  })
+	cors({
+		origin: config.corsOrigin,
+		credentials: true,
+	})
 );
 app.use(morgan('dev'));
 app.use(express.json());
@@ -30,25 +31,25 @@ app.use(cookieParser());
 // Request details logger (body/params/query)
 const redactKeys = new Set(['password', 'confirmPassword']);
 app.use((req: Request, _res: Response, next: NextFunction) => {
-  let safeBody = req.body;
-  if (req.body && typeof req.body === 'object') {
-    safeBody = Object.fromEntries(
-      Object.entries(req.body).map(([key, value]) => [
-        key,
-        redactKeys.has(key) ? '[REDACTED]' : value,
-      ])
-    );
-  }
+	let safeBody = req.body;
+	if (req.body && typeof req.body === 'object') {
+		safeBody = Object.fromEntries(
+			Object.entries(req.body).map(([key, value]) => [
+				key,
+				redactKeys.has(key) ? '[REDACTED]' : value,
+			])
+		);
+	}
 
-  // eslint-disable-next-line no-console
-  console.log('[Request]', {
-    method: req.method,
-    url: req.originalUrl,
-    params: req.params,
-    query: req.query,
-    body: safeBody,
-  });
-  next();
+	// eslint-disable-next-line no-console
+	console.log('[Request]', {
+		method: req.method,
+		url: req.originalUrl,
+		params: req.params,
+		query: req.query,
+		body: safeBody,
+	});
+	next();
 });
 
 // Initialize Passport
@@ -59,7 +60,7 @@ app.use(deserializeUser);
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Auth Service Running 🚀' });
+	res.json({ message: 'Auth Service Running 🚀' });
 });
 
 app.use('/api/auth', authRoutes);
@@ -67,13 +68,14 @@ app.use('/api/oauth', oauthRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/friends', friendRoutes);
 app.use('/api/auth/2fa', twoFatRoutes);
+app.use('/api/public', publicApiRoutes);
 
 // Documentation
 app.use('/docs', scalarDocs);
 
 // 404 Handler
 app.use((req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+	next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 // Global Error Handler
