@@ -5,9 +5,10 @@ import { useUserDirectoryStore } from '@stores/userDirectory.store';
 type FriendsBtnProps = {
   btnRef: React.RefObject<HTMLButtonElement | null>;
   userId: number;
+  username: string;
 };
 
-function FriendsBtn({ btnRef, userId }: FriendsBtnProps) {
+function FriendsBtn({ btnRef, userId, username }: FriendsBtnProps) {
   const { me } = useUserDirectoryStore((state) => state);
   const sendFriendReq = useFriendRequestsStore((state) => state.sendRequest);
   const { toggle, includes, openConfirmation, setAwaitingConfirm } =
@@ -25,7 +26,7 @@ function FriendsBtn({ btnRef, userId }: FriendsBtnProps) {
     }
 
     if (status === 'Unfriend') {
-      setAwaitingConfirm(friendship?.id, 'temp');
+      setAwaitingConfirm(friendship!?.id, username);
       openConfirmation();
       return;
     }
@@ -40,9 +41,8 @@ function FriendsBtn({ btnRef, userId }: FriendsBtnProps) {
     <button
       className={[
         `${getStyleForStatus(status)}`,
-        'flex',
+        'flex transition-colors',
         'px-4 py-2 gap-2 rounded-lg text-sm font-medium',
-        'transition-colors',
       ].join(' ')}
       onClick={handleClick}
       ref={btnRef}
