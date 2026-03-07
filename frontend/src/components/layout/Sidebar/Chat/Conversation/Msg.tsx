@@ -1,20 +1,19 @@
 import type { Message } from 'types/message';
 import Avatar from '@ui/Avatar';
-import self from '/src/assets/boy.jpg';
 import { useUserDirectoryStore } from '@stores/userDirectory.store';
 
 type MsgProps = {
-  avatar: string;
+  userId?: number;
   message: Message;
 };
 
-function Msg({ avatar, message }: MsgProps) {
+function Msg({ userId, message }: MsgProps) {
   const me = useUserDirectoryStore((state) => state.me);
   const isSent = message.sender_id === me?.id;
 
   return (
     <div className={`flex items-start gap-3 ${isSent && 'flex-row-reverse'}`}>
-      <Avatar path={isSent ? self : avatar} section="msg" />
+      <Avatar userId={isSent ? me.id : userId} section="msg" />
       <div className="flex flex-col gap-1">
         <div
           className={[

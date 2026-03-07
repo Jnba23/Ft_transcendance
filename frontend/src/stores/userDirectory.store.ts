@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { MyProfileRes, userAPI, UserSummaryRes } from '@api/user.api';
+import { useErrorStore } from './error.store';
 
 interface UserDirectoryState {
   me: MyProfileRes | null;
@@ -22,16 +23,21 @@ export const useUserDirectoryStore = create<UserDirectoryState>((set, get) => ({
   isLoading: true,
 
   initialize: async (me) => {
+    const errorStore = useErrorStore.getState();
+
     if (!localStorage.getItem('has_session')) {
       set({ me: null, users: [], isLoading: false });
       return;
     }
+
     try {
       const response = await userAPI.getAll();
       const users: UserSummaryRes[] = response.data.users;
 
       set({ me, users, isLoading: false });
     } catch {
+      errorStore.showError('Failed to fetch users');
+    } finally {
       set({ me, isLoading: false });
     }
   },

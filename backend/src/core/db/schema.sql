@@ -21,10 +21,12 @@ CREATE TABLE IF NOT EXISTS users (
     -- Stats: Pong
     pong_wins INTEGER DEFAULT 0,
     pong_losses INTEGER DEFAULT 0,
+    pong_winStreak INTEGER DEFAULT 0,
     
     -- Stats: Second Game (RPS)
     RPS_wins INTEGER DEFAULT 0,
     RPS_losses INTEGER DEFAULT 0,
+    RPS_winStreak INTEGER DEFAULT 0,
     
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -107,4 +109,5 @@ CREATE INDEX IF NOT EXISTS idx_friendship_user_id_2 ON friendship(user_id_2);
 -- Games indexes
 CREATE INDEX IF NOT EXISTS idx_games_player1 ON games(player1_id);
 CREATE INDEX IF NOT EXISTS idx_games_player2 ON games(player2_id);
+CREATE INDEX IF NOT EXISTS idx_games_players_created ON games(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_games_type ON games(game_type);

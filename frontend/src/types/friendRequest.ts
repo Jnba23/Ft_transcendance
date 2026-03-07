@@ -7,6 +7,7 @@ export interface Friendship {
 }
 
 export interface FriendRequestWithUser extends Friendship {
+  user_id: number;
   username: string;
   avatar_url: string;
   user_status: string;

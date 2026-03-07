@@ -7,6 +7,7 @@ import { BOARD_WIDTH, BOARD_HEIGHT } from '../../game/constants';
 import type { GameState } from '../../types/game.types';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useErrorStore } from '@stores/error.store';
+import { useLayoutStore } from '@stores/layout.store';
 
 const PongGame = () => {
   // Refs
@@ -30,6 +31,7 @@ const PongGame = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
   const showError = useErrorStore((state) => state.showError);
+  const { showNavbar, unomitSidebar } = useLayoutStore((state) => state);
 
   useEffect(() => {
     const socket = createPongSocket();
@@ -47,6 +49,9 @@ const PongGame = () => {
         navigate('/end_match', {
           state: { matchData: finalStats, gameType: 'pong' },
         });
+        // open sidebar/navbar
+        showNavbar();
+        unomitSidebar();
       }, 2000);
     };
 
@@ -67,7 +72,7 @@ const PongGame = () => {
       socketRef.current?.off('game_over', handleGameEnd);
       socketRef.current?.off('game_aborted', handleGameAborted);
     };
-  }, [navigate, showError]);
+  }, [navigate, showError, showNavbar, unomitSidebar]);
 
   useEffect(() => {
     if (!gameId) return;
