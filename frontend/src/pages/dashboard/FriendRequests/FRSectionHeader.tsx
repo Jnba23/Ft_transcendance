@@ -20,6 +20,7 @@ function FRSectionHeader({ setReqType }: FRSectionHeaderProps) {
         opt2="Sent"
         onOpt1Select={() => setReqType('received')}
         onOpt2Select={() => setReqType('sent')}
+        section='dashboard'
       />
     </div>
   );
