@@ -97,7 +97,7 @@ function TwoFactorAuth(): React.JSX.Element {
                 setCode(e.target.value.replace(/\D/g, '').slice(0, 6))
               }
               className={`w-full bg-white/5 border border-white/10 rounded-lg py-3 px-4 text-center text-2xl tracking-[0.5em] font-mono text-white placeholder:text-white/20 focus:ring-[#0d59f2] focus:border-[#0d59f2] transition-colors focus:outline-none ${errorMsg ? 'border-[#E94560] focus:border-[#E94560]' : ''
-                }`}
+              }`}
             />
           </div>
 
