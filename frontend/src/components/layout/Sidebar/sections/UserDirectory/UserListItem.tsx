@@ -7,6 +7,7 @@ import { Conversation } from 'types/conversation';
 import { UserSummaryRes } from '@api/user.api';
 // remove later
 import girl from '@assets/girl.jpg';
+import { useLayoutStore } from '@stores/layout.store';
 
 type UserListItemProps = {
   user: UserSummaryRes;
@@ -26,6 +27,7 @@ function UserListItem({ user, hasOpenOpts, openOptions }: UserListItemProps) {
 
   const openChat = useChatStore((state) => state.openChat);
   const update = useChatStore((state) => state.update);
+  const hideSidebar = useLayoutStore((state) => state.hideSidebar);
   const updateChat = (e: React.MouseEvent<HTMLDivElement>) => {
     const isOptsBtnClick = optsBtnRef.current?.contains(e.target as Node);
 
@@ -38,6 +40,7 @@ function UserListItem({ user, hasOpenOpts, openOptions }: UserListItemProps) {
       replaceConversation(convo);
     };
 
+    hideSidebar();
     openChat();
     update(convo ?? null, user, markConvoRead);
   };
@@ -52,7 +55,7 @@ function UserListItem({ user, hasOpenOpts, openOptions }: UserListItemProps) {
     >
       <div className="p-2" onClick={updateChat}>
         <div className="flex items-center justify-between">
-          <UserBadge {...user} avatar={girl} section="DM" />
+          <UserBadge {...user} section="DM" />
           <button
             className={[
               'p-1 rounded-md transition-colors',
