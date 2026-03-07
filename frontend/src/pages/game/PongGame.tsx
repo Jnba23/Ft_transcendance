@@ -33,46 +33,19 @@ const PongGame = () => {
   const showError = useErrorStore((state) => state.showError);
   const { showNavbar, unomitSidebar } = useLayoutStore((state) => state);
 
+  const mountedRef = useRef(false);
+
   useEffect(() => {
+    mountedRef.current = true;
     const socket = createPongSocket();
     socketRef.current = socket;
-  }, []);
-
-  useEffect(() => {
-    let finalStats: GameState | null = null;
-
-    const handleMatchResults = (data: GameState) => (finalStats = data);
-
-    const handleGameEnd = () => {
-      setTimeout(() => {
-        socketRef.current?.disconnect();
-        navigate('/end_match', {
-          state: { matchData: finalStats, gameType: 'pong' },
-        });
-        // open sidebar/navbar
-        showNavbar();
-        unomitSidebar();
-      }, 2000);
-    };
-
-    const handleGameAborted = () => {
-      socketRef.current?.disconnect();
-      showError('Opponent disconnected. Game aborted.');
-      navigate('/start_game');
-    };
-
-    socketRef.current?.on('match_results', handleMatchResults);
-    socketRef.current?.on('player_left', handleGameEnd);
-    socketRef.current?.on('game_over', handleGameEnd);
-    socketRef.current?.on('game_aborted', handleGameAborted);
-
     return () => {
-      socketRef.current?.off('match_results', handleMatchResults);
-      socketRef.current?.off('player_left', handleGameEnd);
-      socketRef.current?.off('game_over', handleGameEnd);
-      socketRef.current?.off('game_aborted', handleGameAborted);
+      mountedRef.current = false;
+      setTimeout(() => {
+        if (!mountedRef.current) socket.disconnect();
+      }, 100);
     };
-  }, [navigate, showError, showNavbar, unomitSidebar]);
+  }, []);
 
   useEffect(() => {
     if (!gameId) return;
@@ -99,8 +72,10 @@ const PongGame = () => {
         err.message === 'Unauthorized' ||
         err.message === 'Not part of this game' ||
         err.message === 'Already connected from another tab'
-      )
+      ) {
+        socket.disconnect();
         navigate('/dashboard');
+      }
     });
 
     return () => {
@@ -109,6 +84,20 @@ const PongGame = () => {
       socket.off('error');
     };
   }, [gameId, navigate, showError]);
+
+  useEffect(() => {
+    if (!isMatched || gameStarted) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        socketRef.current?.emit('start_game');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMatched, gameStarted]);
 
   useEffect(() => {
     const socket = socketRef.current;
@@ -122,9 +111,45 @@ const PongGame = () => {
     socket.on('game_update', handleUpdate);
 
     return () => {
-      socketRef.current?.off('game_update');
+      socketRef.current?.off('game_update', handleUpdate);
     };
   }, []);
+
+  useEffect(() => {
+    let finalStats: GameState | null = null;
+
+    const handleMatchResults = (data: GameState) => (finalStats = data);
+
+    const handleGameEnd = () => {
+      setTimeout(() => {
+        socketRef.current?.disconnect();
+        navigate('/end_match', {
+          state: { matchData: finalStats, gameType: 'pong' },
+        });
+        // open sidebar/navbar
+        showNavbar();
+        unomitSidebar();
+      }, 2000);
+    };
+
+    const handleGameAborted = () => {
+      socketRef.current?.disconnect();
+      showError('Opponent disconnected. Game aborted.');
+      navigate('/start_game/Pong');
+    };
+
+    socketRef.current?.on('match_results', handleMatchResults);
+    socketRef.current?.on('player_left', handleGameEnd);
+    socketRef.current?.on('game_over', handleGameEnd);
+    socketRef.current?.on('game_aborted', handleGameAborted);
+
+    return () => {
+      socketRef.current?.off('match_results', handleMatchResults);
+      socketRef.current?.off('player_left', handleGameEnd);
+      socketRef.current?.off('game_over', handleGameEnd);
+      socketRef.current?.off('game_aborted', handleGameAborted);
+    };
+  }, [navigate, showError]);
 
   // wait Timer
   useEffect(() => {
@@ -155,20 +180,6 @@ const PongGame = () => {
     if (!gameId) return;
     socketRef.current?.emit('input', keys);
   }, [keys, gameId]);
-
-  useEffect(() => {
-    if (!isMatched || gameStarted) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        socketRef.current?.emit('start_game');
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isMatched, gameStarted]);
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext('2d');

@@ -123,7 +123,6 @@ export const updateGame = (
 
   if (
     x - BALL_RADIUS <= p1x + PADDLE_WIDTH &&
-    x + BALL_RADIUS >= p1x &&
     y - BALL_RADIUS <= p1y + PADDLE_HEIGHT &&
     y + BALL_RADIUS >= p1y &&
     dx < 0
@@ -141,7 +140,6 @@ export const updateGame = (
     x = p1x + PADDLE_WIDTH + BALL_RADIUS;
   } else if (
     x + BALL_RADIUS >= p2x &&
-    x - BALL_RADIUS <= p2x + PADDLE_WIDTH &&
     y - BALL_RADIUS <= p2y + PADDLE_HEIGHT &&
     y + BALL_RADIUS >= p2y &&
     dx > 0

@@ -10,15 +10,15 @@ class RpsGameManager {
         userId: match.player1.userId,
         name: match.player1.username,
         score: 0,
-        isConnected: true,
-        socketId: match.player1.socketId,
+        isConnected: false,
+        socketId: '',
       },
       player2: {
         userId: match.player2.userId,
         name: match.player2.username,
         score: 0,
-        isConnected: true,
-        socketId: match.player2.socketId,
+        isConnected: false,
+        socketId: '',
       },
       currentRound: 1,
       roundsToWin: 3,
@@ -73,7 +73,7 @@ class RpsGameManager {
       game.phase = 'game-over';
       game.winner = winner;
       onTimeout();
-    }, 5000);
+    }, 10000);
   }
 
   cancelReconnectionTimer(gameId: string): void {
@@ -104,25 +104,18 @@ class RpsGameManager {
     const game = this.games.get(gameId);
     if (!game) return false;
     if (game.phase !== 'choosing') {
-      console.log(
-        `⚠️ Ignoring choice - game phase is '${game.phase}', not 'choosing'`
-      );
       return false;
     }
     if (userId === game.player1.userId) {
       if (game.player1.currentChoice) {
-        console.log('P1 made a choice');
         return false;
       }
       game.player1.currentChoice = choice;
-      console.log('P1' + choice);
     } else if (userId === game.player2.userId) {
       if (game.player2.currentChoice) {
-        console.log('P2 made a choice');
         return false;
       }
       game.player2.currentChoice = choice;
-      console.log('P2' + choice);
     }
     if (game.player1.currentChoice && game.player2.currentChoice)
       this.resolveRound(game);
@@ -144,10 +137,6 @@ class RpsGameManager {
     const roundWinner = this.determineWinner(choice1, choice2);
     if (roundWinner === 1) game.player1.score++;
     else if (roundWinner === 2) game.player2.score++;
-    else {
-      // eslint-disable-next-line no-console
-      console.log("It's a tie");
-    }
 
     if (game.player1.score >= game.roundsToWin) {
       game.phase = 'game-over';
