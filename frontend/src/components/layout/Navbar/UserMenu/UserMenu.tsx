@@ -26,7 +26,7 @@ function UserMenu({ isOpen, hide, buttonRef }: HeaderMenuProps) {
         `${getTransitionClasses(isOpen, 'navbar')}`,
         'rounded-lg shadow-lg mt-2',
         'bg-[#1F2C4A] border border-white/10',
-        'absolute w-48 right-0 z-[40]',
+        'absolute w-48 right-0 z-[60]',
       ].join(' ')}
       ref={userMenuRef}
     >
