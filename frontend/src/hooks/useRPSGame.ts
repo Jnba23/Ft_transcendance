@@ -1,8 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Socket } from 'socket.io-client';
 import { Choice, GameState, RoundResult, GameOverData } from '../types/rps';
+import { useNavigate } from 'react-router-dom';
+import { useErrorStore } from '@stores/error.store';
 
 export const useRPSGame = (socket: Socket | null, gameId: string) => {
+  const navigate = useNavigate();
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [myChoice, setMyChoice] = useState<Choice | null>(null);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
@@ -20,6 +23,8 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     [socket]
   );
 
+  const showError = useErrorStore((state) => state.showError);
+
   // Effect to handle join-game
   useEffect(() => {
     if (!gameId) return;
@@ -33,23 +38,37 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     if (socket.connected) onConnect();
     else socket.on('connect', onConnect);
 
-    socket.on('game_init', (data: { gameId: string; gameState: GameState }) => {
-      console.log('🟢 Received game_init:', data);
+    socket.on('joined-game', (data: { gameId: string; gameState: GameState }) => {
+      console.log('🟢 Received joined-game:', data);
 
       setGameState(data.gameState);
+      if (data.gameState.phase === 'choosing') {
+        setCountdown(5);
+        setMyChoice(null);
+        setRoundResult(null);
+        setWaitingForOpp(false);
+      }
     });
 
     socket.on('error', (data: { message: string }) => {
       console.error('Game error', data.message);
-      alert(data.message);
+      showError(data.message);
+      if (
+        data.message === 'Game session not found' ||
+        data.message === 'Unauthorized' ||
+        data.message === 'Not part of this game' ||
+        data.message === 'Already connected from another tab'
+      ) {
+        setTimeout(() => navigate('/dashboard'), 0);
+      }
     });
 
     return () => {
       socket.off('connect', onConnect);
-      socket.off('game_init');
+      socket.off('joined-game');
       socket.off('error');
     };
-  }, [gameId, socket]);
+  }, [gameId, socket, navigate, showError]);
 
   // Effect to handle game events
   useEffect(() => {
@@ -86,12 +105,12 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
       setGameState((prev) => {
         return prev
           ? {
-              ...prev,
-              currentRound: data.round,
-              player1: { ...prev.player1, score: data.p1Score },
-              player2: { ...prev.player2, score: data.p2Score },
-              phase: 'revealing',
-            }
+            ...prev,
+            currentRound: data.round,
+            player1: { ...prev.player1, score: data.p1Score },
+            player2: { ...prev.player2, score: data.p2Score },
+            phase: 'revealing',
+          }
           : null;
       });
       setWaitingForOpp(false);
@@ -112,7 +131,23 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     socket.on('game-over', (data: GameOverData) => {
       setGameOver(data);
       setGameState((prev) => {
-        return prev ? { ...prev, phase: 'game-over' } : null;
+        if (!prev) return null;
+        const matchData = {
+          player1Id: prev.player1.userId,
+          player2Id: prev.player2.userId,
+          player1Score: data.finalScore.player1,
+          player2Score: data.finalScore.player2,
+          player1Name: prev.player1.name,
+          player2Name: prev.player2.name,
+          winnerId: data.winnerId,
+        };
+        setTimeout(() => {
+          socket.disconnect();
+          navigate('/end_match', {
+            state: { matchData, gameType: 'rps' },
+          });
+        }, 50);
+        return { ...prev, phase: 'game-over' };
       });
     });
 
