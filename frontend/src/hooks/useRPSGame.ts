@@ -51,17 +51,14 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on(
-      'game-start',
-      (data: { message: string; roundsToWin: number }) => {
-        setGameState((prev) => {
-          return prev ? { ...prev, phase: 'choosing' } : null;
-        });
-        setMyChoice(null);
-        setRoundResult(null);
-        setCountdown(5);
-      }
-    );
+    socket.on('game-start', () => {
+      setGameState((prev) => {
+        return prev ? { ...prev, phase: 'choosing' } : null;
+      });
+      setMyChoice(null);
+      setRoundResult(null);
+      setCountdown(5);
+    });
 
     socket.on(
       'auto-choice-made',
