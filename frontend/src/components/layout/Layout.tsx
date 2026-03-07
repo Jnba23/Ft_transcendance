@@ -8,7 +8,7 @@ function Layout() {
   useAppHydration();
 
   return (
-    <div className="flex min-h-screen h-screen">
+    <div className='flex'>
       <Sidebar />
       <main className="p-8 flex-10 relative">
         <ErrorAlert />
