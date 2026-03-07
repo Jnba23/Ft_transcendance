@@ -1,5 +1,6 @@
 import FriendReqItem from './FriendReqItem';
 import { useFriendRequestsStore } from '@stores/friendRequests.store';
+import NoRequests from './NoRequests';
 
 type FriendReqListProps = {
   reqType: 'received' | 'sent';
@@ -7,27 +8,16 @@ type FriendReqListProps = {
 
 function FriendReqList({ reqType }: FriendReqListProps) {
   const requests = useFriendRequestsStore((state) => state[reqType]);
-  const removeReceived = useFriendRequestsStore(
-    (state) => state.removeReceived
-  );
-  const removeSent = useFriendRequestsStore((state) => state.removeSent);
+
+  if (!requests.length) {
+    return <NoRequests reqType={reqType} key={reqType} />;
+  }
 
   return (
     <div className="h-48 overflow-y-auto custom-scrollbar">
       <div className="flex flex-col gap-3">
         {requests.map((req) => {
-          return (
-            <FriendReqItem
-              key={req.id}
-              request={req}
-              reqType={reqType}
-              removeReq={
-                reqType === 'received'
-                  ? () => removeReceived(req.id)
-                  : () => removeSent(req.id)
-              }
-            />
-          );
+          return <FriendReqItem key={req.id} request={req} reqType={reqType} />;
         })}
       </div>
     </div>

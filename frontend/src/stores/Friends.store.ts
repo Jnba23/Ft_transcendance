@@ -1,6 +1,7 @@
 import { friendsApi } from '@api/friends.api';
 import { FriendRequestWithUser } from 'types/friendRequest';
 import { create } from 'zustand';
+import { useErrorStore } from './error.store';
 
 interface FriendsStoreState {
   isLoading: boolean;
@@ -49,10 +50,13 @@ export const useFriendsStore = create<FriendsStoreState>((set, get) => ({
   total: 0,
 
   initialize: async () => {
+    const errorStore = useErrorStore.getState();
+
     if (!localStorage.getItem('has_session')) {
       set({ friends: [], total: 0, isLoading: false });
       return;
     }
+
     try {
       const response = await friendsApi.getFriends();
       const friends = response.data.friends;
@@ -60,6 +64,8 @@ export const useFriendsStore = create<FriendsStoreState>((set, get) => ({
 
       set({ friends, total, isLoading: false });
     } catch {
+      errorStore.showError('Failed to fetch friends');
+    } finally {
       set({ isLoading: false });
     }
   },

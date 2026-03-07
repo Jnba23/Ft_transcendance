@@ -1,11 +1,16 @@
 import { useRef } from 'react';
 import useClickOutside from '@hooks/useClickOutside';
-import type { headerMenuProps } from '@utils/types';
 import UserMenuItem from './UserMenuItem';
 import getTransitionClasses from '@utils/transitionStyles';
 import { useAuth } from '@context/AuthContext';
 
-function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
+type HeaderMenuProps = {
+  isOpen: boolean;
+  hide: () => void;
+  buttonRef: React.RefObject<HTMLButtonElement | null>;
+};
+
+function UserMenu({ isOpen, hide, buttonRef }: HeaderMenuProps) {
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const { logout, user } = useAuth();
@@ -21,7 +26,7 @@ function UserMenu({ isOpen, hide, buttonRef }: headerMenuProps) {
         `${getTransitionClasses(isOpen, 'navbar')}`,
         'rounded-lg shadow-lg mt-2',
         'bg-[#1F2C4A] border border-white/10',
-        'absolute w-48 right-0 z-[40]',
+        'absolute w-48 right-0 z-[60]',
       ].join(' ')}
       ref={userMenuRef}
     >

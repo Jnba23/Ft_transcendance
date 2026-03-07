@@ -33,6 +33,11 @@ const errorTransition = {
   leave: 'opacity-0 translate-y-0 duration-200 ease-in',
 };
 
+const sidebarTransition = {
+  enter: 'translate-x-0 duration-200 ease-out',
+  leave: '-translate-x-full duration-300 ease-in',
+};
+
 function getTransitionClasses(isOpen: boolean, section: string) {
   switch (section) {
     case 'navbar':
@@ -60,6 +65,11 @@ function getTransitionClasses(isOpen: boolean, section: string) {
       if (isOpen) return errorTransition.enter;
 
       return errorTransition.leave;
+
+    case 'sidebar':
+      if (isOpen) return sidebarTransition.enter;
+
+      return sidebarTransition.leave;
   }
 }
 

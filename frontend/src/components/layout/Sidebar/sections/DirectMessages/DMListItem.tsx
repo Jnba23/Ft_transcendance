@@ -1,10 +1,10 @@
 import { Conversation } from 'types/conversation';
 import UserBadge from '@components/ui/UserBadge';
 import UserOptions from '../shared/UserOptions';
-import girl from '@assets/girl.jpg';
 import { useChatStore } from '@stores/chat.store';
 import { useRef } from 'react';
 import { useDirectMessagesStore } from '@stores/directMessages.store';
+import { useLayoutStore } from '@stores/layout.store';
 
 type DMListItemProps = {
   convo: Conversation;
@@ -21,6 +21,7 @@ function DMListItem({ convo, hasOpenOpts, openOptions }: DMListItemProps) {
 
   const openChat = useChatStore((state) => state.openChat);
   const update = useChatStore((state) => state.update);
+  const hideSidebar = useLayoutStore((state) => state.hideSidebar);
   const updateChat = (e: React.MouseEvent<HTMLDivElement>) => {
     const isOptsBtnClick = optsBtnRef.current?.contains(e.target as Node);
 
@@ -31,6 +32,7 @@ function DMListItem({ convo, hasOpenOpts, openOptions }: DMListItemProps) {
       replaceConversation(convo);
     };
 
+    hideSidebar();
     openChat();
     update(convo, convo.user, markConvoRead);
   };
@@ -49,7 +51,7 @@ function DMListItem({ convo, hasOpenOpts, openOptions }: DMListItemProps) {
         onClick={updateChat}
       >
         <div className="flex items-center justify-between">
-          <UserBadge {...convo.user} avatar={girl} section="DM" />
+          <UserBadge {...convo.user} section="DM" />
           <button
             className={[
               'p-1 rounded-md transition-colors',

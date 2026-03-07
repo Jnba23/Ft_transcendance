@@ -1,6 +1,10 @@
 import Avatar from '@ui/Avatar';
-import type { StatusStyle } from '@utils/types.ts';
 import { useUserDirectoryStore } from '@stores/userDirectory.store';
+
+type StatusStyle = {
+  online: string;
+  offline: string;
+};
 
 const statusStyle = {
   online: 'bg-win border border-[#16213E]/50',
@@ -11,31 +15,49 @@ export type SectionSizes = {
   DM: string;
   chat: string;
   friendRequest: string;
+  history: string;
 };
 
 const sectionSizes = {
   DM: 'text-xs',
   chat: 'text-base',
   friendRequest: 'text-sm',
+  history: 'text-sm font-medium',
 } satisfies SectionSizes;
 
 type UserBadgeProps = {
   id?: number;
   username: string;
-  avatar: string;
   status?: keyof StatusStyle;
   section: keyof SectionSizes;
+  toCols?: boolean;
 };
 
-function UserBadge({ id, username, avatar, status, section }: UserBadgeProps) {
+function UserBadge({
+  id,
+  username,
+  status,
+  section,
+  toCols = false,
+}: UserBadgeProps) {
   const me = useUserDirectoryStore((state) => state.me);
 
   status = id === me?.id ? 'online' : status;
 
   return (
-    <div className="flex gap-3 items-center ">
+    <div
+      className={[
+        `${toCols ? 'gap-2 md:gap-3' : 'gap-3'}`,
+        'flex items-center',
+        `${toCols ? 'flex-col md:flex-row' : ''}`,
+      ].join(' ')}
+    >
       <div className="relative flex items-center">
-        <Avatar path={avatar} section={section} />
+        <Avatar
+          userId={id}
+          section={section}
+          size={toCols ? 'size-15 md:size-10' : ''}
+        />
         <span
           className={[
             'size-2.5 rounded-full',
@@ -46,10 +68,10 @@ function UserBadge({ id, username, avatar, status, section }: UserBadgeProps) {
       </div>
       <span
         className={[
-          'text-white',
+          'text-white truncate',
           `${sectionSizes[section]}`,
-          'font-medium',
           'tracking-wider',
+          `${toCols ? 'font-bold text-lg md:font-medium' : 'font-medium'}`,
         ].join(' ')}
       >
         {username === me?.username ? `${username} (You)` : username}

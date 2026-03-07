@@ -4,11 +4,11 @@ import NoMessages from './NoMessages';
 import { useChatStore } from '@stores/chat.store';
 
 type ConversationProps = {
-  username: string;
-  avatar: string;
+  username?: string;
+  userId?: number;
 };
 
-function Conversation({ username, avatar }: ConversationProps) {
+function Conversation({ userId, username }: ConversationProps) {
   const { messages, isLoading } = useChatStore((state) => state);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -19,13 +19,13 @@ function Conversation({ username, avatar }: ConversationProps) {
   if (isLoading) return <div className="h-full"></div>;
 
   if (!messages.length) {
-    return <NoMessages username={username} />;
+    return <NoMessages username={username ?? ''} />;
   }
 
   return (
     <div className="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar">
       {messages.map((m) => (
-        <Msg key={m.id} avatar={avatar} message={m} />
+        <Msg key={m.id} userId={userId} message={m} />
       ))}
       <div ref={bottomRef} />
     </div>

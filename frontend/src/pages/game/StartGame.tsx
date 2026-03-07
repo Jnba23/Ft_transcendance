@@ -1,19 +1,22 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import Card from '../../components/ui/Cards/GlassCard';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useLayoutStore } from '@stores/layout.store';
+import { useEffect } from 'react';
 
 const StartGame = () => {
   const navigate = useNavigate();
+  const { showNavbar, unomitSidebar } = useLayoutStore((state) => state);
+
+  useEffect(() => {
+    showNavbar();
+    unomitSidebar();
+  }, [showNavbar, unomitSidebar]);
+
+  const location = useLocation();
   const params = useParams();
 
   const game = params['*'] || 'pong';
   return (
-    <div className="text-white relative flex flex-col justify-center items-center min-h-screen w-full bg-background-dark p-4 gap-6 text-center isolate">
-      <span
-        className="material-symbols-outlined absolute text-white/5 -z-10"
-        style={{ fontSize: '40rem' }}
-      >
-        sports_tennis
-      </span>
+    <div className="text-white relative flex flex-col justify-center items-center min-h-screen w-full bg-background-dark p-4 gap-6 text-center">
       <h1 className="font-bold text-6xl leading-none">Play {game}</h1>
       <p className="w-1/2 text-lg leading-7 text-white/60">
         Challenge your friends or find a random opponent to start a new game of
@@ -34,7 +37,6 @@ const StartGame = () => {
         </button>
       </div>
 
-      <Card gameName={game} winLoss="61W / 24L" highestScore="11 - 0" />
     </div>
   );
 };

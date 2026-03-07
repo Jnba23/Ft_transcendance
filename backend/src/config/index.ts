@@ -12,4 +12,5 @@ export const config = {
     '3d') as SignOptions['expiresIn'],
   googleClientId: process.env.GOOGLE_CLIENT_ID,
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  publicApiKey: process.env.PUBLIC_API_KEY,
 };

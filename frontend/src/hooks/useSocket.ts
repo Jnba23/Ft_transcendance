@@ -14,12 +14,10 @@ export const useSocket = (namespace: string) => {
     });
 
     newSocket.on('connect', () => {
-      console.log(`Connected to ${namespace}`);
       setIsConnected(true);
     });
 
     newSocket.on('disconnect', () => {
-      console.log(`Disconnected from ${namespace}`);
       setIsConnected(false);
     });
 
