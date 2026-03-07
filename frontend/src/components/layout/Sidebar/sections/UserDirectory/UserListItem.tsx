@@ -5,8 +5,6 @@ import { useChatStore } from '@stores/chat.store';
 import { useDirectMessagesStore } from '@stores/directMessages.store';
 import { Conversation } from 'types/conversation';
 import { UserSummaryRes } from '@api/user.api';
-// remove later
-import girl from '@assets/girl.jpg';
 import { useLayoutStore } from '@stores/layout.store';
 
 type UserListItemProps = {

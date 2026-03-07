@@ -5,7 +5,7 @@ import { useChatStore } from '@stores/chat.store';
 
 type ConversationProps = {
   username?: string;
-  userId?: number
+  userId?: number;
 };
 
 function Conversation({ userId, username }: ConversationProps) {

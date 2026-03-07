@@ -4,11 +4,10 @@ import {
   getCurrentUserHandler,
   getUserbyIdHandler,
   updateUserHandler,
-  updateUserStatusHandler,
   getAvatarHandler,
 } from './controller.js';
 import { requireUser } from '../../middleware/requireUser.js';
-import { updateUserSchema, updateStatusSchema } from './schema.js';
+import { updateUserSchema } from './schema.js';
 import { validateResource } from '../../middleware/validateResource.js';
 import { upload } from '../../utils/fileUpload.js';
 import { AppError } from '../../utils/AppError.js';

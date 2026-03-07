@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router } from 'express';
 import { getHistory, getLeaderboard, getStats } from './controller.js';
 import { requireUser } from '../../middleware/requireUser.js';
 

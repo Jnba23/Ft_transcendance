@@ -22,7 +22,7 @@ function Chat() {
   useClickOutside(isChatOpen, cleanHide, [chatRef]);
 
   useEffect(() => {
-    document.body.classList.toggle("overflow-hidden", isChatOpen);
+    document.body.classList.toggle('overflow-hidden', isChatOpen);
   }, [isChatOpen]);
 
   return (

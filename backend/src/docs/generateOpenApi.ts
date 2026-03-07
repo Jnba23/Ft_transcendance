@@ -21,7 +21,6 @@ import {
 } from '../auth/2fa/schema.js';
 import { updateUserSchema } from '../user/users/schema.js';
 import { friendActionSchema } from '../user/friends/schema.js';
-import { createMessageSchema } from '../chat/schema.js';
 
 // Extend Zod with OpenAPI
 extendZodWithOpenApi(z);

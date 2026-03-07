@@ -1,23 +1,30 @@
 import Avatar from '@components/ui/Avatar';
 
 type ProfileBadgeProps = {
-  userId: number,
-  username: string,
-  level: number,
-  created_at: string,
-}
+  userId: number;
+  username: string;
+  level: number;
+  created_at: string;
+};
 
-function ProfileBadge({ userId, username, level, created_at }: ProfileBadgeProps) {
+function ProfileBadge({
+  userId,
+  username,
+  level,
+  created_at,
+}: ProfileBadgeProps) {
   const date = new Date(created_at.split(' ')[0]);
-  const month = date.toLocaleString("en-US", { month: "long" })
-  const year = date.toLocaleString("en-US", { year: "numeric" });
+  const month = date.toLocaleString('en-US', { month: 'long' });
+  const year = date.toLocaleString('en-US', { year: 'numeric' });
   const joined_at = `${month} ${year}`;
 
   return (
-    <div className={[
-      "flex items-center gap-6 flex-col md:flex-row",
-      "text-center md:text-start"
-    ].join(' ')}>
+    <div
+      className={[
+        'flex items-center gap-6 flex-col md:flex-row',
+        'text-center md:text-start',
+      ].join(' ')}
+    >
       <div className="relative">
         {' '}
         {/* avatar */}
@@ -30,14 +37,16 @@ function ProfileBadge({ userId, username, level, created_at }: ProfileBadgeProps
             '-bottom-1 -right-1 px-2 py-0.5 border border-white/10',
           ].join(' ')}
         >
-          <span className={[
-            'text-xs flex items-center gap-1',
-            'font-bold text-yellow-400'
-          ].join(' ')}>
-            <span className='material-symbols-outlined !text-[14px]'>
+          <span
+            className={[
+              'text-xs flex items-center gap-1',
+              'font-bold text-yellow-400',
+            ].join(' ')}
+          >
+            <span className="material-symbols-outlined !text-[14px]">
               trophy
             </span>
-              Rating {level}
+            Rating {level}
           </span>
         </div>
       </div>

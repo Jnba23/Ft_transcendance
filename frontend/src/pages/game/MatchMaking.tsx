@@ -7,7 +7,7 @@ import { useLayoutStore } from '@stores/layout.store';
 
 const MatchMaking = () => {
   const navigate = useNavigate();
-  const {hideNavbar, omitSidebar} = useLayoutStore((state) => state);
+  const { hideNavbar, omitSidebar } = useLayoutStore((state) => state);
   const location = useLocation();
   // states
   const [seconds, setSeconds] = useState(10);
@@ -17,7 +17,7 @@ const MatchMaking = () => {
   useEffect(() => {
     const socket = createMatchmakingSocket();
     if (!socket) return;
-  // close navbar/sidebar
+    // close navbar/sidebar
     hideNavbar();
     omitSidebar();
 
@@ -43,7 +43,7 @@ const MatchMaking = () => {
       socket.off('match-found');
       socket.off('reconnect-game');
     };
-  }, [navigate, gameType]);
+  }, [navigate, gameType, hideNavbar, omitSidebar]);
 
   // wait Timer
 

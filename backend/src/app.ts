@@ -5,7 +5,7 @@ import userRoutes from './user/users/routes.js';
 import friendRoutes from './user/friends/routes.js';
 import twoFatRoutes from './auth/2fa/routes.js';
 import chatRoutes from './chat/routes.js';
-import gameRoutes from './realTimeGame/persistence/routes.js'
+import gameRoutes from './realTimeGame/persistence/routes.js';
 import { AppError } from './utils/AppError.js';
 import { deserializeUser } from './middleware/deserializeUser.js';
 import { config } from './config/index.js';
@@ -25,7 +25,7 @@ app.use(
     credentials: true,
   })
 );
-// app.use(morgan('dev'));
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
 

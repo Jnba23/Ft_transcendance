@@ -10,7 +10,9 @@ import { Link } from 'react-router-dom';
 
 function Sidebar() {
   const ref = useRef<HTMLElement>(null);
-  const {isSidebarShown, hideSidebar, isSidebarOmited} = useLayoutStore((state) => state);
+  const { isSidebarShown, hideSidebar, isSidebarOmited } = useLayoutStore(
+    (state) => state
+  );
   const [isDMOpen, setIsDMOpen] = useState(true);
   const switchSection = () => setIsDMOpen(!isDMOpen);
 
@@ -27,9 +29,11 @@ function Sidebar() {
           'border-r border-white/10',
           'fixed inset-y-0 left-0 z-60',
           'md:static md:translate-x-0',
-      ].join(' ')} ref={ref}>
+        ].join(' ')}
+        ref={ref}
+      >
         <div className="flex flex-col gap-8 h-full">
-          <Navigation/>
+          <Navigation />
           <div className="overflow-hidden min-h-0">
             <div
               className={[

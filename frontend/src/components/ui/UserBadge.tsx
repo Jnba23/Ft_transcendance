@@ -22,7 +22,7 @@ const sectionSizes = {
   DM: 'text-xs',
   chat: 'text-base',
   friendRequest: 'text-sm',
-  history: 'text-sm font-medium'
+  history: 'text-sm font-medium',
 } satisfies SectionSizes;
 
 type UserBadgeProps = {
@@ -30,22 +30,34 @@ type UserBadgeProps = {
   username: string;
   status?: keyof StatusStyle;
   section: keyof SectionSizes;
-  toCols?: boolean
+  toCols?: boolean;
 };
 
-function UserBadge({ id, username, status, section, toCols=false }: UserBadgeProps) {
+function UserBadge({
+  id,
+  username,
+  status,
+  section,
+  toCols = false,
+}: UserBadgeProps) {
   const me = useUserDirectoryStore((state) => state.me);
 
   status = id === me?.id ? 'online' : status;
 
   return (
-    <div className={[
-      `${toCols ? 'gap-2 md:gap-3' : 'gap-3'}`,
-      'flex items-center',
-      `${toCols ? 'flex-col md:flex-row' : ''}`
-    ].join(' ')}>
+    <div
+      className={[
+        `${toCols ? 'gap-2 md:gap-3' : 'gap-3'}`,
+        'flex items-center',
+        `${toCols ? 'flex-col md:flex-row' : ''}`,
+      ].join(' ')}
+    >
       <div className="relative flex items-center">
-        <Avatar userId={id} section={section} size={toCols ? 'size-15 md:size-10' : ''}/>
+        <Avatar
+          userId={id}
+          section={section}
+          size={toCols ? 'size-15 md:size-10' : ''}
+        />
         <span
           className={[
             'size-2.5 rounded-full',

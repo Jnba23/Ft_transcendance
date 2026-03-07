@@ -1,9 +1,9 @@
 // add [secion_name: section_size_utility_class] mapping for
 // the section where you wish to use this component
 
-import { useEffect, useState } from "react";
-import { useErrorStore } from "@stores/error.store";
-import { userAPI } from "@api/user.api";
+import { useEffect, useState } from 'react';
+import { useErrorStore } from '@stores/error.store';
+import { userAPI } from '@api/user.api';
 
 type SectionSizes = {
   // section_name: string
@@ -26,7 +26,7 @@ const sectionSizes = {
   friendRequest: 'size-10',
   profile: 'size-32',
   friends: 'size-8',
-  history: 'size-8'
+  history: 'size-8',
 } satisfies SectionSizes;
 
 type AvatarProps = {
@@ -35,11 +35,10 @@ type AvatarProps = {
   size?: string;
 };
 
-function Avatar({userId, section = 'userMenu', size }: AvatarProps) {
-  
+function Avatar({ userId, section = 'userMenu', size }: AvatarProps) {
   const showError = useErrorStore((state) => state.showError);
   const [avatarUrl, setAvatarUrl] = useState('');
-  
+
   useEffect(() => {
     if (!userId) return;
 
@@ -60,7 +59,7 @@ function Avatar({userId, section = 'userMenu', size }: AvatarProps) {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [userId]);
+  }, [userId, showError]);
 
   return (
     <div

@@ -29,12 +29,14 @@ function FriendReqItem({ request, reqType }: FriendReqItemProps) {
   };
 
   return (
-    <div className={[
-      "flex items-center gap-4 md:justify-between",
-      "flex-col md:flex-row p-4 md:p-0 bg-[#16213E]/50 rounded-lg",
-      "md:bg-transparent border border-white/10 shadow-lg",
-      "md:border-0 shadow-none"
-    ].join(' ')}>
+    <div
+      className={[
+        'flex items-center gap-4 md:justify-between',
+        'flex-col md:flex-row p-4 md:p-0 bg-[#16213E]/50 rounded-lg',
+        'md:bg-transparent border border-white/10 shadow-lg',
+        'md:border-0 shadow-none',
+      ].join(' ')}
+    >
       <UserBadge
         username={request.username}
         id={request.user_id}

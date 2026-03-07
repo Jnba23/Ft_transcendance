@@ -31,7 +31,7 @@ const PongGame = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
   const showError = useErrorStore((state) => state.showError);
-  const {showNavbar, unomitSidebar} = useLayoutStore((state) => state);
+  const { showNavbar, unomitSidebar } = useLayoutStore((state) => state);
 
   useEffect(() => {
     const socket = createPongSocket();
@@ -72,7 +72,7 @@ const PongGame = () => {
       socketRef.current?.off('game_over', handleGameEnd);
       socketRef.current?.off('game_aborted', handleGameAborted);
     };
-  }, [navigate, showError]);
+  }, [navigate, showError, showNavbar, unomitSidebar]);
 
   useEffect(() => {
     if (!gameId) return;

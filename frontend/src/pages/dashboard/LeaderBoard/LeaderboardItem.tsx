@@ -15,7 +15,6 @@ const LeaderBoardItem = ({
   username,
   score,
 }: LeaderBoardProps) => {
-
   return (
     <main
       className={

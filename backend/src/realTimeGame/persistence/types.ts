@@ -57,11 +57,11 @@ export interface UserStats {
   pong_win_rate: number;
   RPS_win_rate: number;
 }
- 
+
 export interface LeaderboardRow {
-  id: number,
-  username: string,
-  avatar_url: string,
-  wins: number,
-  rank: number,
+  id: number;
+  username: string;
+  avatar_url: string;
+  wins: number;
+  rank: number;
 }

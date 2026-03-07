@@ -35,7 +35,7 @@ function Friends({ btnRef }: FriendsProps) {
           'bg-[#1F2C4A] md:w-80 w-70 absolute md:right-0 mt-3',
           'rounded-xl top-full border border-white/10',
           'shadow-2xl right-1/2 translate-x-1/2',
-          'md:right-0 md:translate-x-0 z-[60]'
+          'md:right-0 md:translate-x-0 z-[60]',
         ].join(' ')}
         ref={friendsRef}
       >

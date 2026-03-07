@@ -1,14 +1,14 @@
 import React from 'react';
 
 type SectionStyles = {
-  dashboard: string,
-  profile: string,
-}
+  dashboard: string;
+  profile: string;
+};
 
 const sectionStyles = {
   dashboard: 'flex-1',
-  profile: ''
-} satisfies SectionStyles
+  profile: '',
+} satisfies SectionStyles;
 
 type TwoOptionsToggleProps = {
   opt1: string;
@@ -23,7 +23,7 @@ function TwoOptionsToggle({
   opt2,
   onOpt1Select,
   onOpt2Select,
-  section
+  section,
 }: TwoOptionsToggleProps) {
   const [isOpt1Active, setIsOpt1Active] = React.useState(true);
 
@@ -55,7 +55,7 @@ function OptionButton({
   label,
   isActive,
   onClick,
-  section
+  section,
 }: {
   label: string;
   isActive: boolean;

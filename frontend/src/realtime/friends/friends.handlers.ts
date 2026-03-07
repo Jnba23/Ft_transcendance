@@ -61,7 +61,7 @@ export const handleUpdateFriendRequest = (
     const request = friendReqStore.getRequest(
       payload.requestId,
       payload.reqType
-    ); 
+    );
 
     if (request) {
       request.user_id = payload.otherId;

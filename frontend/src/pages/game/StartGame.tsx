@@ -5,12 +5,12 @@ import { useEffect } from 'react';
 
 const StartGame = () => {
   const navigate = useNavigate();
-  const {showNavbar, unomitSidebar} = useLayoutStore((state) => state);
+  const { showNavbar, unomitSidebar } = useLayoutStore((state) => state);
 
   useEffect(() => {
     showNavbar();
     unomitSidebar();
-  }, []);
+  }, [showNavbar, unomitSidebar]);
 
   const location = useLocation();
   const params = useParams();

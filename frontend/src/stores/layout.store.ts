@@ -1,46 +1,46 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface layoutStore {
-	isSidebarShown: boolean,
-	showSidebar: () => void,
-	hideSidebar: () => void,
+  isSidebarShown: boolean;
+  showSidebar: () => void;
+  hideSidebar: () => void;
 
-	isNavbarShown: boolean,
-	showNavbar: () => void,
-	hideNavbar: () => void,
+  isNavbarShown: boolean;
+  showNavbar: () => void;
+  hideNavbar: () => void;
 
-	isSidebarOmited: boolean,
+  isSidebarOmited: boolean;
 
-	omitSidebar: () => void,
-	unomitSidebar: () => void
+  omitSidebar: () => void;
+  unomitSidebar: () => void;
 }
 
 export const useLayoutStore = create<layoutStore>((set) => ({
-	isSidebarShown: false,
+  isSidebarShown: false,
 
-	showSidebar: () => {
-		set({ isSidebarShown: true });
-	},
-	hideSidebar: () => {
-		set({ isSidebarShown: false });
-	},
+  showSidebar: () => {
+    set({ isSidebarShown: true });
+  },
+  hideSidebar: () => {
+    set({ isSidebarShown: false });
+  },
 
-	isNavbarShown: true,
-	
-	showNavbar: () => {
-		set({ isNavbarShown: true });
-	},
-	hideNavbar: () => {
-		set({ isNavbarShown: false });
-	},
+  isNavbarShown: true,
 
-	isSidebarOmited: false,
+  showNavbar: () => {
+    set({ isNavbarShown: true });
+  },
+  hideNavbar: () => {
+    set({ isNavbarShown: false });
+  },
 
-	omitSidebar: () => {
-		set({ isSidebarOmited: true });
-	},
+  isSidebarOmited: false,
 
-	unomitSidebar: () => {
-		set({ isSidebarOmited: false });
-	}
+  omitSidebar: () => {
+    set({ isSidebarOmited: true });
+  },
+
+  unomitSidebar: () => {
+    set({ isSidebarOmited: false });
+  },
 }));

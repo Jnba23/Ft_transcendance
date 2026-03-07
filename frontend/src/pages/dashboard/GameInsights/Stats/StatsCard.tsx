@@ -53,17 +53,18 @@ const StatsCard = ({
                 fill="none"
                 strokeWidth={3}
               />
-              {showWins &&
+              {showWins && (
                 <circle
-                className="stroke-current text-green-400"
-                cx={18}
-                cy={18}
-                r={16}
-                fill="none"
-                strokeWidth={3}
-                strokeDasharray={100}
-                strokeDashoffset={isNaN(offset) ? 50 : offset}
-              />}
+                  className="stroke-current text-green-400"
+                  cx={18}
+                  cy={18}
+                  r={16}
+                  fill="none"
+                  strokeWidth={3}
+                  strokeDasharray={100}
+                  strokeDashoffset={isNaN(offset) ? 50 : offset}
+                />
+              )}
             </svg>
 
             <div className="absolute inset-0 flex flex-col items-center justify-center">

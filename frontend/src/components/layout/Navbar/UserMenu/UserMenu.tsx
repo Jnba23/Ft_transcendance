@@ -8,7 +8,7 @@ type HeaderMenuProps = {
   isOpen: boolean;
   hide: () => void;
   buttonRef: React.RefObject<HTMLButtonElement | null>;
-}
+};
 
 function UserMenu({ isOpen, hide, buttonRef }: HeaderMenuProps) {
   const userMenuRef = useRef<HTMLDivElement>(null);

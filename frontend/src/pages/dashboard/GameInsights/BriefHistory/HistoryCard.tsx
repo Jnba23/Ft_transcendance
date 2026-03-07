@@ -1,4 +1,4 @@
-import { GameHistoryItem } from "types/gameHistory";
+import { GameHistoryItem } from 'types/gameHistory';
 
 interface HistoryCardProps {
   name: string;

@@ -16,28 +16,28 @@ function Profile() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-		const fetchStats = async () => {
-			try {
-				const response = await gamesAPI.getStats(userId);
-				const data = response.data.stats;
-				setStats(data);
-			} catch {
-				showError('Failed to fetch profile');
-			} finally {
-				setLoading(false);
-			}
-		}
+    const fetchStats = async () => {
+      try {
+        const response = await gamesAPI.getStats(userId);
+        const data = response.data.stats;
+        setStats(data);
+      } catch {
+        showError('Failed to fetch profile');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-		fetchStats();
-	}, [userId]);
+    fetchStats();
+  }, [userId, showError]);
 
-	if (loading || !stats) return <div></div>
+  if (loading || !stats) return <div></div>;
 
   return (
-    <div className='flex flex-col gap-12'>
-      <ProfileBanner userId={userId} stats={stats}/>
-      <GameInsights stats={stats}/>
-      <GameHistory userId={userId}/>
+    <div className="flex flex-col gap-12">
+      <ProfileBanner userId={userId} stats={stats} />
+      <GameInsights stats={stats} />
+      <GameHistory userId={userId} />
     </div>
   );
 }

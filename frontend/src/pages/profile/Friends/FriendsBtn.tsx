@@ -26,7 +26,7 @@ function FriendsBtn({ btnRef, userId, username }: FriendsBtnProps) {
     }
 
     if (status === 'Unfriend') {
-      setAwaitingConfirm(friendship!?.id, username);
+      setAwaitingConfirm(friendship?.id, username);
       openConfirmation();
       return;
     }

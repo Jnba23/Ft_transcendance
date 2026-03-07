@@ -17,11 +17,13 @@ function Navbar() {
   };
 
   return (
-    <header className={[
-      `${getTransitionClasses(isNavbarOpen, 'navbar')}`,
-      "flex gap-3 items-center justify-between",
-      "md:justify-end mb-8"
-    ].join(' ')}>
+    <header
+      className={[
+        `${getTransitionClasses(isNavbarOpen, 'navbar')}`,
+        'flex gap-3 items-center justify-between',
+        'md:justify-end mb-8',
+      ].join(' ')}
+    >
       <SidebarMenu />
       <div className="relative">
         <UserMenuBtn

@@ -93,7 +93,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     try {
       if (!conversation_id) {
-        const response = await chatApi.createConversation({ other_id: user_id! });
+        const response = await chatApi.createConversation({
+          other_id: user_id!,
+        });
         conversation_id = response.data.conversation_id;
       }
 

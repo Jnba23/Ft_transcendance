@@ -74,7 +74,8 @@ export function saveCompleteGames(data: {
 						RPS_wins = RPS_wins + 1,
             RPS_winStreak = RPS_winStreak + 1,
             level = ?
-					WHERE id = ?`);
+					WHERE id = ?`
+        );
         updateWinner.run(newWinnerRating, winnerId);
         const updateLoser = db.prepare(`
 					UPDATE users
@@ -92,7 +93,8 @@ export function saveCompleteGames(data: {
 						pong_wins = pong_wins + 1,
             pong_winStreak = pong_winStreak + 1,
             level = ?
-					WHERE id = ?`);
+					WHERE id = ?`
+        );
         updateWinner.run(newWinnerRating, winnerId);
         const updateLoser = db.prepare(`
 					UPDATE users
@@ -146,8 +148,8 @@ export function getUserGameHistory(
 		JOIN users u1 ON g.player1_id = u1.id
 		JOIN users u2 ON g.player2_id = u2.id
 		WHERE (g.player1_id = ? OR g.player2_id = ?) AND g.status = 'completed'
-  `
-  const params: any[] = [userId, userId, userId, userId, userId];
+  `;
+  const params: (number | string)[] = [userId, userId, userId, userId, userId];
 
   if (gameType) {
     query += ` AND g.game_type = ?`;
@@ -176,9 +178,9 @@ export function getUserGamesCount(userId: number, gameType?: string): number {
     FROM games g
     WHERE (g.player1_id = ? OR g.player2_id = ?)
       AND g.status = 'completed'
-  `
+  `;
 
-  const params: any[] = [userId, userId];
+  const params: (number | string)[] = [userId, userId];
 
   if (gameType) {
     query += ` AND g.game_type = ?`;

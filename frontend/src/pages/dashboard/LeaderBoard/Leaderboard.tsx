@@ -25,15 +25,17 @@ const LeaderboardCard = () => {
     };
 
     fetchLeaderboard();
-  }, []);
+  }, [showError]);
 
-  if (loading) return <div></div>
+  if (loading) return <div></div>;
 
   return (
     <main className="text-white">
-      <h3 className="text-lg font-bold mb-4 leading-tight tracking-tight">Top Players</h3>
+      <h3 className="text-lg font-bold mb-4 leading-tight tracking-tight">
+        Top Players
+      </h3>
       <section className="flex flex-col gap-3">
-        {leaderboard.map(user => {
+        {leaderboard.map((user) => {
           return (
             <LeaderBoardItem
               key={user.id}

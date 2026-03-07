@@ -31,9 +31,11 @@ const EndMatch = () => {
     ? matchData?.player2Name
     : matchData?.player1Name;
   const didIWin = matchData?.winnerId === user?.id;
-  const opponentId = (matchData?.player1Id === user?.id
-    ? matchData?.player2Id
-    : matchData?.player1Id) as number | undefined;
+  const opponentId = (
+    matchData?.player1Id === user?.id
+      ? matchData?.player2Id
+      : matchData?.player1Id
+  ) as number | undefined;
 
   const userDirStore = useUserDirectoryStore((state) => state);
   const friendReqStore = useFriendRequestsStore((state) => state);
@@ -92,12 +94,15 @@ const EndMatch = () => {
       </div>
 
       <div className="flex flex-col sm:flex-row mt-4 md:mt-8 gap-4 md:gap-6 w-full max-w-180 px-4 md:px-0 z-10">
-        {!userDirStore.hasFriendRequest(opponentId ?? 0) &&
-          <button onClick={() => friendReqStore.sendRequest(opponentId!)} className="flex-1 flex justify-center items-center gap-3 rounded-xl border border-blue-500/50 bg-blue-600/90 hover:bg-blue-500 text-white text-sm md:text-base font-semibold py-4 px-6 cursor-pointer shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(37,99,235,0.6)]">
+        {!userDirStore.hasFriendRequest(opponentId ?? 0) && (
+          <button
+            onClick={() => friendReqStore.sendRequest(opponentId!)}
+            className="flex-1 flex justify-center items-center gap-3 rounded-xl border border-blue-500/50 bg-blue-600/90 hover:bg-blue-500 text-white text-sm md:text-base font-semibold py-4 px-6 cursor-pointer shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(37,99,235,0.6)]"
+          >
             <span className="material-symbols-outlined text-xl">group_add</span>
             <span className="tracking-wide">Add Friend</span>
           </button>
-        }
+        )}
 
         <button
           onClick={() => navigate('/match_making', { state: { gameType } })}
