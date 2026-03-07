@@ -1,8 +1,8 @@
 import Avatar from '@components/ui/Avatar';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Boy from '@assets/boy.jpg';
-import Girl from '@assets/girl.jpg';
 import { useAuth } from '../../context/AuthContext';
+import { useUserDirectoryStore } from '@stores/userDirectory.store';
+import { useFriendRequestsStore } from '@stores/friendRequests.store';
 
 interface MatchData {
   player1Id: string;
@@ -30,6 +30,12 @@ const EndMatch = () => {
     ? matchData?.player2Name
     : matchData?.player1Name;
   const didIWin = matchData?.winnerId === user?.id;
+  const opponentId = (matchData?.player1Id === user?.id
+    ? matchData?.player2Id
+    : matchData?.player1Id) as number | undefined;
+
+  const userDirStore = useUserDirectoryStore((state) => state);
+  const friendReqStore = useFriendRequestsStore((state) => state);
 
   if (!matchData || !user) {
     return (
@@ -52,7 +58,7 @@ const EndMatch = () => {
       >
         <div className="flex flex-col justify-center items-center flex-1">
           <div className="relative mb-4">
-            <Avatar path={Boy} section="profile" />
+            <Avatar userId={user.id} section="profile" />
           </div>
           <h3 className="font-bold text-xl md:text-2xl text-white mb-2">You</h3>
           <p className="text-blue-100 bg-blue-600/30 border border-blue-500/30 rounded px-3 py-1 text-xs md:text-sm uppercase tracking-widest font-semibold">
@@ -73,7 +79,7 @@ const EndMatch = () => {
 
         <div className="flex flex-col justify-center items-center flex-1">
           <div className="relative mb-4">
-            <Avatar path={Girl} section="profile" />
+            <Avatar userId={opponentId} section="profile" />
           </div>
           <h3 className="font-bold text-xl md:text-2xl text-white/80 mb-2 whitespace-nowrap">
             {opponentName}
@@ -85,10 +91,12 @@ const EndMatch = () => {
       </div>
 
       <div className="flex flex-col sm:flex-row mt-4 md:mt-8 gap-4 md:gap-6 w-full max-w-180 px-4 md:px-0 z-10">
-        <button className="flex-1 flex justify-center items-center gap-3 rounded-xl border border-blue-500/50 bg-blue-600/90 hover:bg-blue-500 text-white text-sm md:text-base font-semibold py-4 px-6 cursor-pointer shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(37,99,235,0.6)]">
-          <span className="material-symbols-outlined text-xl">group_add</span>
-          <span className="tracking-wide">Add Friend</span>
-        </button>
+        {!userDirStore.hasFriendRequest(opponentId ?? 0) &&
+          <button onClick={() => friendReqStore.sendRequest(opponentId!)} className="flex-1 flex justify-center items-center gap-3 rounded-xl border border-blue-500/50 bg-blue-600/90 hover:bg-blue-500 text-white text-sm md:text-base font-semibold py-4 px-6 cursor-pointer shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(37,99,235,0.6)]">
+            <span className="material-symbols-outlined text-xl">group_add</span>
+            <span className="tracking-wide">Add Friend</span>
+          </button>
+        }
 
         <button
           onClick={() => navigate('/match_making')}
