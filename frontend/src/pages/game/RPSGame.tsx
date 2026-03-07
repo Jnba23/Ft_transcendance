@@ -3,36 +3,17 @@ import { Socket } from 'socket.io-client';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useRPSGame } from '@hooks/useRPSGame';
+import { useSocket } from '@hooks/useSocket';
 import { Choice } from '@my-types/rps';
 import ChoiceIcon from '@components/ui/icons/ChoiceIcons';
 import { createRpsSocket } from '@services/game/socket';
 import { getManager } from '../../services/manager';
 
 const RPSGame = () => {
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [socketReady, setSocketReady] = useState(false);
-  const { gameId } = useParams<{ gameId: string }>();
+  const { gameId } = useParams<{ gameId: string}>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  useEffect(() => {
-    const manager = getManager();
-    const existingSocket = manager.socket('/rps');
-    if (existingSocket.connected) existingSocket.disconnect();
-    const newSocket = createRpsSocket();
-    setSocket(newSocket);
-
-    const handleConnect = () => {
-      setSocketReady(true);
-    };
-
-    if (newSocket.connected) handleConnect();
-    else newSocket.on('connect', handleConnect);
-    return () => {
-      newSocket.off('connect', handleConnect);
-      newSocket.disconnect();
-      setSocketReady(false);
-    };
-  }, []);
+  const  { socket, isConnected } = useSocket('/rps');
 
   const {
     gameState,
@@ -42,10 +23,17 @@ const RPSGame = () => {
     waitingForOpp,
     opDisconnected,
     countdown,
-    makeChoice,
-  } = useRPSGame(socket, gameId!);
+    makeChoice
+  } = useRPSGame(socket, gameId!, user?.id || 0);
 
-  if (!socket || !user) {
+  useEffect(() => {
+    const savedGameId = localStorage.getItem('currentGameId');
+    if (savedGameId && savedGameId != gameId){
+      navigate(`/rps/${savedGameId}`);
+    }
+  }, [gameId, navigate]);
+
+  if (!isConnected || !user) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="flex flex-col items-center gap-4">
@@ -57,7 +45,6 @@ const RPSGame = () => {
       </div>
     );
   }
-
   if (!gameState) {
     return (
       <div className="flex items-center justify-center h-screen">

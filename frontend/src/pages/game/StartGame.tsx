@@ -1,12 +1,11 @@
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Card from '../../components/ui/Cards/GlassCard';
 
 const StartGame = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const params = useParams();
 
-  const game = params['*'] || location.state?.game;
+  const game = params['*'] || 'pong';
   return (
     <div className="text-white relative flex flex-col justify-center items-center min-h-screen w-full bg-background-dark p-4 gap-6 text-center isolate">
       <span

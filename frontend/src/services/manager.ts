@@ -4,7 +4,7 @@ let manager: Manager | null = null;
 
 export function getManager() {
   if (!manager) {
-    manager = new Manager(import.meta.env.VITE_SOCKET_URL, {
+    manager = new Manager({
       withCredentials: true,
     });
     manager.socket('/');

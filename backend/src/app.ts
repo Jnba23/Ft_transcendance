@@ -40,15 +40,6 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
       ])
     );
   }
-
-  // eslint-disable-next-line no-console
-  // console.log('[Request]', {
-  //   method: req.method,
-  //   url: req.originalUrl,
-  //   params: req.params,
-  //   query: req.query,
-  //   body: safeBody,
-  // });
   next();
 });
 
