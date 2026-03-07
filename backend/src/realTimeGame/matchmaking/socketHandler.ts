@@ -9,17 +9,24 @@ export const setupMmHandlers = (io: Server) => {
   const matchMakingNs = io.of('/matchmaking').use(socketAuthMiddleware);
 
   matchMakingNs.on('connection', (socket) => {
-    console.log('connected to matchmaking');
+    console.log('matchmaking socket connected: ', socket.data.userId);
     socket.on('join-queue', (data) => {
-      console.log('Joined queue');
       const userId = socket.data.userId;
 
-      const gameId = SessionManager.getGameId(userId);
-      if (gameId) {
-        socket.emit('reconnect-game', gameId);
+      const existingSession = SessionManager.getSessionByUserId(userId);
+      if (existingSession) {
+        if (existingSession.gameType !== data.gameType) {
+          socket.emit('error', {
+            message: `You are already in a ${existingSession.gameType} game`,
+          });
+          return;
+        }
+        socket.emit('reconnect-game', {
+          gameId: existingSession.gameId,
+          gameType: existingSession.gameType,
+        });
         return;
       }
-      // End
 
       if (!userId) {
         socket.emit('error', { message: 'Unauthorized' });
@@ -48,7 +55,6 @@ export const setupMmHandlers = (io: Server) => {
 
       if (match) {
         SessionManager.add(match);
-        console.log('matched');
         const p1Socket = matchMakingNs.sockets.get(match.player1.socketId);
         const p2Socket = matchMakingNs.sockets.get(match.player2.socketId);
 
@@ -73,7 +79,7 @@ export const setupMmHandlers = (io: Server) => {
     });
 
     socket.on('disconnect', () => {
-      console.log('matchmaking socket desconnected: ', socket.id);
+      console.log('matchmaking socket disconnected: ', socket.data.userId);
       if (socket.data.userId) mmServ.removeFromQueue(socket.data.userId);
     });
   });
