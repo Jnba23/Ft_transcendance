@@ -1,8 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import Card from '../../components/ui/Cards/GlassCard';
+import { useLayoutStore } from '@stores/layout.store';
+import { useEffect } from 'react';
 
 const StartGame = ({ name }: { name: string }) => {
   const navigate = useNavigate();
+  const {showNavbar, unomitSidebar} = useLayoutStore((state) => state);
+
+  useEffect(() => {
+    showNavbar();
+    unomitSidebar();
+  }, []);
 
   return (
     <div className="text-white relative flex flex-col justify-center items-center min-h-screen w-full bg-background-dark p-4 gap-6 text-center isolate">
