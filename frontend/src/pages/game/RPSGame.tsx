@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -6,24 +6,30 @@ import { useRPSGame } from '@hooks/useRPSGame';
 import { Choice } from '@my-types/rps';
 import ChoiceIcon from '@components/ui/icons/ChoiceIcons';
 import { createRpsSocket } from '@services/game/socket';
-import { getManager } from '../../services/manager';
 
 const RPSGame = () => {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const socketRef = useRef<Socket | null>(null);
+  const [socketReady, setSocketReady] = useState(false);
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  useEffect(() => {
-    const manager = getManager();
-    const existingSocket = manager.socket('/rps');
-    if (existingSocket.connected) existingSocket.disconnect();
-    const newSocket = createRpsSocket();
-    setSocket(newSocket);
 
+  const mountedRef = useRef(false);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    const socket = createRpsSocket();
+    socketRef.current = socket;
+    setSocketReady(true);
     return () => {
-      newSocket.disconnect();
+      mountedRef.current = false;
+      setTimeout(() => {
+        if (!mountedRef.current) socket.disconnect();
+      }, 100);
     };
   }, []);
+
+  const socket = socketRef.current;
 
   const {
     gameState,
@@ -74,7 +80,7 @@ const RPSGame = () => {
         </p>
       </div>
       {/* Scoreboard */}
-      <div className="flex items-center gap-16 mb-12 bg-white/5  border border-white/10 rounded-xl p-8 min-w-[550px]">
+      <div className="flex items-center gap-16 mb-12 bg-white/5  border border-white/10 rounded-xl p-8 min-w-137.5">
         <div className="flex flex-col items-center flex-1 gap-3">
           <span
             className={`text-base mb-1 uppercase ${isPlayer1 ? 'text-primary font-bold' : 'text-white/70 font-medium'}`}
@@ -134,7 +140,7 @@ const RPSGame = () => {
             ⚠️ OPPONENT DISCONNECTED
           </p>
           <p className="text-white/60 text-sm tracking-wide">
-            Waiting for reconnection (5 seconds)...
+            Waiting for reconnection (10 seconds)...
           </p>
         </div>
       )}
@@ -212,7 +218,7 @@ const RPSGame = () => {
 
       {/* Round Results */}
       {roundResult && gameState?.phase === 'revealing' && (
-        <div className="text-center bg-white/5  border border-white/10 rounded-2xl p-10 min-w-[700px]">
+        <div className="text-center bg-white/5  border border-white/10 rounded-2xl p-10 min-w-175">
           <h3 className="text-3xl text-primary/80 mb-10 tracking-wide font-bold">
             ROUND RESULT
           </h3>
@@ -276,63 +282,6 @@ const RPSGame = () => {
                 {gameState.player2.name.toUpperCase()} WINS THIS ROUND!
               </p>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Game Over Modal */}
-      {gameOver && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-3xl p-14 text-center max-w-lg shadow-[0_0_60px_rgba(0,243,255,0.3)]">
-            <h2 className="text-6xl font-bold mb-6 tracking-wide">
-              {gameOver.winnerId === user.id ? (
-                <span className="text-win">YOU WON</span>
-              ) : (
-                <span className="text-loss">YOU LOST</span>
-              )}
-            </h2>
-            <p className="text-3xl text-white mb-8 tracking-wide font-semibold">
-              {gameOver.winnerName} wins!
-            </p>
-
-            <div className="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
-              <p className="text-primary/60 text-xs  uppercase mb-4 font-semibold">
-                Final Score
-              </p>
-              <div className="flex justify-around text-lg">
-                <div className="flex flex-col gap-2">
-                  <span className="text-white/70 text-sm">
-                    {gameState?.player1.name}
-                  </span>
-                  <span className="text-white font-bold text-3xl">
-                    {gameOver.finalScore.player1}
-                  </span>
-                </div>
-                <div className="text-white/30 text-2xl self-center font-bold">
-                  -
-                </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-white/70 text-sm">
-                    {gameState?.player2.name}
-                  </span>
-                  <span className="text-white font-bold text-3xl">
-                    {gameOver.finalScore.player2}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {gameOver.reason === 'forfeit' && (
-              <p className="text-yellow-400 text-sm mb-8 tracking-wide">
-                ({gameOver.message})
-              </p>
-            )}
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="bg-white/5  border-2 border-primary/80 rounded-xl py-4 px-10 text-primary font-bold text-lg uppercase hover:bg-white/10 hover:shadow-[0_0_30px_rgba(0,243,255,0.5)] transition-all duration-300"
-            >
-              Return to Dashboard
-            </button>
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 interface GameStats {
   name: string;
   totalGames: number;
-  winStrick: number;
+  winStreak: number;
   winRate: number;
   WLRatio: {
     win: number;
@@ -9,14 +9,15 @@ interface GameStats {
   };
 }
 
-const StartCard = ({
+const StatsCard = ({
   name,
   totalGames,
-  winStrick,
+  winStreak,
   winRate,
   WLRatio,
 }: GameStats) => {
   const offset = (WLRatio.loss / (WLRatio.win + WLRatio.loss)) * 100;
+  const showWins = WLRatio.win > 0;
 
   return (
     <main className="text-white">
@@ -30,8 +31,8 @@ const StartCard = ({
         </section>
 
         <section className="flex flex-col gap-2 rounded-xl p-4 bg-white/5">
-          <span className="text-[#A9A9A9] text-sm font-medium">Win Strick</span>
-          <p className="text-2xl font-bold">{winStrick}</p>
+          <span className="text-[#A9A9A9] text-sm font-medium">Win Streak</span>
+          <p className="text-2xl font-bold">{winStreak}</p>
         </section>
 
         <section className="flex flex-col gap-2 rounded-xl p-4 bg-white/5">
@@ -52,17 +53,18 @@ const StartCard = ({
                 fill="none"
                 strokeWidth={3}
               />
-              <circle
-                className="stroke-current text-green-400"
-                cx={18}
-                cy={18}
-                r={16}
-                fill="none"
-                strokeWidth={3}
-                strokeDasharray={100}
-                strokeDashoffset={offset}
-                strokeLinecap="round"
-              />
+              {showWins && (
+                <circle
+                  className="stroke-current text-green-400"
+                  cx={18}
+                  cy={18}
+                  r={16}
+                  fill="none"
+                  strokeWidth={3}
+                  strokeDasharray={100}
+                  strokeDashoffset={isNaN(offset) ? 50 : offset}
+                />
+              )}
             </svg>
 
             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -78,4 +80,4 @@ const StartCard = ({
   );
 };
 
-export default StartCard;
+export default StatsCard;

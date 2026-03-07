@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Conversation } from 'types/conversation';
 import { chatApi } from '@api/chat.api';
+import { useErrorStore } from './error.store';
 
 interface DirectMessagesState {
   conversations: Conversation[];
@@ -35,6 +36,9 @@ export const useDirectMessagesStore = create<DirectMessagesState>(
 
         set({ conversations, isLoading: false });
       } catch {
+        const errorStore = useErrorStore.getState();
+        errorStore.showError('Failed to fetch conversations');
+      } finally {
         set({ isLoading: false });
       }
     },

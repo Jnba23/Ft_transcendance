@@ -22,6 +22,17 @@ class GameSessions {
     return undefined;
   }
 
+  getSessionByUserId(userId: number): MatchResult | undefined {
+    for (const session of this.sessions.values()) {
+      if (
+        session.player1.userId === userId ||
+        session.player2.userId === userId
+      )
+        return session;
+    }
+    return undefined;
+  }
+
   remove(gameId: string) {
     this.sessions.delete(gameId);
   }

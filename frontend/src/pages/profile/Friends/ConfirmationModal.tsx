@@ -32,7 +32,7 @@ function ConfirmationModal() {
         className={[
           `${getTransitionClasses(isOpen, 'overlay')}`,
           'transition-opacity',
-          'fixed inset-0 bg-black/50 z-[40]',
+          'fixed inset-0 bg-black/50 z-[60]',
         ].join(' ')}
       ></div>
 
@@ -40,9 +40,9 @@ function ConfirmationModal() {
         className={[
           `${getTransitionClasses(isOpen, 'confirmationModal')}`,
           'bg-[#1F2C4A] border border-white/10 rounded-lg',
-          'shadow-2xl w-full max-w-sm p-6 text-center',
+          'shadow-2xl md:w-full w-70 max-w-sm p-6 text-center',
           'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
-          'z-[50]',
+          'z-[60]',
         ].join(' ')}
         ref={modalRef}
       >

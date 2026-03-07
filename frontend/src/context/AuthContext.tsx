@@ -62,6 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('has_session', 'true');
     } catch {
       setUser(null);
+      destroyManager();
       localStorage.removeItem('has_session');
     } finally {
       setIsLoading(false);

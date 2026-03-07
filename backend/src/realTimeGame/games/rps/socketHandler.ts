@@ -2,114 +2,150 @@ import { Server } from 'socket.io';
 import { SessionManager } from '../../core/gameSessionManager.js';
 import { RpsServ } from './RPS.js';
 import { socketAuthMiddleware } from '../../../middleware/socketAuthMiddleware.js';
-// import { saveCompleteGames } from '../../persistence/gamePersistence.js';
+import { saveCompleteGames } from '../../persistence/gamePersistence.js';
 import * as RpsTypes from './types.js';
 
 export const setupRpsHandler = (io: Server) => {
   const RpsNs = io.of('/rps').use(socketAuthMiddleware);
   RpsNs.on('connection', (socket) => {
+    console.log(
+      `rps socket connected: ${socket.id} | user ID: ${socket.data.userId}`
+    );
     socket.on('join-game', (data: { gameId: string }) => {
       const { gameId } = data;
       const userId = socket.data.userId;
-      console.log('🎮 Player joining:', userId, 'GameID:', gameId);
+
+      if (!userId) {
+        socket.emit('error', { message: 'Unauthorized' });
+        return;
+      }
+
       const matchInfo = SessionManager.get(gameId);
       if (!matchInfo) {
         socket.emit('error', { message: 'Game session not found' });
         return;
       }
-      if (!userId) {
-        console.log('❌ No userId in socket.data');
-        socket.emit('error', { message: 'Unauthorized' });
-        return;
-      }
-      console.log('✅ Auth passed for userId:', userId);
       if (
         matchInfo.player1.userId !== userId &&
-        matchInfo.player2.userId != userId
+        matchInfo.player2.userId !== userId
       ) {
-        socket.emit('error', {
-          message: 'Not part of this game, Unauthorized',
-        });
+        socket.emit('error', { message: 'Not part of this game' });
+        socket.disconnect();
         return;
       }
+
+      // Create game state if this is the first connection
       if (!RpsServ.getGame(gameId)) RpsServ.createGame(matchInfo);
+
       const game = RpsServ.getGame(gameId);
       if (!game) return;
+
+      // Kick stale socket if the same player reconnects from another tab
       if (
         game.player1.userId === userId &&
         game.player1.isConnected &&
         game.player1.socketId !== socket.id
       ) {
-        const prevSoc = RpsNs.sockets.get(game.player1.socketId);
-        if (prevSoc) {
-          prevSoc.emit('error', {
-            message: 'You did connect from a new tab',
+        const oldSocket = RpsNs.sockets.get(game.player1.socketId);
+        if (oldSocket) {
+          oldSocket.emit('error', {
+            message: 'Already connected from another tab',
           });
-          prevSoc.disconnect();
+          oldSocket.disconnect();
         }
       } else if (
         game.player2.userId === userId &&
         game.player2.isConnected &&
         game.player2.socketId !== socket.id
       ) {
-        const prevSoc = RpsNs.sockets.get(game.player2.socketId);
-        if (prevSoc) {
-          prevSoc.emit('error', {
-            message: 'You did connect from a new tab',
+        const oldSocket = RpsNs.sockets.get(game.player2.socketId);
+        if (oldSocket) {
+          oldSocket.emit('error', {
+            message: 'Already connected from another tab',
           });
-          prevSoc.disconnect();
+          oldSocket.disconnect();
         }
       }
+
       socket.join(gameId);
       socket.data.gameId = gameId;
-      RpsServ.markPlayerConnected(gameId, userId, socket.id);
+
+      // Cancel any pending reconnection timer and mark player connected
       RpsServ.cancelReconnectionTimer(gameId);
-      RpsNs.to(gameId).emit('opponent-reconnected', {
-        message: 'Opponent reconnected!',
-      });
-      socket.emit('game_init', {
+      RpsServ.markPlayerConnected(gameId, userId, socket.id);
+
+      // Notify the other player that this player (re)connected, but only if game already started
+      if (game.phase !== 'waiting') {
+        RpsNs.to(gameId).emit('opponent-reconnected', {
+          message: 'Opponent reconnected!',
+        });
+      }
+
+      // Determine if this join triggers game start (both players connected for the first time)
+      const isGameStart =
+        game.player1.isConnected &&
+        game.player2.isConnected &&
+        game.phase === 'waiting';
+
+      if (isGameStart) {
+        game.phase = 'choosing';
+      }
+
+      const gameStatePayload = {
         gameId,
         gameState: {
-          currentRound: game?.currentRound,
+          currentRound: game.currentRound,
           player1: {
-            userId: game?.player1.userId,
-            name: game?.player1.name,
-            score: game?.player1.score,
-            isConnected: game?.player1.isConnected,
+            userId: game.player1.userId,
+            name: game.player1.name,
+            score: game.player1.score,
+            isConnected: game.player1.isConnected,
           },
           player2: {
-            userId: game?.player2.userId,
-            name: game?.player2.name,
-            score: game?.player2.score,
-            isConnected: game?.player2.isConnected,
+            userId: game.player2.userId,
+            name: game.player2.name,
+            score: game.player2.score,
+            isConnected: game.player2.isConnected,
           },
-          phase: game?.phase,
-          roundsToWin: game?.roundsToWin,
+          phase: game.phase,
+          roundsToWin: game.roundsToWin,
         },
-      });
+      };
 
-      if (RpsNs.adapter.rooms.get(gameId)?.size === 2) {
-        const game = RpsServ.getGame(gameId);
-        if (!game) return;
-        game.phase = 'choosing';
+      // Always send joined-game directly to the joining socket
+      socket.emit('joined-game', gameStatePayload);
+
+      if (isGameStart) {
+        // Also send updated state to the other player (so they see both connected + phase=choosing)
+        const otherSocketId =
+          userId === game.player1.userId
+            ? game.player2.socketId
+            : game.player1.socketId;
+        if (otherSocketId) {
+          RpsNs.to(otherSocketId).emit('joined-game', gameStatePayload);
+        }
+
+        // Notify both players game is starting
         RpsNs.to(gameId).emit('game-start', {
-          message: `Round ${game.gameId} - Make your choice!`,
+          message: `Round ${game.currentRound} - Make your choice!`,
           roundsToWin: game.roundsToWin,
         });
-        [game.player1.userId, game.player2.userId].forEach((userId) => {
+
+        [game.player1.userId, game.player2.userId].forEach((uId) => {
           const choices: RpsTypes.Choice[] = ['paper', 'rock', 'scissors'];
           const randChoice = choices[Math.floor(Math.random() * 3)];
-          RpsServ.startAutoChoiceTimer(gameId, userId, () => {
-            // if (game.timers.autoChoice) clearTimeout(game.timers.autoChoice);
+          RpsServ.startAutoChoiceTimer(gameId, uId, () => {
             const targetSocket =
-              userId === game.player1.userId
+              uId === game.player1.userId
                 ? game.player1.socketId
                 : game.player2.socketId;
-            RpsNs.to(targetSocket).emit('auto-choice-made', {
-              message: `You took too long, random choice made`,
-              choice: randChoice,
-              userId: userId,
-            });
+            if (targetSocket) {
+              RpsNs.to(targetSocket).emit('auto-choice-made', {
+                message: `You took too long, random choice made`,
+                choice: randChoice,
+                userId: uId,
+              });
+            }
           });
         });
       }
@@ -145,16 +181,15 @@ export const setupRpsHandler = (io: Server) => {
         message: 'Waiting for opponent...',
       });
       if (RpsServ.bothPlayersReady(gameId)) {
+        // Don't override phase here - resolveRound already set it
         game.timers.roundReveal = setTimeout(() => {
           RpsNs.to(gameId).emit('round-results', {
             p1Choice: game.player1.currentChoice,
             p2Choice: game.player2.currentChoice,
             p1Score: game.player1.score,
             p2Score: game.player2.score,
-            round: game.currentRound - 1,
+            round: game.currentRound,
           });
-          game.player1.currentChoice = undefined;
-          game.player2.currentChoice = undefined;
           if (game.phase === 'game-over') {
             if (!game.winner) {
               RpsNs.to(gameId).emit('error', {
@@ -162,17 +197,17 @@ export const setupRpsHandler = (io: Server) => {
               });
               return;
             }
-            // saveCompleteGames({
-            //   gameId: game.gameId,
-            //   gameType: 'rps',
-            //   player1Id: game.player1.userId,
-            //   player2Id: game.player2.userId,
-            //   player1Name: game.player1.name,
-            //   player2Name: game.player2.name,
-            //   winnerId: game.winner,
-            //   player1Score: game.player1.score,
-            //   player2Score: game.player2.score,
-            // });
+            saveCompleteGames({
+              gameId: game.gameId,
+              gameType: 'rps',
+              player1Id: game.player1.userId,
+              player2Id: game.player2.userId,
+              player1Name: game.player1.name,
+              player2Name: game.player2.name,
+              winnerId: game.winner,
+              player1Score: game.player1.score,
+              player2Score: game.player2.score,
+            });
             RpsNs.to(gameId).emit('game-over', {
               winnerId: game.winner,
               winnerName:
@@ -184,13 +219,17 @@ export const setupRpsHandler = (io: Server) => {
                 player2: game.player2.score,
               },
             });
+            // Remove session immediately so players can rematch right away
+            SessionManager.remove(gameId);
             game.timers.cleanup = setTimeout(() => {
-              SessionManager.remove(gameId);
               RpsServ.clearAllTimers(gameId);
               RpsServ.deleteGame(gameId);
             }, 3000);
           } else {
-            game.phase = 'waiting';
+            // Clear choices from previous round
+            game.player1.currentChoice = undefined;
+            game.player2.currentChoice = undefined;
+            game.phase = 'choosing';
             setTimeout(() => {
               RpsNs.to(gameId).emit('new-round', {
                 round: game.currentRound,
@@ -221,7 +260,10 @@ export const setupRpsHandler = (io: Server) => {
         }, 1000);
       }
     });
-    socket.on('disconnect', (reason) => {
+    socket.on('disconnect', (_reason) => {
+      console.log(
+      `rps socket disconnected: ${socket.id} | user ID: ${socket.data.userId}`
+    );
       const gameId = socket.data.gameId;
       const userId = socket.data.userId;
 
@@ -230,10 +272,26 @@ export const setupRpsHandler = (io: Server) => {
       const game = RpsServ.getGame(gameId);
       if (!game) return;
       RpsServ.markPlayerDisconnected(gameId, userId);
+
+      // If both players are now disconnected, end the match without saving
+      if (!game.player1.isConnected && !game.player2.isConnected) {
+        RpsServ.clearAllTimers(gameId);
+        SessionManager.remove(gameId);
+        RpsServ.deleteGame(gameId);
+        return;
+      }
+
       RpsNs.to(gameId).emit('opponent-disconnected', {
         message: 'Opponent disconnected ! Waiting for reconnection ...',
       });
       RpsServ.startReconnectionTimer(gameId, userId, () => {
+        // If the remaining player also disconnected while waiting, skip save
+        if (!game.player1.isConnected && !game.player2.isConnected) {
+          SessionManager.remove(gameId);
+          RpsServ.clearAllTimers(gameId);
+          RpsServ.deleteGame(gameId);
+          return;
+        }
         RpsNs.to(gameId).emit('game-over', {
           winnerId: game.winner,
           winnerName:
@@ -242,20 +300,25 @@ export const setupRpsHandler = (io: Server) => {
               : game.player2.name,
           reason: 'Forfeit',
           message: 'Opponent failed to reconnect',
+          finalScore: {
+            player1: game.player1.score,
+            player2: game.player2.score,
+          },
         });
-        // saveCompleteGames({
-        //   gameId: gameId,
-        //   gameType: 'rps',
-        //   player1Id: game.player1.userId,
-        //   player2Id: game.player2.userId,
-        //   player1Name: game.player1.name,
-        //   player2Name: game.player2.name,
-        //   player1Score: game.player1.score,
-        //   player2Score: game.player2.score,
-        //   winnerId: game.winner!,
-        // });
+        saveCompleteGames({
+          gameId: gameId,
+          gameType: 'rps',
+          player1Id: game.player1.userId,
+          player2Id: game.player2.userId,
+          player1Name: game.player1.name,
+          player2Name: game.player2.name,
+          player1Score: game.player1.score,
+          player2Score: game.player2.score,
+          winnerId: game.winner!,
+        });
+        // Remove session immediately so players can rematch right away
+        SessionManager.remove(gameId);
         setTimeout(() => {
-          SessionManager.remove(gameId);
           RpsServ.clearAllTimers(gameId);
           RpsServ.deleteGame(gameId);
         }, 3000);

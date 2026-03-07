@@ -22,9 +22,10 @@ export interface MyProfileRes {
   created_at: string;
   pong_wins: number;
   pong_losses: number;
+  pong_winStreak: number;
   RPS_wins: number;
   RPS_losses: number;
-  win_streak: number;
+  RPS_winStreak: number;
 }
 
 export interface UserProfileRes {

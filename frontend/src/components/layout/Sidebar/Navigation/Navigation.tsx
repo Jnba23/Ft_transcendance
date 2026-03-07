@@ -1,12 +1,26 @@
-import logo from '@assets/logo.png';
+import Logo from '@components/ui/Logo';
 import NavItem from './NavItem';
+import { useLayoutStore } from '@stores/layout.store';
 
 function Navigation() {
+  const hideSidebar = useLayoutStore((state) => state.hideSidebar);
+
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex items-center gap-3 px-3 h-10">
-        <img src={logo} alt="logo" className="size-12" />
-        <span className="text-white text-lg font-semibold">Pongoose</span>
+      <div>
+        <div className="flex gap-4 items-center justify-between">
+          <Logo />
+          <button
+            className={[
+              'flex items-center justify-center size-7',
+              'rounded-lg text-white/60 hover:text-white',
+              'hover:bg-white/10 transition-colors md:hidden',
+            ].join(' ')}
+            onClick={hideSidebar}
+          >
+            <span className="material-symbols-outlined !text-xl">close</span>
+          </button>
+        </div>
       </div>
       <nav className="flex flex-col gap-8">
         <NavItem icon="dashboard" label="Dashboard" path="/dashboard" />

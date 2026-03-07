@@ -1,26 +1,43 @@
 import { useParams } from 'react-router';
-import ProfileBadge from './ProfileBadge/ProfileBadge';
-import FriendsBtn from './Friends/FriendsBtn';
-import Friends from './Friends/Friends';
-import { useRef } from 'react';
+import GameInsights from './GameInsights/GameInsights';
+import ProfileBanner from './ProfileBadge/ProfileBanner';
+import { useErrorStore } from '@stores/error.store';
+import { UserStats } from 'types/userStats';
+import { gamesAPI } from '@api/games.api';
+import { useEffect, useState } from 'react';
+import GameHistory from './GameInsights/GameHistory/GameHistory';
 
 function Profile() {
   const { id } = useParams();
-  const friendsBtnRef = useRef<HTMLButtonElement>(null);
+  const userId = parseInt(id!);
+
+  const showError = useErrorStore((state) => state.showError);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await gamesAPI.getStats(userId);
+        const data = response.data.stats;
+        setStats(data);
+      } catch {
+        showError('Failed to fetch profile');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [userId, showError]);
+
+  if (loading || !stats) return <div></div>;
 
   return (
-    <div
-      className={[
-        'bg-[#16213E]/50 flex justify-between p-6',
-        'gap-6 items-center border border-white/10',
-        'rounded-xl',
-      ].join(' ')}
-    >
-      <ProfileBadge />
-      <div className="relative">
-        <FriendsBtn btnRef={friendsBtnRef} userId={parseInt(id!)} />
-        <Friends btnRef={friendsBtnRef} />
-      </div>
+    <div className="flex flex-col gap-12">
+      <ProfileBanner userId={userId} stats={stats} />
+      <GameInsights stats={stats} />
+      <GameHistory userId={userId} />
     </div>
   );
 }

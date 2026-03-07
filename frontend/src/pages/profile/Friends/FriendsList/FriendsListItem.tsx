@@ -1,5 +1,4 @@
 import Avatar from '@components/ui/Avatar';
-import friend from '@assets/friend.jpg';
 import { useFriendsStore } from '@stores/Friends.store';
 import { FriendRequestWithUser } from 'types/friendRequest';
 
@@ -26,7 +25,7 @@ function FriendsListItem({ friendship }: FriendsListItemProps) {
       {' '}
       {/* friends list item */}
       <div className="flex gap-3 items-center">
-        <Avatar path={friend} section="friends" />
+        <Avatar userId={friendship.user_id} section="friends" />
         <h3 className="text-white font-medium text-sm">
           {friendship.username}
         </h3>
