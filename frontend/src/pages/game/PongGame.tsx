@@ -33,9 +33,18 @@ const PongGame = () => {
   const showError = useErrorStore((state) => state.showError);
   const { showNavbar, unomitSidebar } = useLayoutStore((state) => state);
 
+  const mountedRef = useRef(false);
+
   useEffect(() => {
+    mountedRef.current = true;
     const socket = createPongSocket();
     socketRef.current = socket;
+    return () => {
+      mountedRef.current = false;
+      setTimeout(() => {
+        if (!mountedRef.current) socket.disconnect();
+      }, 100);
+    };
   }, []);
 
   useEffect(() => {
@@ -63,8 +72,10 @@ const PongGame = () => {
         err.message === 'Unauthorized' ||
         err.message === 'Not part of this game' ||
         err.message === 'Already connected from another tab'
-      )
+      ) {
+        socket.disconnect();
         navigate('/dashboard');
+      }
     });
 
     return () => {
@@ -140,7 +151,6 @@ const PongGame = () => {
     };
   }, [navigate, showError]);
 
-
   // wait Timer
   useEffect(() => {
     if (!state?.isPaused || !state?.isPlaying) {
@@ -170,8 +180,6 @@ const PongGame = () => {
     if (!gameId) return;
     socketRef.current?.emit('input', keys);
   }, [keys, gameId]);
-
-  
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext('2d');

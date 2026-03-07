@@ -14,10 +14,19 @@ const RPSGame = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const mountedRef = useRef(false);
+
   useEffect(() => {
+    mountedRef.current = true;
     const socket = createRpsSocket();
     socketRef.current = socket;
     setSocketReady(true);
+    return () => {
+      mountedRef.current = false;
+      setTimeout(() => {
+        if (!mountedRef.current) socket.disconnect();
+      }, 100);
+    };
   }, []);
 
   const socket = socketRef.current;
