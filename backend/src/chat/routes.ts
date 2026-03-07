@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { validateResource } from '../middleware/validateResource.js';
+import { requireUser } from '../middleware/requireUser.js';
 import { createMessageSchema } from './schema.js';
 import {
   createConversation,
@@ -10,6 +11,8 @@ import {
 } from './controller.js';
 
 const router = Router();
+
+router.use(requireUser);
 
 // POST
 
