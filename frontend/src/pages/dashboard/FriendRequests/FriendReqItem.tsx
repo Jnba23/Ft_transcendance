@@ -1,5 +1,4 @@
 import UserBadge from '@ui/UserBadge';
-import friend from '@assets/friend.jpg';
 import RequestActions from '@ui/RequestActions';
 import { FriendRequestWithUser } from 'types/friendRequest';
 import { friendsApi } from '@api/friends.api';
@@ -32,13 +31,13 @@ function FriendReqItem({ request, reqType }: FriendReqItemProps) {
   return (
     <div className={[
       "flex items-center gap-4 md:justify-between",
-      "flex-col md:flex-row p-4 md:p-0 bg-[#16213E] rounded-lg",
+      "flex-col md:flex-row p-4 md:p-0 bg-[#16213E]/50 rounded-lg",
       "md:bg-transparent border border-white/10 shadow-lg",
       "md:border-0 shadow-none"
     ].join(' ')}>
       <UserBadge
         username={request.username}
-        avatar={friend}
+        id={request.user_id}
         section="friendRequest"
         toCols={true}
       />
