@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createMatchmakingSocket } from '@services/game/socket';
 import '@styles/matchMaking/matchMaking.css';
+import { useLayoutStore } from '@stores/layout.store';
 const MatchMaking = () => {
   const navigate = useNavigate();
-
+  const {hideNavbar, omitSidebar} = useLayoutStore((state) => state);
   // states
   const [seconds, setSeconds] = useState(0);
 
@@ -14,6 +15,9 @@ const MatchMaking = () => {
   useEffect(() => {
     const socket = createMatchmakingSocket();
     if (!socket) return;
+  // close navbar/sidebar
+    hideNavbar();
+    omitSidebar();
 
     const onConnect = () => socket.emit('join-queue', gameType);
 
