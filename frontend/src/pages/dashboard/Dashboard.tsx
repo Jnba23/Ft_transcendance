@@ -1,22 +1,6 @@
 import FriendRequests from './FriendRequests/FriendRequests';
-import LeaderboardCard from './LeaderboardCard';
-import StateCard from './StateCard';
-import HistoryCard, { HistoryEntry } from './HistoryCard';
-
-const dummyHistory: HistoryEntry[] = [
-  {
-    opponent: 'GhostRider',
-    date: '2024-07-21',
-    winningHand: 'Paper',
-    outcome: 'Win',
-  },
-  {
-    opponent: 'GhostRider',
-    date: '2024-07-21',
-    winningHand: 'Paper',
-    outcome: 'Win',
-  },
-];
+import GameInsights from './GameInsights/GameInsights';
+import Leaderboard from './LeaderBoard/Leaderboard';
 
 function Dashboard() {
   return (
@@ -31,20 +15,12 @@ function Dashboard() {
             ].join(' ')}
           >
             <FriendRequests />
-            <LeaderboardCard />
+            <Leaderboard />
           </div>
         </article>
+
         <article>
-          <div className="bg-[#16213E]/50 p-6 rounded-lg border border-white/10">
-            <StateCard
-              name="Pong"
-              totalGames={85}
-              winStrick={9}
-              winRate={72}
-              WLRatio={{ win: 50, loss: 50 }}
-            />
-            <HistoryCard name="Pong" history={dummyHistory} />
-          </div>
+          <GameInsights />
         </article>
       </div>
     </div>
