@@ -10,9 +10,7 @@ import { Link } from 'react-router-dom';
 
 function Sidebar() {
   const ref = useRef<HTMLElement>(null);
-  const { isSidebarShown, hideSidebar } = useLayoutStore(
-    (state) => state
-  );
+  const { isSidebarShown, hideSidebar } = useLayoutStore((state) => state);
   const [isDMOpen, setIsDMOpen] = useState(true);
   const switchSection = () => setIsDMOpen(!isDMOpen);
 

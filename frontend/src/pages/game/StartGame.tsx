@@ -28,7 +28,6 @@ const StartGame = () => {
           <span>Random Opponent</span>
         </button>
       </div>
-
     </div>
   );
 };

@@ -14,5 +14,5 @@ export const useLayoutStore = create<layoutStore>((set) => ({
   },
   hideSidebar: () => {
     set({ isSidebarShown: false });
-  }
+  },
 }));
