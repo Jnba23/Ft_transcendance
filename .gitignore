@@ -5,3 +5,7 @@ node_modules/
 /frontend/dist/
 *.md
 *.jpeg
+.tldr
+deploy.sh
+ssl/
+*.pem

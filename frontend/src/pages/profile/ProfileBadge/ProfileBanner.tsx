@@ -1,4 +1,4 @@
-import ProfileBadge from '../ProfileBadge/ProfileBadge';
+import ProfileBadge from './ProfileBadge';
 import FriendsBtn from '../Friends/FriendsBtn';
 import Friends from '../Friends/Friends';
 import { useRef } from 'react';

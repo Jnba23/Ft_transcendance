@@ -4,11 +4,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { createMatchmakingSocket } from '@services/game/socket';
 import { useErrorStore } from '@stores/error.store';
 import '@styles/matchMaking/matchMaking.css';
-import { useLayoutStore } from '@stores/layout.store';
 
 const MatchMaking = () => {
   const navigate = useNavigate();
-  const { hideNavbar, omitSidebar } = useLayoutStore((state) => state);
   const location = useLocation();
   // states
   const [seconds, setSeconds] = useState(0);
@@ -19,9 +17,6 @@ const MatchMaking = () => {
   useEffect(() => {
     const socket = createMatchmakingSocket();
     if (!socket) return;
-    // close navbar/sidebar
-    hideNavbar();
-    omitSidebar();
 
     const onConnect = () => socket.emit('join-queue', { gameType });
 
@@ -55,7 +50,7 @@ const MatchMaking = () => {
       socket.off('reconnect-game');
       socket.off('error');
     };
-  }, [navigate, gameType, hideNavbar, omitSidebar]);
+  }, [navigate, gameType]);
 
   // wait Timer
 

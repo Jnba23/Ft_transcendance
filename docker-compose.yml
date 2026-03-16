@@ -1,34 +1,36 @@
-volumes:
-  redis_data:
-network:
+networks:
   trans_net:
     driver: bridge
+
 services:
   backend:
-    build: ./backend
-    container_name: backend
-    ports:
-      - "3000:3000"
-    env_file:
-      - ./.env
-    volumes:
-      - ./backend/src:/app/src
-      - ./backend/data:/app/data
-      - /app/node_modules
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    image: ft_trans_backend:1.0
+    container_name: backend-c
+    env_file: .env
     networks:
       - trans_net
+    volumes:
+      - ./backend/data:/app/data
+    restart: on-failure
 
   frontend:
-    build: ./frontend
-    container_name: frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    image: ft_trans_frontend:1.0
+    container_name: frontend-c
+    env_file: .env
     ports:
-      - "5173:5173"
-    env_file:
-      - ./.env
-    volumes:
-      - ./frontend/src:/app/src
-      - /app/node_modules
+      - "443:443"
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_started
     networks:
       - trans_net
-  redis:
-    /*finish it later*/
+    volumes:
+      - ./ssl:/etc/nginx/ssl:ro
+    restart: on-failure

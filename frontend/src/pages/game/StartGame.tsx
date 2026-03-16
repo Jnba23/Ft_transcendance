@@ -1,15 +1,7 @@
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { useLayoutStore } from '@stores/layout.store';
-import { useEffect } from 'react';
 
 const StartGame = () => {
   const navigate = useNavigate();
-  const { showNavbar, unomitSidebar } = useLayoutStore((state) => state);
-
-  useEffect(() => {
-    showNavbar();
-    unomitSidebar();
-  }, [showNavbar, unomitSidebar]);
 
   const location = useLocation();
   const params = useParams();
@@ -36,7 +28,6 @@ const StartGame = () => {
           <span>Random Opponent</span>
         </button>
       </div>
-
     </div>
   );
 };

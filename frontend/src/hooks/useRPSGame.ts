@@ -37,17 +37,20 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
     if (socket.connected) onConnect();
     else socket.on('connect', onConnect);
 
-    socket.on('joined-game', (data: { gameId: string; gameState: GameState }) => {
-      console.log('🟢 Received joined-game:', data);
+    socket.on(
+      'joined-game',
+      (data: { gameId: string; gameState: GameState }) => {
+        console.log('🟢 Received joined-game:', data);
 
-      setGameState(data.gameState);
-      if (data.gameState.phase === 'choosing') {
-        setCountdown(5);
-        setMyChoice(null);
-        setRoundResult(null);
-        setWaitingForOpp(false);
+        setGameState(data.gameState);
+        if (data.gameState.phase === 'choosing') {
+          setCountdown(5);
+          setMyChoice(null);
+          setRoundResult(null);
+          setWaitingForOpp(false);
+        }
       }
-    });
+    );
 
     socket.on('error', (data: { message: string }) => {
       console.error('Game error', data.message);
@@ -100,12 +103,12 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
       setGameState((prev) => {
         return prev
           ? {
-            ...prev,
-            currentRound: data.round,
-            player1: { ...prev.player1, score: data.p1Score },
-            player2: { ...prev.player2, score: data.p2Score },
-            phase: 'revealing',
-          }
+              ...prev,
+              currentRound: data.round,
+              player1: { ...prev.player1, score: data.p1Score },
+              player2: { ...prev.player2, score: data.p2Score },
+              phase: 'revealing',
+            }
           : null;
       });
       setWaitingForOpp(false);

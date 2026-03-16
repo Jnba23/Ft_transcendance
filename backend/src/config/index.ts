@@ -1,7 +1,4 @@
-import dotenv from 'dotenv';
 import type { SignOptions } from 'jsonwebtoken';
-
-dotenv.config();
 
 export const config = {
   port: process.env.PORT || 3000,
