@@ -4,7 +4,7 @@ networks:
 
 services:
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile.prod
     image: ft_trans_backend:1.0

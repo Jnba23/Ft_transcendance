@@ -43,12 +43,13 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile/:id" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/start_game" element={<StartGame />} />
-              {/* <Route path="/start_rps" element={<StartGame />} /> */}
+              <Route path="/start_game/Pong" element={<StartGame />} />
+              <Route path="/start_game/Rps" element={<StartGame />} />
               <Route path="/match_making" element={<MatchMaking />} />
-              <Route path="/pong/:gameId" element={<PongGame />} />
-              <Route path="/end_match" element={<EndMatch />} />
               <Route path="/rps/:gameId" element={<RPSGame />} />
+              <Route path="/pong/:gameId" element={<PongGame />} />
+              {/* <Route path="/rps-test" element={<RPSMatchmakingTest />} /> */}
+              <Route path="/end_match" element={<EndMatch />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>
           </Route>

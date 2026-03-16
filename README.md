@@ -22,11 +22,11 @@
 
 | Member | GitHub | Role | Responsibilities |
 |--------|--------|------|------------------|
-| **jnba23** | [@Jnba23](https://github.com/Jnba23) | **Project Manager** | Project planning, coordination, code reviews, RPS game implementation, feature integration |
-| **yikenyiken** | [@yikenyiken](https://github.com/yikenyiken) | **Product Owner** | Requirements gathering, feature prioritization, user stories, stakeholder communication |
-| **sel-hasn (Salah)** | [@sel-hasn](https://github.com/sel-hasn) | **Tech Lead** | Architecture design, authentication system, user management, API development, code quality |
-| **moha (Mohamed)** | [@moha](https://github.com/moha) | **Developer** | Pong game development, real-time features, matchmaking system, game logic |
-| **TheBacteria** | [@TheBacteria](https://github.com/TheBacteria) | **Developer** | Frontend development, UI/UX implementation, testing |
+| **asayad** | [@asayad](https://github.com/Jnba23) | **Tech Lead** | RPS game implementation, feature integration |
+| **yiken** | [@yiken](https://github.com/yikenyiken) | **Product Owner** | Frontend development, UI/UX implementation, testing, chat |
+| **sel-hasn** | [@sel-hasn](https://github.com/sel-hasn) | **Developer** | Architecture design, authentication system, user management, API development, code quality |
+| **messkely** | [@messkely](https://github.com/messkely) | **Developer** | Pong game development, real-time features, matchmaking system, game logic |
+| **mzouine** | [@mzouine](https://github.com/mzouine) | **Project Manager** | Project planning, coordination, code reviews, Public API |
 
 ---
 
@@ -316,13 +316,7 @@ The database uses SQLite3 with the following structure:
 
 #### **Major Modules (2 points each)**
 
-1. **Use a Framework for Backend** ✅
-   - **Points**: 2
-   - **Implementation**: Express.js (v5.2.1) framework
-   - **Justification**: Express provides robust routing, middleware support, and extensive ecosystem
-   - **Team Members**: sel-hasn (architecture), moha (game APIs), jnba23 (RPS integration)
-
-2. **Implement Real-Time Features Using WebSockets** ✅
+1. **Implement Real-Time Features Using WebSockets** ✅
    - **Points**: 2
    - **Implementation**: Socket.io (v4.8.3) for bidirectional real-time communication
    - **Features**:
@@ -331,17 +325,17 @@ The database uses SQLite3 with the following structure:
      - Instant chat messaging
      - Connection/disconnection handling
      - Efficient message broadcasting
-   - **Team Members**: moha (Pong game sockets), jnba23 (RPS game sockets), sel-hasn (chat sockets)
+   - **Team Members**: messkely (Pong game sockets), asayad (RPS game sockets), sel-hasn (chat sockets)
 
-3. **Allow Users to Interact with Other Users** ✅
+2. **Allow Users to Interact with Other Users** ✅
    - **Points**: 2
    - **Implementation**:
      - **Chat System**: Send/receive messages between users
      - **Profile System**: View user information, stats, match history
      - **Friends System**: Add/remove friends, see friends list
-   - **Team Members**: sel-hasn (backend implementation), TheBacteria (frontend UI)
+   - **Team Members**: sel-hasn (backend implementation), mzouine (frontend UI)
 
-4. **A Public API with Secured Endpoints** ✅
+3. **A Public API with Secured Endpoints** ✅
    - **Points**: 2
    - **Implementation**: RESTful API with JWT authentication, rate limiting, and OpenAPI documentation
    - **Endpoints** (5+ required):
@@ -353,16 +347,16 @@ The database uses SQLite3 with the following structure:
      - Plus 20+ additional endpoints
    - **Team Members**: sel-hasn (API design & implementation)
 
-5. **Standard User Management and Authentication** ✅
+4. **Standard User Management and Authentication** ✅
    - **Points**: 2 (Major module from User Management section)
    - **Implementation**:
      - Update profile information
      - Upload avatar (with default if none provided)
      - Add users as friends and see online status
      - Profile page displaying user information
-   - **Team Members**: sel-hasn (backend), TheBacteria (frontend)
+   - **Team Members**: sel-hasn (backend), mzouine (frontend)
 
-6. **Implement a Complete Web-Based Game** ✅
+5. **Implement a Complete Web-Based Game** ✅
    - **Points**: 2
    - **Implementation**: Pong - Real-time multiplayer game
    - **Features**:
@@ -370,18 +364,18 @@ The database uses SQLite3 with the following structure:
      - Live match functionality
      - Clear rules and win/loss conditions
      - 2D graphics
-   - **Team Members**: moha (game engine, physics, UI)
+   - **Team Members**: messkely (game engine, physics, UI)
 
-7. **Remote Players — Enable Two Players on Separate Computers** ✅
+6. **Remote Players — Enable Two Players on Separate Computers** ✅
    - **Points**: 2
    - **Implementation**: 
      - WebSocket-based real-time synchronization
      - Handle network latency and disconnections gracefully
      - Smooth user experience for remote gameplay
      - Reconnection logic
-   - **Team Members**: moha (Pong), jnba23 (RPS)
+   - **Team Members**: messkely (Pong), asayad (RPS)
 
-8. **Add Another Game with User History and Matchmaking** ✅
+7. **Add Another Game with User History and Matchmaking** ✅
    - **Points**: 2
    - **Implementation**: Rock-Paper-Scissors (RPS) as second game
    - **Features**:
@@ -389,7 +383,7 @@ The database uses SQLite3 with the following structure:
      - Track user history and statistics
      - Matchmaking system for finding opponents
      - Performance optimization
-   - **Team Members**: jnba23 (RPS game implementation & matchmaking)
+   - **Team Members**: asayad (RPS game implementation & matchmaking)
 
 #### **Minor Modules (1 point each)**
 
@@ -401,7 +395,7 @@ The database uses SQLite3 with the following structure:
 2. **Use a Backend Framework** ✅
    - **Points**: 1
    - **Implementation**: Express.js (v5.2.1) with TypeScript
-   - **Team Members**: sel-hasn, moha, jnba23
+   - **Team Members**: sel-hasn, messkely, jnba23
 
 3. **Use ORM for Database** ✅
    - **Points**: 1
@@ -418,19 +412,29 @@ The database uses SQLite3 with the following structure:
    - **Implementation**: Two-Factor Authentication using TOTP (Time-based One-Time Password)
    - **Team Members**: sel-hasn
 
-6. **Game Statistics and Match History** ✅
+6. **JWT Authentication** ✅
+   - **Points**: 1
+   - **Implementation**: JSON Web Tokens for secure stateless authentication
+   - **Features**:
+     - Access and refresh token system
+     - Token blacklisting for logout
+     - Automatic token refresh
+     - Secure cookie storage
+   - **Team Members**: sel-hasn
+
+7. **Game Statistics and Match History** ✅
    - **Points**: 1
    - **Implementation**:
      - Track user game statistics (wins, losses, ranking, level)
      - Display match history (1v1 games, dates, results, opponents)
      - Show achievements and progression
      - Leaderboard integration
-   - **Team Members**: moha (Pong stats), jnba23 (RPS stats), sel-hasn (database)
+   - **Team Members**: messkely (Pong stats), asayad (RPS stats), sel-hasn (database)
 
-### **Total Points: 19 points**
-- **Major Modules**: 8 × 2 = 16 points
-- **Minor Modules**: 6 × 1 = 6 points (only counting distinct modules)
-- **Adjusted Total**: 19 points (exceeds minimum requirement)
+### **Total Points: 20 points**
+- **Major Modules**: 7 × 2 = 14 points
+- **Minor Modules**: 7 × 1 = 7 points
+- **Adjusted Total**: 20 points (exceeds minimum requirement)
 
 ---
 
@@ -452,7 +456,7 @@ The database uses SQLite3 with the following structure:
 - Profile information display
 - User statistics and rankings
 - Level system (ELO-based)
-- **Team Members**: sel-hasn (backend), TheBacteria (frontend)
+- **Team Members**: sel-hasn (backend), mzouine (frontend)
 
 ### Friends System
 - Send/accept/decline friend requests
@@ -486,7 +490,7 @@ The database uses SQLite3 with the following structure:
 - Skill-based pairing
 - Game type selection (Pong/RPS)
 - Real-time status updates
-- **Team Members**: moha (Pong), jnba23 (RPS)
+- **Team Members**: messkely (Pong), asayad (RPS)
 
 ### Chat System
 - One-on-one messaging
@@ -494,7 +498,7 @@ The database uses SQLite3 with the following structure:
 - Read receipts
 - Conversation history
 - Message persistence
-- **Team Members**: sel-hasn (backend), TheBacteria (frontend)
+- **Team Members**: sel-hasn (backend), mzouine (frontend)
 
 ### Game History & Statistics
 - Match history for both games
@@ -503,7 +507,7 @@ The database uses SQLite3 with the following structure:
 - Opponent information
 - Game timestamps
 - Performance metrics
-- **Team Members**: moha, jnba23, sel-hasn
+- **Team Members**: messkely, jnba23, sel-hasn
 
 ### RESTful API
 - Comprehensive REST API with 25+ endpoints
@@ -521,13 +525,13 @@ The database uses SQLite3 with the following structure:
 - Loading states and error handling
 - Smooth animations
 - Intuitive navigation
-- **Team Members**: TheBacteria, moha, jnba23
+- **Team Members**: mzouine, messkely, jnba23
 
 ---
 
 ## Individual Contributions
 
-### jnba23 (Project Manager)
+### asayad (Tech Lead)
 **Primary Focus**: Project coordination, RPS game implementation, integration
 
 **Key Contributions**:
@@ -552,7 +556,7 @@ The database uses SQLite3 with the following structure:
 
 ---
 
-### yikenyiken (Product Owner)
+### yiken (Product Owner)
 **Primary Focus**: Project requirements, user stories, feature prioritization
 
 **Key Contributions**:
@@ -572,7 +576,7 @@ The database uses SQLite3 with the following structure:
 
 ---
 
-### sel-hasn (Salah - Tech Lead)
+### sel-hasn (Developer)
 **Primary Focus**: Architecture, authentication, user management, API development
 
 **Key Contributions**:
@@ -623,7 +627,7 @@ The database uses SQLite3 with the following structure:
 
 ---
 
-### moha (Mohamed - Developer)
+### messkely (Developer)
 **Primary Focus**: Pong game development, real-time features
 
 **Key Contributions**:
@@ -662,27 +666,12 @@ The database uses SQLite3 with the following structure:
 
 ---
 
-### TheBacteria (Developer)
-**Primary Focus**: Frontend development, UI/UX implementation
+### mzouine (Project Manager)
+**Primary Focus**: Public API Integration 
 
 **Key Contributions**:
-- Frontend component development
-- User interface design and implementation
-- Responsive layout design
-- Authentication pages (login, register)
-- Profile pages and user information display
-- Chat interface
-- Dashboard and navigation
-- Settings page
-- Form validation and error handling
-- Integration with backend APIs
-- User experience optimization
+- Code reviews and Public API
 
-**Challenges Overcome**:
-- Creating responsive designs for various screen sizes
-- Implementing real-time updates in the UI
-- Managing complex state in React components
-- Ensuring consistent styling across the application
 
 **Branches**: Contributions across `develop` and feature branches
 
@@ -726,31 +715,26 @@ The database uses SQLite3 with the following structure:
 
 AI tools were used throughout the project to assist with:
 
-1. **Code Generation**:
-   - Boilerplate code for Express routes and controllers
-   - TypeScript type definitions and interfaces
-   - Socket.io event handlers structure
-   - React component scaffolding
 
-2. **Debugging**:
+1. **Debugging**:
    - Identifying and fixing TypeScript compilation errors
    - Resolving Socket.io connection issues
    - Debugging real-time synchronization problems
    - ESLint and Prettier configuration conflicts
 
-3. **Documentation**:
+2. **Documentation**:
    - API endpoint documentation
    - Code comments for complex logic
    - README structure and formatting
    - Database schema explanations
 
-4. **Problem Solving**:
+3. **Problem Solving**:
    - OAuth 2.0 implementation guidance
    - 2FA/TOTP integration strategies
    - WebSocket connection handling patterns
    - Database query optimization
 
-5. **Code Review**:
+4. **Code Review**:
    - Identifying potential bugs and edge cases
    - Security vulnerability detection
    - Performance optimization suggestions

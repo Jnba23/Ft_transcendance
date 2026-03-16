@@ -9,7 +9,7 @@ function ErrorAlert() {
       className={[
         `${getTransitionClasses(!!error, 'error')}`,
         'absolute top-4 left-1/2 -translate-x-1/2',
-        'z-[50] max-w-md w-full px-4 pointer-events-none',
+        'z-[60] max-w-md w-full px-4 pointer-events-none',
       ].join(' ')}
     >
       <div

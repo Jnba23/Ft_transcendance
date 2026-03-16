@@ -4,7 +4,9 @@ let manager: Manager | null = null;
 
 export function getManager() {
   if (!manager) {
-    manager = new Manager({
+    // Use undefined to connect to same origin (respects current protocol)
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || undefined;
+    manager = new Manager(socketUrl, {
       withCredentials: true,
     });
     manager.socket('/');

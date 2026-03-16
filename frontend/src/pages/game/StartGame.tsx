@@ -1,20 +1,12 @@
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { useLayoutStore } from '@stores/layout.store';
-import { useEffect } from 'react';
 
 const StartGame = () => {
   const navigate = useNavigate();
-  const { showNavbar, unomitSidebar } = useLayoutStore((state) => state);
-
-  useEffect(() => {
-    showNavbar();
-    unomitSidebar();
-  }, [showNavbar, unomitSidebar]);
 
   const location = useLocation();
   const params = useParams();
 
-  const game = params['*'] || 'pong';
+  const game = params['*'] || location.state?.game;
   return (
     <div className="text-white relative flex flex-col justify-center items-center min-h-screen w-full bg-background-dark p-4 gap-6 text-center">
       <h1 className="font-bold text-6xl leading-none">Play {game}</h1>

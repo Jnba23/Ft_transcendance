@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 
 function Sidebar() {
   const ref = useRef<HTMLElement>(null);
-  const { isSidebarShown, hideSidebar, isSidebarOmited } = useLayoutStore(
+  const { isSidebarShown, hideSidebar } = useLayoutStore(
     (state) => state
   );
   const [isDMOpen, setIsDMOpen] = useState(true);
@@ -22,7 +22,6 @@ function Sidebar() {
     <>
       <aside
         className={[
-          `${isSidebarOmited ? 'md:w-0 md:hidden' : ''}`,
           `${getTransitionClasses(isSidebarShown, 'sidebar')}`,
           'w-64 p-4 md:block',
           'bg-[#16213E] md:bg-[#16213E]/30',
