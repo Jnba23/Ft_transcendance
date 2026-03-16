@@ -1,0 +1,134 @@
+import { Request, Response, NextFunction } from 'express';
+import { catchAsync } from '../../utils/catchAsync.js';
+import { AppError } from '../../utils/AppError.js';
+import { friendService } from './service.js';
+import { User } from '../../auth/types.js';
+import { FriendAction } from './types.js';
+import {
+  emitUpdateFriendRequest,
+  emitNewFriendRequest,
+} from './realtime.service.js';
+
+export const createFriendRequest = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const SenderId = (res.locals.user as User).id;
+    const recipientId = req.body.other_id;
+
+    if (!recipientId) return next(new AppError('Recipient ID required', 400));
+
+    if (SenderId === recipientId) {
+      return next(new AppError('Cannot send friend request to yourself', 403));
+    }
+
+    const existing = friendService.checkExisting(SenderId, recipientId);
+    if (existing) {
+      if (existing.status === 'accepted') {
+        return next(new AppError('Already friends', 409));
+      }
+      return next(new AppError('Friend request already exists', 409));
+    }
+
+    const requestId = friendService.createRequest(SenderId, recipientId);
+
+    const requestWithCreator = friendService.getFriendRequestWithUser(
+      requestId,
+      SenderId
+    );
+    const requestWithOther = friendService.getFriendRequestWithUser(
+      requestId,
+      recipientId
+    );
+
+    // broadcast to creator and other
+    emitNewFriendRequest({ requestWithCreator, requestWithOther });
+
+    res.status(201).json({
+      status: 'success',
+      data: { request_id: requestId },
+    });
+  }
+);
+
+// GET /api/friend-requests?type=sent|received
+export const getFriendRequests = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (res.locals.user as User).id;
+    let type = req.query.type as string;
+
+    if (!type) {
+      type = 'received';
+    }
+
+    if (!['sent', 'received'].includes(type)) {
+      return next(
+        new AppError('Query param "type" must be "sent" or "received"', 400)
+      );
+    }
+
+    const requests =
+      type === 'sent'
+        ? friendService.getSentRequests(userId)
+        : friendService.getReceivedRequests(userId);
+
+    res.json({
+      status: 'success',
+      results: requests.length,
+      data: { requests },
+    });
+  }
+);
+
+export const handleFriendAction = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (res.locals.user as User).id;
+    const { request_id, action } = req.body as {
+      request_id: number;
+      action: FriendAction;
+    };
+
+    const request = friendService.getRequestById(request_id);
+
+    if (!request) {
+      return next(new AppError('Friend request not found', 404));
+    }
+
+    const isSender = request.user_id_1 === userId;
+    const isRecipient = request.user_id_2 === userId;
+
+    if (!isRecipient && !isSender) {
+      return next(new AppError('Not authorized to perfom this action', 403));
+    }
+
+    if (action === 'cancel' && !isSender) {
+      return next(new AppError('Only sender can cancel a request', 403));
+    }
+
+    if ((action === 'accept' || action === 'decline') && !isRecipient) {
+      return next(new AppError('Only recipient can accept or decline', 403));
+    }
+
+    if (action === 'accept') {
+      friendService.acceptRequest(request_id);
+      res.json({ status: 'success', message: 'Friend request accepted' });
+    } else {
+      // decline, cancel or remove = delete the request
+      friendService.deleteRequest(request_id);
+      res.json({ status: 'success', message: `Friend request ${action}ed` });
+    }
+
+    emitUpdateFriendRequest({ request, userId, isSender, action });
+  }
+);
+
+export const getFriends = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const userId = (res.locals.user as User).id;
+    const friends = friendService.getFriends(userId);
+
+    res.json({
+      status: 'success',
+      results: friends.length,
+      data: { friends },
+    });
+  }
+);

@@ -1,0 +1,11 @@
+node_modules/
+/backend/data/
+.env
+/backend/docs/
+/frontend/dist/
+*.md
+*.jpeg
+.tldr
+deploy.sh
+ssl/
+*.pem

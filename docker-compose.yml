@@ -1,0 +1,36 @@
+networks:
+  trans_net:
+    driver: bridge
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    image: ft_trans_backend:1.0
+    container_name: backend-c
+    env_file: .env
+    networks:
+      - trans_net
+    volumes:
+      - ./backend/data:/app/data
+    restart: on-failure
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    image: ft_trans_frontend:1.0
+    container_name: frontend-c
+    env_file: .env
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - trans_net
+    volumes:
+      - ./ssl:/etc/nginx/ssl:ro
+    restart: on-failure

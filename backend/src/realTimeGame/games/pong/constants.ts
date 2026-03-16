@@ -1,0 +1,9 @@
+export const BOARD_WIDTH = 800;
+export const BOARD_HEIGHT = 500;
+export const PADDLE_WIDTH = 12;
+export const PADDLE_HEIGHT = 150;
+export const PADDLE_SPEED = 700;
+export const PADDLE_MARGIN = 20;
+export const BALL_RADIUS = 10;
+export const BALL_INITIAL_SPEED = 650;
+export const WINNING_SCORE = 5;

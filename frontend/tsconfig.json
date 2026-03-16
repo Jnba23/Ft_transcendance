@@ -1,0 +1,61 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "baseUrl": "src",
+    "paths": {
+      "@components/*": [
+        "components/*"
+      ],
+      "@pages/*": [
+        "pages/*"
+      ],
+      "@styles/*": [
+        "styles/*"
+      ],
+      "@hooks/*": [
+        "hooks/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ],
+      "@assets/*": [
+        "assets/*"
+      ],
+      "@my-types/*": ["types/*"],
+      "@ui/*": [
+        "components/ui/*"
+      ],
+      "@stores/*": [
+        "stores/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@context/*": [
+        "context/*"
+      ],
+      "@api/*": [
+        "api/*"
+      ],
+      "@realtime/*": [
+        "realtime/*"
+      ],
+      "@schemas/*": [
+        "schemas/*"
+      ],
+    },
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
