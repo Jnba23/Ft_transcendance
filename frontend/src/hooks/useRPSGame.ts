@@ -103,12 +103,12 @@ export const useRPSGame = (socket: Socket | null, gameId: string) => {
       setGameState((prev) => {
         return prev
           ? {
-              ...prev,
-              currentRound: data.round,
-              player1: { ...prev.player1, score: data.p1Score },
-              player2: { ...prev.player2, score: data.p2Score },
-              phase: 'revealing',
-            }
+          ...prev,
+          currentRound: data.round,
+          player1: { ...prev.player1, score: data.p1Score },
+          player2: { ...prev.player2, score: data.p2Score },
+          phase: 'revealing',
+          }
           : null;
       });
       setWaitingForOpp(false);
